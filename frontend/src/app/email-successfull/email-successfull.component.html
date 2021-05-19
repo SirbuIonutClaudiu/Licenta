@@ -1,0 +1,46 @@
+<link href="//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+<!------ Include the above in your HEAD tag ---------->
+
+<!-- http://www.jquery2dotnet.com -->
+<div class="container">
+  <div class="col">
+    <div class="row middle" *ngIf="answer">
+      <div class="alert alert-success">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">
+          ×</button>
+        <span class="glyphicon glyphicon-ok"></span> <strong> Email activated</strong>
+        <hr class="message-inner-separator">
+        <p>
+          You successfully activated your email.<br>&nbsp;</p>
+      </div>
+    </div>
+
+    <div class="row middle" *ngIf="answer">
+      <div class="alert alert-warning">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">
+          ×</button>
+        <span class="glyphicon glyphicon-record"></span> <strong> Remember</strong>
+        <hr class="message-inner-separator">
+        <p>
+          Your application has to be reviewed by an administrator now.<br>
+          If it has, you can go to login right now.
+        </p>
+      </div>
+    </div>
+
+    <div class="row middle" *ngIf="!answer">
+      <div class="alert alert-danger">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">
+          ×</button>
+        <span class="glyphicon glyphicon-hand-right"></span> <strong> Warning</strong>
+        <hr class="message-inner-separator">
+        <p>
+          Something went wrong. Check out if you already activated your email before.</p>
+      </div>
+    </div>
+
+    <button type="button" class="row btn_middle btn btn-success" [routerLink]="'/login'">Go to Login Page</button>
+  </div>
+</div>

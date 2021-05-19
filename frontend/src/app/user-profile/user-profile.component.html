@@ -1,0 +1,280 @@
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+<div class="container">
+  <div class="main-body">
+
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="main-breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item active" aria-current="page">User Profile</li>
+      </ol>
+    </nav>
+    <!-- /Breadcrumb -->
+
+    <div class="row gutters-sm">
+      <div class="col-md-4 mb-3">
+        <div class="card">
+          <div class="card-body">
+            <div class="d-flex flex-column align-items-center text-center">
+              <img src="https://bootdey.com/img/Content/avatar/avatar7.png" alt="Admin" class="rounded-circle" width="150">
+              <div class="mt-3">
+                <h4>{{member.name | titlecase}}</h4>
+                <p class="mb-1" *ngFor="let role of member.roles" style="color: #2a9fa1">{{role}}</p>
+                <div class="select">
+                  <select name="slct" id="slct" [(ngModel)]="selectedRole" (ngModelChange)="optionSelected()">
+                    <option selected disabled>{{defaultOption}}</option>
+                    <option *ngFor="let number of [1,2,3,4,5,6]">{{availableRoles.get(number)}}</option>
+                  </select>
+                </div>
+                <div *ngIf="isRoleEditable">
+                  <a class="btn btn-xs btn-bold btn-warning activateBtn roleBtnLeft" (click)="discardRoleChange()">
+                    <i class="fa fa-times-circle fa-lg"></i> Discard</a>
+                  <a class="btn btn-xs btn-bold btn-success activateBtn roleBtnRight" (click)="applyRoleChanges()">
+                    <i class="fa fa-floppy-o fa-lg"></i> Apply</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card mt-3">
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
+              <h6 (click)="goToWebsite()"
+                  title="Follow website"
+                  class="mb-0 clickable">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-globe mr-2 icon-inline">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="2" y1="12" x2="22" y2="12"></line>
+                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                </svg>Website
+              </h6>
+              <span class="text-secondary editable" id="website" *ngIf="!isWebsiteEditable && !websiteError">{{website}}</span>
+              <span class="error" *ngIf="websiteError">{{website}}</span>
+              <input id="websiteInput" placeholder="{{website}}" [(ngModel)]="website" *ngIf="isWebsiteEditable">
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
+              <h6 class="mb-0">
+                <svg style="color: red;" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 23 20" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="bi bi-telephone mr-2 icon-inline">
+                  <path d="M3.654 1.328a.678.678 0 0 0-1.015-.063L1.605 2.3c-.483.484-.661 1.169-.45 1.77a17.568 17.568 0 0 0 4.168 6.608 17.569 17.569 0 0 0 6.608 4.168c.601.211 1.286.033 1.77-.45l1.034-1.034a.678.678 0 0 0-.063-1.015l-2.307-1.794a.678.678 0 0 0-.58-.122l-2.19.547a1.745 1.745 0 0 1-1.657-.459L5.482 8.062a1.745 1.745 0 0 1-.46-1.657l.548-2.19a.678.678 0 0 0-.122-.58L3.654 1.328zM1.884.511a1.745 1.745 0 0 1 2.612.163L6.29 2.98c.329.423.445.974.315 1.494l-.547 2.19a.678.678 0 0 0 .178.643l2.457 2.457a.678.678 0 0 0 .644.178l2.189-.547a1.745 1.745 0 0 1 1.494.315l2.306 1.794c.829.645.905 1.87.163 2.611l-1.034 1.034c-.74.74-1.846 1.065-2.877.702a18.634 18.634 0 0 1-7.01-4.42 18.634 18.634 0 0 1-4.42-7.009c-.362-1.03-.037-2.137.703-2.877L1.885.511z"></path>
+                </svg>Landline
+              </h6>
+              <span class="text-secondary">bootdey</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
+              <h6 class="mb-0">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 21 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="bi bi-shield-lock-fillr mr-2 icon-inline text-info">
+                  <path fill-rule="evenodd" d="M8 0c-.69 0-1.843.265-2.928.56-1.11.3-2.229.655-2.887.87a1.54 1.54 0 0 0-1.044 1.262c-.596 4.477.787 7.795 2.465 9.99a11.777 11.777 0 0 0 2.517 2.453c.386.273.744.482 1.048.625.28.132.581.24.829.24s.548-.108.829-.24a7.159 7.159 0 0 0 1.048-.625 11.775 11.775 0 0 0 2.517-2.453c1.678-2.195 3.061-5.513 2.465-9.99a1.541 1.541 0 0 0-1.044-1.263 62.467 62.467 0 0 0-2.887-.87C9.843.266 8.69 0 8 0zm0 5a1.5 1.5 0 0 1 .5 2.915l.385 1.99a.5.5 0 0 1-.491.595h-.788a.5.5 0 0 1-.49-.595l.384-1.99A1.5 1.5 0 0 1 8 5z"></path>
+                </svg>Two-Factor Authentication
+              </h6><input type="checkbox" id="2FA_switch" [(ngModel)]="this.twoFactor" (change)="toggle_2FA()"/><label for="2FA_switch">Toggle</label>
+              <span class="error" *ngIf="twoFactorError">Introduce a phone number first !</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-md-8">
+        <div class="card mb-3">
+          <div class="card-body">
+
+            <div class="row">
+              <div class="col-sm-2">
+                <h6 class="col-mb-0">Full Name</h6>
+              </div>
+              <div class="col-md-6" *ngIf="!isNameEditable">
+                {{member.name}}
+              </div>
+              <div class="col-md-6" *ngIf="isNameEditable">
+                <input placeholder={{name}} [(ngModel)]="this.member.name" *ngIf="isNameEditable">
+              </div>
+              <div class="col-md-3 card-hover-show" *ngIf="!isNameEditable">
+              <a class="btn btn-xs btn-bold btn-warning activateBtn" (click)="EditName()">
+                <i class="fa fa-pencil fa-lg"></i> Edit</a>
+              </div>
+              <div class="col-md-3 card-hover-show" *ngIf="isNameEditable">
+                <a class="btn btn-xs btn-bold btn-success activateBtn" (click)="SaveNewName()">
+                  <i class="fa fa-floppy-o fa-lg"></i> Save</a>
+              </div>
+            </div>
+            <hr>
+
+            <div class="row">
+              <div class="col-sm-2">
+                <h6 class="col-mb-0">Email</h6>
+              </div>
+              <div class="col-md-6" *ngIf="!isEmailEditable">
+                {{member.email}}
+              </div>
+              <div class="col-md-6" *ngIf="isEmailEditable">
+                <input placeholder="Enter name" [(ngModel)]="member.email" *ngIf="isEmailEditable">
+              </div>
+              <div class="col-md-3 card-hover-show" *ngIf="!isEmailEditable">
+                <a class="btn btn-xs btn-bold btn-warning activateBtn" (click)="EditEmail()">
+                  <i class="fa fa-pencil fa-lg"></i> Edit</a>
+              </div>
+              <div class="col-md-3 card-hover-show" *ngIf="isEmailEditable">
+                <a class="btn btn-xs btn-bold btn-success activateBtn" (click)="SaveNewEmail()">
+                  <i class="fa fa-floppy-o fa-lg"></i> Save</a>
+              </div>
+            </div>
+            <hr>
+
+            <div class="row">
+              <div class="col-sm-2">
+                <h6 class="col-mb-0">Mobile</h6>
+              </div>
+              <div class="col-md-5" *ngIf="!isPhoneNumber">
+                <international-phone-number placeholder="Enter phone number"
+                                            [maxlength]="15"
+                                            [defaultCountry]="'ro'"
+                                            [locale]="'en'"
+                                            name="phone_number"
+                                            [(ngModel)]="phoneNumber"
+                                            *ngIf="!isPhoneNumber && !isPhoneNumberEditable">
+                </international-phone-number>
+                <div class="d-flex flex-row md-6" *ngIf="isPhoneNumberEditable">
+                  <input type="text"
+                         class="form-control smsInput"
+                         autofocus=""
+                         [(ngModel)]="digitOne"
+                         [ngClass]="{'incorrectSmsCode': codeError === true}"
+                         maxlength="1"
+                         (keyup)="onDigitInput($event)"
+                         name="digitOne">
+                  <input type="text"
+                         class="form-control smsInput"
+                         ng-model="digitTwo"
+                         [(ngModel)]="digitTwo"
+                         [ngClass]="{'incorrectSmsCode': codeError === true}"
+                         maxlength="1"
+                         (keyup)="onDigitInput($event)"
+                         name="digitTwo">
+                  <input type="text"
+                         class="form-control smsInput"
+                         ng-model="digitThree"
+                         [(ngModel)]="digitThree"
+                         [ngClass]="{'incorrectSmsCode': codeError === true}"
+                         maxlength="1"
+                         (keyup)="onDigitInput($event)"
+                         name="digitThree">
+                  <input type="text"
+                         class="form-control smsInput"
+                         ng-model="digitFour"
+                         [(ngModel)]="digitFour"
+                         [ngClass]="{'incorrectSmsCode': codeError === true}"
+                         maxlength="1"
+                         (keyup)="onDigitInput($event)"
+                         name="digitFour">
+                  <input type="text"
+                         class="form-control smsInput"
+                         ng-model="digitFive"
+                         [(ngModel)]="digitFive"
+                         [ngClass]="{'incorrectSmsCode': codeError === true}"
+                         maxlength="1"
+                         (keyup)="onDigitInput($event)"
+                         name="digitFive">
+                  <input type="text"
+                         class="form-control smsInput"
+                         ng-model="digitSix"
+                         [(ngModel)]="digitSix"
+                         [ngClass]="{'incorrectSmsCode': codeError === true}"
+                         maxlength="1"
+                         (keyup)="onDigitInput($event)"
+                         name="digitSix">
+                </div>
+              </div>
+              <div class="col-md-3 card-hover-show" *ngIf="!isPhoneNumber && !isPhoneNumberEditable">
+                <a class="btn btn-xs btn-bold btn-primary activateBtn" (click)="addNumber()">
+                  <i class="fa fa-mobile fa-lg"></i>&nbsp;&nbsp;Add number</a>
+              </div>
+              <div class="col-md-5 card-hover-show" *ngIf="isPhoneNumberEditable">
+                <a class="btn btn-xs btn-bold btn-success activateBtn" (click)="confirmCode()" style="margin-right: 5%;">
+                  <i class="fa fa-check-circle-o fa-lg"></i> &nbsp;Confirm</a>
+                <a class="btn btn-xs btn-bold btn-info activateBtn" (click)="onEdit()">
+                  <i class="fa fa-repeat fa-lg"></i> Resend</a>
+              </div>
+                <div class="d-flex smsError" *ngIf="codeError">
+                  <p class="error">{{errorMessage}}</p>
+              </div>
+            </div>
+            <hr>
+
+            <div class="row">
+              <div class="col-sm-3">
+                <h6 class="col-mb-0">Address</h6>
+              </div>
+              <div class="col-md-6" *ngIf="!isEditEnable">
+                Bay Area, San Francisco, CA
+              </div>
+              <div class="col-md-6" *ngIf="isEditEnable">
+                <input placeholder="Enter name" [(ngModel)]="name" *ngIf="isEditEnable">
+              </div>
+              <div class="col-md-3 card-hover-show" *ngIf="!isEditEnable">
+                <a class="btn btn-xs btn-bold btn-warning activateBtn" (click)="onEdit()">
+                  <i class="fa fa-pencil fa-lg"></i> Edit</a>
+              </div>
+              <div class="col-md-3 card-hover-show" *ngIf="isEditEnable">
+                <a class="btn btn-xs btn-bold btn-success activateBtn" (click)="onEdit()">
+                  <i class="fa fa-floppy-o fa-lg"></i> Save</a>
+              </div>
+            </div>
+
+          </div>
+        </div>
+        <div class="row gutters-sm">
+          <div class="col-sm-6 mb-3">
+            <div class="card h-100">
+              <div class="card-body">
+                <h6 class="d-flex align-items-center mb-3"><i class="material-icons text-info mr-2">assignment</i>Project Status</h6>
+                <small>Web Design</small>
+                <div class="progress mb-3" style="height: 5px">
+                  <div class="progress-bar bg-primary" role="progressbar" style="width: 80%" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                <small>Website Markup</small>
+                <div class="progress mb-3" style="height: 5px">
+                  <div class="progress-bar bg-primary" role="progressbar" style="width: 72%" aria-valuenow="72" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                <small>One Page</small>
+                <div class="progress mb-3" style="height: 5px">
+                  <div class="progress-bar bg-primary" role="progressbar" style="width: 89%" aria-valuenow="89" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                <small>Mobile Template</small>
+                <div class="progress mb-3" style="height: 5px">
+                  <div class="progress-bar bg-primary" role="progressbar" style="width: 55%" aria-valuenow="55" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                <small>Backend API</small>
+                <div class="progress mb-3" style="height: 5px">
+                  <div class="progress-bar bg-primary" role="progressbar" style="width: 66%" aria-valuenow="66" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-6 mb-3">
+            <div class="card h-100">
+              <div class="card-body">
+                <h6 class="d-flex align-items-center mb-3"><i class="material-icons text-info mr-2">assignment</i>Project Status</h6>
+                <small>Web Design</small>
+                <div class="progress mb-3" style="height: 5px">
+                  <div class="progress-bar bg-primary" role="progressbar" style="width: 80%" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                <small>Website Markup</small>
+                <div class="progress mb-3" style="height: 5px">
+                  <div class="progress-bar bg-primary" role="progressbar" style="width: 72%" aria-valuenow="72" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                <small>One Page</small>
+                <div class="progress mb-3" style="height: 5px">
+                  <div class="progress-bar bg-primary" role="progressbar" style="width: 89%" aria-valuenow="89" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                <small>Mobile Template</small>
+                <div class="progress mb-3" style="height: 5px">
+                  <div class="progress-bar bg-primary" role="progressbar" style="width: 55%" aria-valuenow="55" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                <small>Backend API</small>
+                <div class="progress mb-3" style="height: 5px">
+                  <div class="progress-bar bg-primary" role="progressbar" style="width: 66%" aria-valuenow="66" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

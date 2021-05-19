@@ -1,0 +1,75 @@
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+<br>
+<br>
+<br>
+<div class="container">
+  <div class="col-md-12">
+    <div class="selectorSpace">
+    <b>Show    </b>
+    <select class="selectpicker" [(ngModel)]="option" (change)="newPerPage()">
+      <option>5</option>
+      <option selected>10</option>
+      <option>15</option>
+      <option>20</option>
+    </select>
+    <b>    Rows</b>
+    </div>
+    <div class="card b-1 hover-shadow mb-20" *ngFor="let member of selectedMembers">
+      <div class="media card-body">
+        <div class="media-left pr-12">
+          <img class="avatar avatar-xl no-radius" [src]="retreivedImages.get(member.email)" alt="...">
+        </div>
+        <div class="media-body">
+          <div class="mb-2">
+            <span class="fs-20 pr-16">{{member.name}}</span>
+          </div>
+          <i class="fa fa-thumbs-up yes"
+             aria-hidden="true"
+             title="Email verified"
+             *ngIf="member.verifiedEmail">
+          </i>
+          <i class="fa fa-thumbs-down not"
+             aria-hidden="true"
+             title="Email not verified"
+             *ngIf="!member.verifiedEmail">
+          </i>
+          <small class="fs-16 fw-300 ls-1">   {{member.email}}</small>
+        </div>
+        <div class="media-right text-right d-none d-md-block">
+          <p class="fs-14 text-fade mb-12"><i class="fa fa-map-marker pr-1"></i>{{member.address}}</p>
+          <span class="text-fade"><i class="fa fa-cog pr-1"></i>{{member.institutionalCode}}</span>
+        </div>
+      </div>
+      <footer class="card-footer flexbox align-items-center">
+        <div>
+          <strong>Applied on: </strong>
+          <span>{{member.applicationDate}}</span>
+        </div>
+        <div class="card-hover-show">
+          <a class="btn btn-xs btn-bold btn-success activateBtn" (click)="acceptApplication(member.id)">
+            <i class="fa fa-check fa-lg"></i> Accept</a>
+          <a class="btn btn-xs btn-bold btn-danger activateBtn" (click)="denyApplication(member.id)">
+            <i class="fa fa-times fa-lg"></i> Deny</a>
+        </div>
+      </footer>
+    </div>
+
+    <nav aria-label="Page navigation example">
+      <ul class="pagination justify-content-end">
+        <li class="page-item" [ngClass]="{'disabled': NumberOf(cookieService.get('page')) == 1}">
+          <a class="page-link" tabindex="-1" href="members" (click)="previousPage()">Previous</a>
+        </li>
+        <li class="page-item"
+            *ngFor="let p of pages"
+            [ngClass]="{'disabled': p == 0, 'active': NumberOf(cookieService.get('page')) == p}">
+          <a class="page-link" href="members" (click)="setPage(p)">{{p ? p : '...'}}</a>
+        </li>
+        <li class="page-item" [ngClass]="{'disabled': NumberOf(cookieService.get('page')) == getLastPage()}">
+          <a class="page-link" href="members" (click)="nextPage()">Next</a>
+        </li>
+      </ul>
+    </nav>
+
+    <br>
+  </div>
+</div>

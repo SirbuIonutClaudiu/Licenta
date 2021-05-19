@@ -1,0 +1,160 @@
+<div class="col-md-12">
+  <div class="card card-container">
+    <img
+      id="profile-img"
+      src="//ssl.gstatic.com/accounts/ui/avatar_2x.png"
+      class="profile-img-card"
+    />
+    <form
+      *ngIf="!isSuccessful"
+      name="form"
+      (ngSubmit)="f.form.valid && onSubmit()"
+      #f="ngForm"
+      novalidate
+    >
+      <div class="form-group">
+        <label for="first_name">First name</label>
+        <input
+          type="text"
+          class="form-control"
+          name="first_name"
+          [(ngModel)]="form.first_name"
+          placeholder="Enter your first name"
+          required
+          minlength="3"
+          maxlength="20"
+          #first_name="ngModel"
+        />
+        <div class="alert-danger" *ngIf="first_name.errors && f.submitted">
+          <div *ngIf="first_name.errors.required">First name is required</div>
+          <div *ngIf="first_name.errors.minlength">
+            First name must be at least 3 characters
+          </div>
+          <div *ngIf="first_name.errors.maxlength">
+            First nme must be at most 20 characters
+          </div>
+        </div>
+
+      </div>
+      <div class="form-group">
+        <label for="last_name">Last name</label>
+        <input
+          type="text"
+          class="form-control"
+          name="last_name"
+          [(ngModel)]="form.last_name"
+          placeholder="Enter your last name"
+          required
+          minlength="3"
+          maxlength="20"
+          #last_name="ngModel"
+        />
+        <div class="alert-danger" *ngIf="last_name.errors && f.submitted">
+          <div *ngIf="last_name.errors.required">Last name is required</div>
+          <div *ngIf="last_name.errors.minlength">
+            Name must be at least 3 characters
+          </div>
+          <div *ngIf="last_name.errors.maxlength">
+            Last name must be at most 20 characters
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+         <label for="institutional_code">Institutional code</label>
+         <input type="text"
+                class="form-control"
+                name="institutional_code"
+                [(ngModel)]="form.institutional_code"
+                #institutional_code="ngModel"
+                placeholder="Enter your institutional code"
+                required
+          />
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input
+          type="email"
+          class="form-control"
+          name="email"
+          [(ngModel)]="form.email"
+          placeholder="Your institutional email address"
+          required
+          email
+          #email="ngModel"
+        />
+        <div class="alert-danger" *ngIf="email.errors && f.submitted">
+          <div *ngIf="email.errors.required">Email is required</div>
+          <div *ngIf="email.errors.email">
+            Email must be a valid email address
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input
+          type="password"
+          class="form-control"
+          name="password"
+          [(ngModel)]="form.password"
+          placeholder="Pick a password"
+          required
+          minlength="6"
+          #password="ngModel"/>
+
+        <div class="alert-danger" *ngIf="password.errors && f.submitted">
+          <div *ngIf="password.errors.required">Password is required</div>
+          <div *ngIf="password.errors.minlength">
+            Password must be at least 6 characters
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+         <label for="uploadFile">Pick a profile image</label>
+         <input id="uploadFile"
+                placeholder="Image to be uploaded"
+                value={{selectedFile.name}}
+                disabled="disabled"/>
+         <div class="fileUpload btn btn-primary">
+            <span>Upload</span>
+           <input id="uploadBtn" type="file" class="upload" accept="image/*" (change)="onFileChanged($event)" required/>
+         </div>
+      </div>
+
+      <div class="form-group">
+         <label for="googleAddress">Address of residence</label>
+         <input id="googleAddress" type="text" class="form-control" required>
+      </div>
+
+      <div class="form-group">
+        <button class="btn btn-primary btn-block">Sign Up</button>
+      </div>
+
+      <div class="alert alert-warning" *ngIf="f.submitted && isSignUpFailed">
+        Signup failed!<br />{{ errorMessage }}
+      </div>
+
+      <div class="card pageloader gray-bg" *ngIf="isLoading">
+        <div class="loader">
+          <span>You are being registred.Please wait...</span>
+          <div class="sp-hydrogen"></div>
+        </div>
+      </div>
+
+      <div class="container bootstrap snippets bootdeys" *ngIf="isLoading">
+        <div class="jumbotron">
+          <h1 id="loading-text">Loading...</h1>
+        </div>
+      </div>
+    </form>
+
+    <div class="alert alert-success" *ngIf="isSuccessful">
+      Your registration is successful!<br>
+      Please verify your email!
+    </div>
+
+  </div>
+</div>
