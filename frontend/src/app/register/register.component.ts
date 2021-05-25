@@ -33,6 +33,7 @@ export class RegisterComponent implements OnInit {
     function initializeAddress() {
       const input = document.getElementById('googleAddress') as HTMLInputElement;
       if (input) {
+        alert("a");
         const autocompleter = new google.maps.places.Autocomplete(input);
         autocompleter.setComponentRestrictions({
           country: ['ro'],

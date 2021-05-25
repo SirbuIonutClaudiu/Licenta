@@ -26,7 +26,7 @@
                   </select>
                 </div>
                 <div *ngIf="isRoleEditable">
-                  <a class="btn btn-xs btn-bold btn-warning activateBtn roleBtnLeft" (click)="discardRoleChange()">
+                  <a class="btn btn-xs btn-bold btn-danger activateBtn roleBtnLeft" (click)="discardRoleChange()">
                     <i class="fa fa-times-circle fa-lg"></i> Discard</a>
                   <a class="btn btn-xs btn-bold btn-success activateBtn roleBtnRight" (click)="applyRoleChanges()">
                     <i class="fa fa-floppy-o fa-lg"></i> Apply</a>
@@ -180,6 +180,13 @@
                          name="digitSix">
                 </div>
               </div>
+              <div class="col-md-6" *ngIf="isPhoneNumber">
+                {{member.phoneNumber}}
+              </div>
+              <div class="col-md-3 card-hover-show" *ngIf="isPhoneNumber">
+                <a class="btn btn-xs btn-bold btn-warning activateBtn" (click)="EditPhoneNumber()">
+                  <i class="fa fa-pencil fa-lg"></i> Edit</a>
+              </div>
               <div class="col-md-3 card-hover-show" *ngIf="!isPhoneNumber && !isPhoneNumberEditable">
                 <a class="btn btn-xs btn-bold btn-primary activateBtn" (click)="addNumber()">
                   <i class="fa fa-mobile fa-lg"></i>&nbsp;&nbsp;Add number</a>
@@ -187,7 +194,7 @@
               <div class="col-md-5 card-hover-show" *ngIf="isPhoneNumberEditable">
                 <a class="btn btn-xs btn-bold btn-success activateBtn" (click)="confirmCode()" style="margin-right: 5%;">
                   <i class="fa fa-check-circle-o fa-lg"></i> &nbsp;Confirm</a>
-                <a class="btn btn-xs btn-bold btn-info activateBtn" (click)="onEdit()">
+                <a class="btn btn-xs btn-bold btn-info activateBtn" (click)="resendCode()">
                   <i class="fa fa-repeat fa-lg"></i> Resend</a>
               </div>
                 <div class="d-flex smsError" *ngIf="codeError">
@@ -197,21 +204,21 @@
             <hr>
 
             <div class="row">
-              <div class="col-sm-3">
+              <div class="col-sm-2">
                 <h6 class="col-mb-0">Address</h6>
               </div>
-              <div class="col-md-6" *ngIf="!isEditEnable">
-                Bay Area, San Francisco, CA
+              <div class="col-md-6" *ngIf="!isAddressEditable">
+                {{member.address}}
               </div>
-              <div class="col-md-6" *ngIf="isEditEnable">
-                <input placeholder="Enter name" [(ngModel)]="name" *ngIf="isEditEnable">
+              <div class="col-md-6" [hidden]="!isAddressEditable">
+                <input id="googleAddress" type="text" class="form-control">
               </div>
-              <div class="col-md-3 card-hover-show" *ngIf="!isEditEnable">
-                <a class="btn btn-xs btn-bold btn-warning activateBtn" (click)="onEdit()">
+              <div class="col-md-3 card-hover-show" *ngIf="!isAddressEditable">
+                <a id="edit" class="btn btn-xs btn-bold btn-warning activateBtn" (click)="EditAddress()">
                   <i class="fa fa-pencil fa-lg"></i> Edit</a>
               </div>
-              <div class="col-md-3 card-hover-show" *ngIf="isEditEnable">
-                <a class="btn btn-xs btn-bold btn-success activateBtn" (click)="onEdit()">
+              <div class="col-md-3 card-hover-show" *ngIf="isAddressEditable">
+                <a class="btn btn-xs btn-bold btn-success activateBtn" (click)="EditAddress()">
                   <i class="fa fa-floppy-o fa-lg"></i> Save</a>
               </div>
             </div>

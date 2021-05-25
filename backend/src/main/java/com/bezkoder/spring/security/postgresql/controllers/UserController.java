@@ -51,6 +51,10 @@ public class UserController {
     @Autowired
     RoleRepository roleRepository;
 
+    private final String username = "AC315b0b103eacf332065bb30dca612446";
+
+    private final String password = "39962c7724c9c3b7f6e50b984fe6a329";
+
     @GetMapping("/return_all")
     public List<UserResponse> returnAll() {
         List<UserResponse> result = new ArrayList<UserResponse>();
@@ -79,10 +83,10 @@ public class UserController {
                     .body(new MessageResponse("Member does not exist !"));
         }
         membruSenat member = membruSenatService.findMemberById(id);
+        Twilio.init(this.username, this.password);
         if(member.getVerificationSID() != null) {
-            Service.deleter(member.getVerificationSID());
+            Service.deleter(member.getVerificationSID()).delete();
         }
-        Twilio.init("AC315b0b103eacf332065bb30dca612446", "10de401248a976fbc3933307b122c7f8");
         Service service = Service.creator("UNITBV Voting").create();
         Verification verification = Verification.creator(
                 service.getSid(),
@@ -90,6 +94,7 @@ public class UserController {
                 "sms")
                 .create();
         member.setVerificationSID(service.getSid());
+        member.setPhoneNumber2BVerified(number);
         membruSenatRepo.save(member);
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -103,26 +108,28 @@ public class UserController {
                     .badRequest()
                     .body(new MessageResponse("Try sending another verification request !"));
         }
-        Twilio.init("AC315b0b103eacf332065bb30dca612446", "10de401248a976fbc3933307b122c7f8");
+        Twilio.init(this.username, this.password);
         try {
             VerificationCheck verificationCheck = VerificationCheck.creator(
                     member.getVerificationSID(),
                     code)
-                    .setTo("+400787541765").create();
+                    .setTo(member.getPhoneNumber2BVerified()).create();
             System.out.println(verificationCheck.getStatus().toLowerCase(Locale.ROOT));
             if(verificationCheck.getStatus().toLowerCase(Locale.ROOT).compareToIgnoreCase("approved") == 0) {
                 member.setVerificationSID(null);
+                member.setPhoneNumber(member.getPhoneNumber2BVerified());
+                member.setPhoneNumber2BVerified(null);
                 membruSenatRepo.save(member);
             }
             else {
-                System.out.println("here");
                 return ResponseEntity
                         .badRequest()
                         .body(new MessageResponse("Wrong code.Try again !"));
             }
         } catch(Exception e) {
-            Service.deleter(member.getVerificationSID());
+            Service.deleter(member.getVerificationSID()).delete();
             member.setVerificationSID(null);
+            member.setPhoneNumber2BVerified(null);
             membruSenatRepo.save(member);
             return ResponseEntity
                     .badRequest()

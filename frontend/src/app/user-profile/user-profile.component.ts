@@ -67,10 +67,11 @@ export class UserProfileComponent implements OnInit {
   selectedRole = 'Attribute a user role';
   isRoleEditable = false;
   isNameEditable = false;
-  isEditEnable = false;
+  isAddressEditable = false;
   isEmailEditable = false;
   isWebsiteEditable = false;
-  isPhoneNumberEditable = true;
+  isPhoneNumberEditable = false;
+  address = '';
 
   constructor(private tokenStorageService: TokenStorageService, private userService: UserService) {
     this.editSiteClicked();
@@ -82,11 +83,30 @@ export class UserProfileComponent implements OnInit {
   }
 
   addNumber(): void {
-    this.userService.sendPhoneVerification(this.member.id, this.phoneNumber).subscribe(
-      ans => {
-        this.isPhoneNumberEditable = true;
-      }
-    );
+    const phoneUtil = require('google-libphonenumber').PhoneNumberUtil.getInstance();
+    const PNF = require('google-libphonenumber').PhoneNumberFormat;
+    const number = phoneUtil.parseAndKeepRawInput(this.phoneNumber, 'US');
+    const region = phoneUtil.getRegionCodeForNumber(number);
+    if (region == null) {
+      this.codeError = true;
+      this.errorMessage = 'Phone number invalid. Please insert a country code !';
+    }
+    else if (!phoneUtil.isValidNumberForRegion(phoneUtil.parse(number.getRawInput(), 'RO'), 'RO')) {
+      this.codeError = true;
+      this.errorMessage = 'Phone number invalid for region ' + region + '. Please try another !';
+    }
+    else {
+      this.phoneNumber = phoneUtil.format(number, PNF.E164);
+      this.userService.sendPhoneVerification(this.member.id, this.phoneNumber).subscribe(
+        ans => {
+          this.codeError = false;
+          this.isPhoneNumberEditable = true;
+        },
+        err => {
+          this.errorMessage = err.error.message;
+        }
+      );
+    }
   }
 
   confirmCode(): void {
@@ -94,12 +114,23 @@ export class UserProfileComponent implements OnInit {
       ans => {
         this.isPhoneNumberEditable = false;
         this.codeError = false;
+        this.isPhoneNumber = true;
+        this.member.phoneNumber = this.phoneNumber;
       },
       err => {
         this.codeError = true;
         this.errorMessage = err.error.message;
       }
     );
+  }
+
+  resendCode(): void {
+
+  }
+
+  EditPhoneNumber(): void {
+    this.isPhoneNumber = false;
+    this.phoneNumber = this.member.phoneNumber;
   }
 
   onDigitInput(event: any) {
@@ -216,6 +247,13 @@ export class UserProfileComponent implements OnInit {
         this.website = this.member.website;
         this.twoFactor = this.member.activated2FA;
         this.isPhoneNumber = this.member.phoneNumber != null;
+        if (this.isPhoneNumber) {
+          const phoneUtil = require('google-libphonenumber').PhoneNumberUtil.getInstance();
+          const PNF = require('google-libphonenumber').PhoneNumberFormat;
+          const number = phoneUtil.parseAndKeepRawInput(this.member.phoneNumber, 'US');
+          const region = phoneUtil.getRegionCodeForNumber(number);
+          this.member.phoneNumber = phoneUtil.format(number, PNF.NATIONAL);
+        }
       } );
   }
 
@@ -230,13 +268,28 @@ export class UserProfileComponent implements OnInit {
       } );
   }
 
-  onEdit() {
-    this.isEditEnable = !this.isEditEnable;
-  }
-
   EditEmail(): void {
     this.isEmailEditable = true;
   }
+
+  EditAddress(): void {
+    this.isAddressEditable = true;
+    const this_aux = this;
+    const input = document.getElementById('googleAddress') as HTMLInputElement;
+    if (input) {
+      const autocompleter = new google.maps.places.Autocomplete(input);
+      autocompleter.setComponentRestrictions({
+        country: ['ro'],
+      });
+      google.maps.event.addListener(autocompleter, 'place_changed', function() {
+        fillInAddress(autocompleter);
+      });
+    }
+    function fillInAddress(autocompleter: any){
+      const place = autocompleter.getPlace().formatted_address;
+      this_aux.address = place;
+    }
+    }
 
   SaveNewEmail(): void {
     this.userService.updateEmail(this.member.id, this.member.email).subscribe(
