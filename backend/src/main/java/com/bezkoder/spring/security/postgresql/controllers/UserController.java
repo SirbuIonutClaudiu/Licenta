@@ -164,6 +164,19 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @PostMapping("/update_address/{id}/{address}")
+    public ResponseEntity<?> updateAddress(@PathVariable("id") Long id, @PathVariable("address") String address) {
+        if(!membruSenatRepo.existsById(id)) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new MessageResponse("Member does not exist !"));
+        }
+        membruSenat member = membruSenatService.findMemberById(id);
+        member.setAddress(address);
+        membruSenatRepo.save(member);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
     @PostMapping("/update_name/{id}/{name}")
     public ResponseEntity<?> updateName(@PathVariable("id") Long id, @PathVariable("name") String name) {
         if(!membruSenatRepo.existsById(id)) {

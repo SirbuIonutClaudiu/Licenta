@@ -196,3 +196,20 @@ label:active:after {
   margin-left: 15%;
   margin-right: 8%;
 }
+
+input {
+  width: auto;
+  height: 85%;
+  margin-top: 0;
+  padding: 0.5em;
+  border: 0;
+  border-bottom: 2px solid gray;
+  font-family: "Roboto", sans-serif;
+  font-size: 18px;
+}
+
+input:focus {
+  border-bottom: 4px solid black;
+  outline: none;
+}
+

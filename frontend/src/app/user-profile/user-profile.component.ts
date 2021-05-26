@@ -16,6 +16,7 @@ export class UserProfileComponent implements OnInit {
   website = '';
   phoneNumber = '';
   errorMessage = '';
+  address = '';
 
   code = ' ';
   digitOne: null;
@@ -70,8 +71,9 @@ export class UserProfileComponent implements OnInit {
   isAddressEditable = false;
   isEmailEditable = false;
   isWebsiteEditable = false;
+  isPhoneCodeEditable = false;
   isPhoneNumberEditable = false;
-  address = '';
+
 
   constructor(private tokenStorageService: TokenStorageService, private userService: UserService) {
     this.editSiteClicked();
@@ -100,19 +102,18 @@ export class UserProfileComponent implements OnInit {
       this.userService.sendPhoneVerification(this.member.id, this.phoneNumber).subscribe(
         ans => {
           this.codeError = false;
-          this.isPhoneNumberEditable = true;
+          this.isPhoneCodeEditable = true;
         },
         err => {
           this.errorMessage = err.error.message;
-        }
-      );
+        });
     }
   }
 
   confirmCode(): void {
     this.userService.confirmPhone(this.member.id, this.code).subscribe(
       ans => {
-        this.isPhoneNumberEditable = false;
+        this.isPhoneCodeEditable = false;
         this.codeError = false;
         this.isPhoneNumber = true;
         this.member.phoneNumber = this.phoneNumber;
@@ -125,12 +126,23 @@ export class UserProfileComponent implements OnInit {
   }
 
   resendCode(): void {
-
+    this.userService.sendPhoneVerification(this.member.id, this.phoneNumber).subscribe(
+      ans => {
+        this.codeError = false;
+        this.isPhoneCodeEditable = true;
+      },
+      err => {
+        this.errorMessage = err.error.message;
+      });
   }
 
   EditPhoneNumber(): void {
-    this.isPhoneNumber = false;
+    this.isPhoneNumberEditable = true;
     this.phoneNumber = this.member.phoneNumber;
+  }
+
+  discardPhoneChange(): void {
+    this.isPhoneNumberEditable = false;
   }
 
   onDigitInput(event: any) {
@@ -268,6 +280,10 @@ export class UserProfileComponent implements OnInit {
       } );
   }
 
+  discardNameChange(): void {
+    this.isNameEditable = false;
+  }
+
   EditEmail(): void {
     this.isEmailEditable = true;
   }
@@ -291,10 +307,26 @@ export class UserProfileComponent implements OnInit {
     }
     }
 
+    SaveAddress(): void {
+      this.userService.updateAddress(this.member.id, this.address).subscribe(
+        res => {
+          this.member.address = this.address;
+          this.isAddressEditable = false;
+        });
+    }
+
+  discardAddressChange(): void {
+    this.isAddressEditable = false;
+  }
+
   SaveNewEmail(): void {
     this.userService.updateEmail(this.member.id, this.member.email).subscribe(
       response => {
         this.isEmailEditable = false;
       } );
+  }
+
+  discardEmailChange(): void {
+    this.isEmailEditable = false;
   }
 }
