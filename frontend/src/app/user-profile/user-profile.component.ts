@@ -11,13 +11,14 @@ import {PhoneNumberFormat, PhoneNumberUtil, ShortNumberInfo} from 'google-libpho
   styleUrls: ['./user-profile.component.css']
 })
 export class UserProfileComponent implements OnInit {
+  retrievedImage: any;
   email = '';
   name = '';
   website = '';
   phoneNumber = '';
   errorMessage = '';
   address = '';
-
+  landline = '232';
   code = ' ';
   digitOne: null;
   digitTwo: null;
@@ -25,7 +26,6 @@ export class UserProfileComponent implements OnInit {
   digitFour: null;
   digitFive: null;
   digitSix: null;
-
   codeError = false;
   websiteError = false;
   twoFactorError = false;
@@ -73,10 +73,12 @@ export class UserProfileComponent implements OnInit {
   isWebsiteEditable = false;
   isPhoneCodeEditable = false;
   isPhoneNumberEditable = false;
+  isLandlineEditable = false;
 
 
   constructor(private tokenStorageService: TokenStorageService, private userService: UserService) {
     this.editSiteClicked();
+    this.editLandlineClicked();
   }
 
   ngOnInit(): void {
@@ -143,6 +145,16 @@ export class UserProfileComponent implements OnInit {
 
   discardPhoneChange(): void {
     this.isPhoneNumberEditable = false;
+  }
+
+  getImage(name: string): void{
+    this.userService.getImage(name).subscribe(
+      res => {
+        const retreivedResponse = res;
+        const base64Data = retreivedResponse.picByte;
+        this.retrievedImage = 'data:image/jpeg;base64,' + base64Data;
+      },
+      error => {  } );
   }
 
   onDigitInput(event: any) {
@@ -217,6 +229,20 @@ export class UserProfileComponent implements OnInit {
     });
   }
 
+  editLandlineClicked(): void {
+    document.addEventListener('click', (evt) => {
+      const landline = document.getElementById('landline');
+      const landlineInput = document.getElementById('landlineInput');
+      const target = evt.target; // clicked element
+      if ((target == landline) || (target == landlineInput)) {
+        this.isLandlineEditable = true;
+      }
+      else {
+        this.isLandlineEditable = false;
+      }
+    });
+  }
+
   optionSelected(): void {
     this.isRoleEditable = true;
   }
@@ -255,6 +281,8 @@ export class UserProfileComponent implements OnInit {
     this.userService.getMemberById(id).subscribe(
       (response: membruSenat) => {
         this.member = response;
+        this.name = this.member.name;
+        this.getImage(this.member.email);
         this.member.website = (this.member.website == null) ? 'No website available' : this.member.website;
         this.website = this.member.website;
         this.twoFactor = this.member.activated2FA;
@@ -274,9 +302,10 @@ export class UserProfileComponent implements OnInit {
   }
 
   SaveNewName(): void {
-    this.userService.updateName(this.member.id, this.member.name).subscribe(
+    this.userService.updateName(this.member.id, this.name).subscribe(
       response => {
         this.isNameEditable = false;
+        this.member.name = this.name;
       } );
   }
 
