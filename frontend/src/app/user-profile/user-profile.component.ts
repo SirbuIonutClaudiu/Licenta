@@ -41,6 +41,7 @@ export class UserProfileComponent implements OnInit {
     applicationDate: ' ',
     loginLocation: ' ',
     website: ' ',
+    landline: ' ',
     phoneNumber: ' ',
     verifiedApplication: false,
     verifiedEmail: false,
@@ -205,7 +206,7 @@ export class UserProfileComponent implements OnInit {
       const website = document.getElementById('website');
       const websiteInput = document.getElementById('websiteInput');
       const target = evt.target; // clicked element
-      if ((target == website) || (target == websiteInput)) {
+      if ((target === website) || (target === websiteInput)) {
         this.isWebsiteEditable = true;
       }
       else {
@@ -234,11 +235,17 @@ export class UserProfileComponent implements OnInit {
       const landline = document.getElementById('landline');
       const landlineInput = document.getElementById('landlineInput');
       const target = evt.target; // clicked element
-      if ((target == landline) || (target == landlineInput)) {
+      if ((target === landline) || (target === landlineInput)) {
         this.isLandlineEditable = true;
       }
       else {
-        this.isLandlineEditable = false;
+        this.landline = ((this.landline.substring(0, 3) !== '+40') ? '+40 ' : '') + this.landline;
+        this.landline = this.landline.substring(0, 6) + ' ' + this.landline.substring(6);
+        this.userService.updateLandline(this.member.id, this.landline).subscribe(
+          answ => {
+            this.member.landline = this.landline;
+            this.isLandlineEditable = false;
+          });
       }
     });
   }
@@ -285,6 +292,7 @@ export class UserProfileComponent implements OnInit {
         this.getImage(this.member.email);
         this.member.website = (this.member.website == null) ? 'No website available' : this.member.website;
         this.website = this.member.website;
+        this.landline = this.member.landline;
         this.twoFactor = this.member.activated2FA;
         this.isPhoneNumber = this.member.phoneNumber != null;
         if (this.isPhoneNumber) {

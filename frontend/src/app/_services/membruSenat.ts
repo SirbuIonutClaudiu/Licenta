@@ -7,6 +7,7 @@ export interface membruSenat {
   applicationDate: string;
   loginLocation: string;
   website: string;
+  landline: string;
   phoneNumber: string;
   verifiedApplication: boolean;
   verifiedEmail: boolean;

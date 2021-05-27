@@ -79,6 +79,10 @@ export class UserService {
     return this.http.post(API_URL + 'update_address/' + id + '/' + address, this.httpOptions);
   }
 
+  updateLandline(id: number, landline: string): Observable<any> {
+    return this.http.post(API_URL + 'update_landline/' + id + '/' + landline, this.httpOptions);
+  }
+
   updateRoles(id: number, role: string): Observable<any> {
     return this.http.post(API_URL + 'update_roles/' + id + '/' + role, this.httpOptions);
   }

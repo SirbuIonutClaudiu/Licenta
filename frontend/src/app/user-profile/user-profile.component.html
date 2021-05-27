@@ -61,6 +61,8 @@
               <span class="error" *ngIf="websiteError">{{landline}}</span>
               <input id="landlineInput"
                      name="landlineInput"
+                     prefix="+40"
+                     mask=" 000 000000"
                      placeholder="{{landline}}"
                      [(ngModel)]="landline"
                      *ngIf="isLandlineEditable">

@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { CookieService } from 'ngx-cookie-service';
 import { InternationalPhoneNumberModule } from 'ng-phone-number';
+import { NgxMaskModule, IConfig } from 'ngx-mask'
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -38,7 +39,8 @@ import { MembersComponent } from './members/members.component';
     AppRoutingModule,
     FormsModule,
     HttpClientModule,
-    InternationalPhoneNumberModule
+    InternationalPhoneNumberModule,
+    NgxMaskModule.forRoot()
   ],
   providers: [
     authInterceptorProviders,

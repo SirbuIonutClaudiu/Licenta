@@ -24,6 +24,7 @@ public class UserResponse {
     private String applicationDate;
     private String loginLocation;
     private String website;
+    private String landline;
     private String phoneNumber;
     private boolean verifiedApplication;
     private boolean verifiedEmail;

@@ -190,6 +190,19 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @PostMapping("/update_landline/{id}/{landline}")
+    public ResponseEntity<?> updateLandline(@PathVariable("id") Long id, @PathVariable("landline") String landline) {
+        if(!membruSenatRepo.existsById(id)) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new MessageResponse("Member does not exist !"));
+        }
+        membruSenat member = membruSenatService.findMemberById(id);
+        member.setLandline(landline);
+        membruSenatRepo.save(member);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
     @PostMapping("/update_email/{id}/{email}")
     public ResponseEntity<?> updateEmail(@PathVariable("id") Long id, @PathVariable("email") String email) {
         if(!membruSenatRepo.existsById(id)) {
@@ -362,6 +375,7 @@ public class UserController {
                                  member.getApplicationDate(),
                                  member.getLoginLocation(),
                                  member.getWebsite(),
+                                 member.getLandline(),
                                  member.getPhoneNumber(),
                                  member.isVerifiedApplication(),
                                  member.isVerifiedEmail(),

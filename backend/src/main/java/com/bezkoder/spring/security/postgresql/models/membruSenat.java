@@ -55,6 +55,8 @@ public class membruSenat {
 
     private String website;
 
+    private String landline;
+
     @Column(name = "phone_number")
     private String phoneNumber;
 
