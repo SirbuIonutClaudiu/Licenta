@@ -15,7 +15,7 @@ const routes: Routes = [
   { path: 'home', component: HomeComponent },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
-  { path: 'user_profile', component: UserProfileComponent },
+  { path: 'user_profile/:id', component: UserProfileComponent, },
   { path: 'email_successfull/:answer', component: EmailSuccessfullComponent },
   { path: 'sms_verification', component: SmsVerificationComponent },
   { path: 'forgot_password', component: ForgotPasswordComponent },

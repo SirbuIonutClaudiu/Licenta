@@ -4,6 +4,7 @@ import {UserService} from '../_services/user.service';
 import {membruSenat} from '../_services/membruSenat';
 // @ts-ignore
 import {PhoneNumberFormat, PhoneNumberUtil, ShortNumberInfo} from 'google-libphonenumber';
+import {ActivatedRoute} from '@angular/router';
 
 @Component({
   selector: 'app-user-profile',
@@ -77,14 +78,15 @@ export class UserProfileComponent implements OnInit {
   isLandlineEditable = false;
 
 
-  constructor(private tokenStorageService: TokenStorageService, private userService: UserService) {
-    this.editSiteClicked();
-    this.editLandlineClicked();
+  constructor(private tokenStorageService: TokenStorageService,
+              private userService: UserService, private _Activatedroute: ActivatedRoute,) {
+    this.getMemberById(Number(this._Activatedroute.snapshot.paramMap.get('id')));
   }
 
   ngOnInit(): void {
-    this.getMemberById(this.tokenStorageService.getId());
     this.checklist();
+    this.editSiteClicked();
+    this.editLandlineClicked();
   }
 
   addNumber(): void {

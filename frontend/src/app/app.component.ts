@@ -11,7 +11,6 @@ export class AppComponent implements OnInit {
   isLoggedIn = false;
   showAdminBoard = false;
   showModeratorBoard = false;
-  username?: string;
 
   constructor(private tokenStorageService: TokenStorageService) { }
 
@@ -24,13 +23,15 @@ export class AppComponent implements OnInit {
 
       this.showAdminBoard = this.roles.includes('ROLE_ADMIN');
       this.showModeratorBoard = this.roles.includes('ROLE_MODERATOR');
-
-      this.username = user.username;
     }
   }
 
   logout(): void {
     this.tokenStorageService.signOut();
     window.location.reload();
+  }
+
+  getUserId(): number {
+    return this.tokenStorageService.getId();
   }
 }

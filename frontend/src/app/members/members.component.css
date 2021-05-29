@@ -198,10 +198,12 @@ small, time, .small {
 
 .not {
   color: #C12F10;
-  cursor: pointer;
 }
 
 .yes {
   color: #38B67B;
+}
+
+.pointer {
   cursor: pointer;
 }

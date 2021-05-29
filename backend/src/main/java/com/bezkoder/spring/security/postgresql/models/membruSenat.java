@@ -77,9 +77,6 @@ public class membruSenat {
     @Column(name = "verification_code", length = 64)
     private String verificationCode;
 
-    @Column(name = "sms_code", length = 4)
-    private String smsCode;
-
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(	name = "user_roles",
             joinColumns = @JoinColumn(name = "member_id"),

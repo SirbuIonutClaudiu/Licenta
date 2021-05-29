@@ -17,18 +17,21 @@
     <div class="card b-1 hover-shadow mb-20" *ngFor="let member of selectedMembers">
       <div class="media card-body">
         <div class="media-left pr-12">
-          <img class="avatar avatar-xl no-radius" [src]="retreivedImages.get(member.email)" alt="...">
+          <img class="avatar avatar-xl no-radius pointer"
+               [src]="retreivedImages.get(member.email)"
+               (click)="navToProfile(member.id)"
+               alt="..." >
         </div>
         <div class="media-body">
           <div class="mb-2">
-            <span class="fs-20 pr-16">{{member.name}}</span>
+            <span class="fs-20 pr-16 pointer" (click)="navToProfile(member.id)">{{member.name}}</span>
           </div>
-          <i class="fa fa-thumbs-up yes"
+          <i class="fa fa-thumbs-up yes pointer"
              aria-hidden="true"
              title="Email verified"
              *ngIf="member.verifiedEmail">
           </i>
-          <i class="fa fa-thumbs-down not"
+          <i class="fa fa-thumbs-down not pointer"
              aria-hidden="true"
              title="Email not verified"
              *ngIf="!member.verifiedEmail">

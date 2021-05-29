@@ -3,6 +3,8 @@ import {UserService} from '../_services/user.service';
 import {membruSenat} from '../_services/membruSenat';
 import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import {CookieService} from 'ngx-cookie-service';
+import {Router, Routes} from '@angular/router';
+import {UserProfileComponent} from '../user-profile/user-profile.component';
 
 @Component({
   selector: 'app-members',
@@ -21,8 +23,14 @@ export class MembersComponent implements OnInit {
   retreivedImages = new Map<string, string>();
   pages = new Array();
   option!: number;
+  private routes: Routes = [
+    {
+      path: 'user_profile/:id',
+      component: UserProfileComponent
+    }
+  ];
 
-  constructor(private userService: UserService, public cookieService: CookieService) {  }
+  constructor(private userService: UserService, public cookieService: CookieService, private router: Router) {  }
 
   ngOnInit(): void {
     this.setCookies();
@@ -170,5 +178,9 @@ export class MembersComponent implements OnInit {
         }
       },
       error => {  } );
+  }
+
+  navToProfile(id: number) {
+    this.router.navigate([`user_profile/${id}`]);
   }
 }

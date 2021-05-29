@@ -60,7 +60,7 @@ export class SmsVerificationComponent implements OnInit {
                 this.tokenStorageService.saveUser(data);
                 this.isLoginFailed = false;
                 this.isLoggedIn = true;
-                this.router.navigate(['user_profile']);
+                this.router.navigate(['user_profile/' + this.tokenStorageService.getId()]);
       },
       err => {
         this.errorMessage = err.error.message;
