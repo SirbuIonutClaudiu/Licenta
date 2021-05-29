@@ -4,7 +4,9 @@ import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { CookieService } from 'ngx-cookie-service';
 import { InternationalPhoneNumberModule } from 'ng-phone-number';
-import { NgxMaskModule, IConfig } from 'ngx-mask'
+import { NgxMaskModule, IConfig } from 'ngx-mask';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatInputModule } from '@angular/material/input';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -20,6 +22,14 @@ import { ForgotPasswordComponent } from './forgot-password/forgot-password.compo
 import { ChangePasswordComponent } from './change-password/change-password.component';
 import { VisitorsService} from './_services/visitors.service';
 import { MembersComponent } from './members/members.component';
+import { AddVoteComponent } from './add-vote/add-vote.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+
+import {
+  NgxMatDatetimePickerModule,
+  NgxMatNativeDateModule,
+  NgxMatTimepickerModule
+} from '@angular-material-components/datetime-picker';
 
 @NgModule({
   declarations: [
@@ -32,7 +42,8 @@ import { MembersComponent } from './members/members.component';
     SmsVerificationComponent,
     ForgotPasswordComponent,
     ChangePasswordComponent,
-    MembersComponent
+    MembersComponent,
+    AddVoteComponent
   ],
   imports: [
     BrowserModule,
@@ -40,7 +51,13 @@ import { MembersComponent } from './members/members.component';
     FormsModule,
     HttpClientModule,
     InternationalPhoneNumberModule,
-    NgxMaskModule.forRoot()
+    NgxMaskModule.forRoot(),
+    BrowserAnimationsModule,
+    MatDatepickerModule,
+    MatInputModule,
+    NgxMatDatetimePickerModule,
+    NgxMatTimepickerModule,
+    NgxMatNativeDateModule
   ],
   providers: [
     authInterceptorProviders,
