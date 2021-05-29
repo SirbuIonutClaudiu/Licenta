@@ -42,6 +42,22 @@
              (keyup)="onDigitInput($event)"
              [(ngModel)]="digitFour"
              name="digitFour">
+      <input type="text"
+             class="form-control"
+             ng-model="digitFive"
+             #digitfive
+             maxlength="1"
+             (keyup)="onDigitInput($event)"
+             [(ngModel)]="digitFive"
+             name="digitFive">
+      <input type="text"
+             class="form-control"
+             ng-model="digitSix"
+             #digitsix
+             maxlength="1"
+             (keyup)="onDigitInput($event)"
+             [(ngModel)]="digitSix"
+             name="digitSix">
     </div>
     <button type="button"
             class="btn btn-success"

@@ -4,13 +4,12 @@ import java.io.UnsupportedEncodingException;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-
 import com.bezkoder.spring.security.postgresql.models.PasswordResetToken;
 import com.bezkoder.spring.security.postgresql.models.membruSenat;
 import com.bezkoder.spring.security.postgresql.payload.request.*;
@@ -18,8 +17,9 @@ import com.bezkoder.spring.security.postgresql.repository.PasswordResetTokenRepo
 import com.bezkoder.spring.security.postgresql.repository.membruSenatRepository;
 import com.bezkoder.spring.security.postgresql.security.services.MembruSenatService;
 import com.bezkoder.spring.security.postgresql.security.services.UserServices;
-import com.bezkoder.spring.security.postgresql.sms.Service;
-import com.bezkoder.spring.security.postgresql.sms.SmsRequest;
+import com.twilio.Twilio;
+import com.twilio.rest.verify.v2.service.Verification;
+import com.twilio.rest.verify.v2.service.VerificationCheck;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,10 +28,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-
 import com.bezkoder.spring.security.postgresql.models.ERole;
 import com.bezkoder.spring.security.postgresql.models.Role;
 import com.bezkoder.spring.security.postgresql.payload.response.JwtResponse;
@@ -54,6 +54,9 @@ public class AuthController {
 	membruSenatRepository membruSenatRepo;
 
 	@Autowired
+	MembruSenatService membruSenatService;
+
+	@Autowired
 	PasswordResetTokenRepository passwordResetTokenRepository;
 
 	@Autowired
@@ -68,13 +71,11 @@ public class AuthController {
 	@Autowired
 	private UserServices service;
 
-	@Autowired
-	private Service smsService;
-
-	private Long memberId;
 	private String jwt;
 	private List<String> roles;
-
+	private Long loginID = 0L;
+	private final String username = "AC315b0b103eacf332065bb30dca612446";
+	private final String password = "206a7a4b111aa7556c7176dfaf65ae30";
 
 	@PostMapping("/signin")
 	public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
@@ -87,7 +88,7 @@ public class AuthController {
 		
 		UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();		
 		List<String> roles = userDetails.getAuthorities().stream()
-				.map(item -> item.getAuthority())
+				.map(GrantedAuthority::getAuthority)
 				.collect(Collectors.toList());
 
 		membruSenat member = membruSenatRepo.findByEmail(loginRequest.getEmail())
@@ -96,17 +97,18 @@ public class AuthController {
 		membruSenatRepo.save(member);
 
 		if(userDetails.isActivated2FA()) {
-			SmsRequest smsRequest = new SmsRequest(userDetails.getId());
-			smsService.sendSms(smsRequest);
-			this.memberId = userDetails.getId();
+			this.loginID = userDetails.getId();
+			if(!this.sendPhoneVerification()) {
+				return ResponseEntity
+						.badRequest()
+						.body(new MessageResponse("Verification code could not be sent!"));
+			}
 			this.jwt = jwt;
 			this.roles = roles;
 			return ResponseEntity.ok(new MessageResponse("Passed the login stage!"));
 		}
 
-		return ResponseEntity.ok(new JwtResponse( jwt,
-				                                  userDetails.getId(),
-				                                  roles));
+		return ResponseEntity.ok(new JwtResponse(jwt, userDetails.getId(), roles));
 	}
 
 	@PostMapping("/signup")
@@ -163,36 +165,66 @@ public class AuthController {
 		}
 	}
 
-	@PostMapping("/two_factor")
-	public ResponseEntity<?> sendSms(@Valid @RequestBody SmsRequestBody smsRequest) {
-		Long memberId = this.getMemberId();
-		List<String> roles = this.getRoles();
-		String jwt = this.getJwt();
+	@PostMapping("/sendPhoneVerification")
+	public boolean sendPhoneVerification() {
+		if(!membruSenatRepo.existsById(this.loginID)) {
+			return false;
+		}
+		membruSenat member = membruSenatService.findMemberById(this.loginID);
+		Twilio.init(this.username, this.password);
+		if(member.getVerificationSID() != null) {
+			com.twilio.rest.verify.v2.Service.deleter(member.getVerificationSID()).delete();
+		}
+		com.twilio.rest.verify.v2.Service service = com.twilio.rest.verify.v2.Service.creator("UNITBV Voting").create();
+		Verification verification = Verification.creator(
+				service.getSid(),
+				member.getPhoneNumber(),
+				"sms")
+				.create();
+		member.setVerificationSID(service.getSid());
+		member.setPhoneNumber2BVerified(member.getPhoneNumber());
+		membruSenatRepo.save(member);
+		return true;
+	}
 
-		membruSenat member = membruSenatRepo.findById(memberId)
-				.orElseThrow(() -> new RuntimeException("No such member !"));
-
-		if(member.isActivated2FA()) {
-			String db_code = member.getSmsCode();
-			String req_code = smsRequest.getCode();
-			if(!db_code.equals(req_code)) {
+	@PostMapping("/confirm_code/{code}")
+	public ResponseEntity<?> confirmPhone(@PathVariable("code") String code) {
+		membruSenat member = membruSenatRepo.findById(this.loginID)
+				.orElseThrow(() -> new RuntimeException("User does not exist!"));
+		if(member.getVerificationSID() == null) {
+			return ResponseEntity
+					.badRequest()
+					.body(new MessageResponse("Try sending another verification request !"));
+		}
+		Twilio.init(this.username, this.password);
+		try {
+			VerificationCheck verificationCheck = VerificationCheck.creator(
+					member.getVerificationSID(),
+					code)
+					.setTo(member.getPhoneNumber2BVerified()).create();
+			if(verificationCheck.getStatus().toLowerCase(Locale.ROOT).compareToIgnoreCase("approved") == 0) {
+				member.setVerificationSID(null);
+				member.setPhoneNumber(member.getPhoneNumber2BVerified());
+				member.setPhoneNumber2BVerified(null);
+				membruSenatRepo.save(member);
+			}
+			else {
 				return ResponseEntity
 						.badRequest()
-						.body(new MessageResponse("Wrong sms code ! Ty to get another code."));
+						.body(new MessageResponse("Wrong code.Try again !"));
 			}
-			member.setSmsCode(null);
+		} catch(Exception e) {
+			com.twilio.rest.verify.v2.Service.deleter(member.getVerificationSID()).delete();
+			member.setVerificationSID(null);
+			member.setPhoneNumber2BVerified(null);
 			membruSenatRepo.save(member);
-			this.setMemberId(null);
-			this.setRoles(null);
-			this.setJwt(null);
+			return ResponseEntity
+					.badRequest()
+					.body("Code request expired.Try sending another one !");
 		}
-
-		this.setMemberId(null);
-		this.setRoles(null);
-		this.setJwt(null);
-		return ResponseEntity.ok(new JwtResponse(jwt,
-				                                 member.getId(),
-				                                 roles));
+		Long loginID_aux = this.loginID;
+		this.loginID = 0L;
+		return ResponseEntity.ok(new JwtResponse(jwt, loginID_aux, this.roles));
 	}
 
 	@PostMapping("/send_reset")
@@ -213,12 +245,9 @@ public class AuthController {
 		}
 		try {
 			service.reset(member, getSiteURL(request));
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		} catch (MessagingException e) {
+		} catch (UnsupportedEncodingException | MessagingException e) {
 			e.printStackTrace();
 		}
-		this.setMemberId(member.getId());
 		return ResponseEntity.ok(new MessageResponse("Reset email sent successfully. Check your email!"));
 	}
 
@@ -250,14 +279,5 @@ public class AuthController {
 					.badRequest()
 					.body(new MessageResponse("Code expired or invalid!"));
 		}
-	}
-
-	@PostMapping("/resend_sms/{email}")
-	public ResponseEntity<?> resendSMS(@PathVariable("email") String email) {
-		membruSenat member = membruSenatRepo.findByEmail(email)
-				.orElseThrow(() -> new RuntimeException("User does not exist!"));
-		SmsRequest smsRequest = new SmsRequest(member.getId());
-		smsService.sendSms(smsRequest);
-		return ResponseEntity.ok(new MessageResponse("Sms sent successfully! Check your phone."));
 	}
 }

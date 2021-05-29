@@ -9,18 +9,19 @@ import {Router} from '@angular/router';
   styleUrls: ['./sms-verification.component.css']
 })
 export class SmsVerificationComponent implements OnInit {
-  code = ' ';
   email = ' ';
   isLoggedIn = false;
   isLoginFailed = false;
   resentSucess = false;
   errorMessage = '';
   successMessage = '';
-
+  code = ' ';
   digitOne: null;
   digitTwo: null;
   digitThree: null;
   digitFour: null;
+  digitFive: null;
+  digitSix: null;
 
   constructor(private tokenStorageService: TokenStorageService, private authService: AuthService,
               private router: Router) { }
@@ -34,14 +35,13 @@ export class SmsVerificationComponent implements OnInit {
     if (event.code !== 'Backspace') {
       element = event.srcElement.nextElementSibling;
     }
-
-    if (event.code === 'Backspace') {
+    else if (event.code === 'Backspace') {
       element = event.srcElement.previousElementSibling;
     }
 
     this.code = String(this.digitOne).concat( String(this.digitTwo),
-      String(this.digitThree),
-      String(this.digitFour));
+      String(this.digitThree), String(this.digitFour),
+      String(this.digitFive),  String(this.digitSix));
 
     if (element == null) {
       return;
@@ -54,7 +54,7 @@ export class SmsVerificationComponent implements OnInit {
   onSubmit(): void {
     this.isLoginFailed = false;
     this.resentSucess = false;
-    this.authService.verifySms(this.code).subscribe(
+    this.authService.confirmCode(this.code).subscribe(
       data => {
                 this.tokenStorageService.saveToken(data.accessToken);
                 this.tokenStorageService.saveUser(data);
@@ -73,9 +73,9 @@ export class SmsVerificationComponent implements OnInit {
     this.isLoginFailed = false;
     this.resentSucess = true;
     console.log(this.email);
-    this.authService.resendSMS(this.email).subscribe(
+    this.authService.resendSMS().subscribe(
       data => {
-        this.successMessage = data.message;
+        this.successMessage = 'Code sent successfully. Check your phone !';
       },
       err => {
         this.errorMessage = err.error.message;

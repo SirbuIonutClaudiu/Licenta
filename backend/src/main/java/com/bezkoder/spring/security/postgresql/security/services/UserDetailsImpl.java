@@ -29,14 +29,13 @@ public class UserDetailsImpl implements UserDetails {
 
 	private boolean activated2FA;
 
-	private boolean adminPriviledge;
 	@JsonIgnore
 	private String password;
 
 	private Collection<? extends GrantedAuthority> authorities;
 
-	public UserDetailsImpl(Long id, String name, String email, String password, boolean verifiedApplication, boolean verifiedEmail,
-						   boolean activated2FA, boolean adminPriviledge, Collection<? extends GrantedAuthority> authorities) {
+	public UserDetailsImpl(Long id, String name, String email, String password, boolean verifiedApplication,
+						   boolean verifiedEmail, boolean activated2FA, Collection<? extends GrantedAuthority> authorities) {
 		this.id = id;
 		this.name = name;
 		this.email = email;
@@ -44,7 +43,6 @@ public class UserDetailsImpl implements UserDetails {
 		this.verifiedApplication = verifiedApplication;
 		this.verifiedEmail = verifiedEmail;
 		this.activated2FA = activated2FA;
-		this.adminPriviledge = adminPriviledge;
 		this.authorities = authorities;
 	}
 
@@ -61,7 +59,6 @@ public class UserDetailsImpl implements UserDetails {
 				member.isVerifiedApplication(),
 				member.isVerifiedEmail(),
 				member.isActivated2FA(),
-				member.isAdminPriviledge(),
 				authorities);
 	}
 
@@ -76,9 +73,7 @@ public class UserDetailsImpl implements UserDetails {
 	}
 
 	@Override
-	public String getUsername() {
-		return name;
-	}
+	public String getUsername() { return name; }
 
 	@Override
 	public boolean isAccountNonExpired() {

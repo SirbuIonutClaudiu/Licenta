@@ -22,10 +22,8 @@ export class AuthService {
     }, httpOptions);
   }
 
-  verifySms(code: string): Observable<any> {
-    return this.http.post(AUTH_API + 'two_factor', {
-      code
-    }, httpOptions);
+  confirmCode(code: string): Observable<any> {
+    return this.http.post(AUTH_API + 'confirm_code/' + code, httpOptions);
   }
 
   register(name: string, email: string, password: string, institutionalCode: string,
@@ -53,8 +51,7 @@ export class AuthService {
     }, httpOptions);
   }
 
-  resendSMS(email: string): Observable<any> {
-    console.log(email);
-    return this.http.post(AUTH_API + 'resend_sms/' + email, httpOptions);
+  resendSMS(): Observable<any> {
+    return this.http.post(AUTH_API + 'sendPhoneVerification/', httpOptions);
   }
 }
