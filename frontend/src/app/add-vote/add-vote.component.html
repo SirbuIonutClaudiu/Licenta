@@ -16,7 +16,8 @@
               <div class="col-md-6">
                 <div class="form-group">
                   <mat-form-field>
-                    <input matInput [ngxMatDatetimePicker]="picker" placeholder="Choose a date and time" [disabled]="true">
+                    <input matInput [ngxMatDatetimePicker]="picker" style="color: #556B2F;"
+                           placeholder="Choose a date and time" [disabled]="true">
                     <mat-datepicker-toggle matSuffix [for]="$any(picker)"></mat-datepicker-toggle>
                     <ngx-mat-datetime-picker #picker [showSpinners]=true [showSeconds]=false [disabled]="false">
                     </ngx-mat-datetime-picker>
@@ -25,7 +26,12 @@
               </div>
               <div class="col-md-6">
                 <div class="form-group">
-                  <input id="email" type="text" placeholder="Email Address" class="form-control">
+                  <details>
+                    <summary #test>{{duration}}</summary>
+                    <ul>
+                      <li *ngFor="let option of duration_options" (click)="selectDuration(option)">{{option}}</li>
+                    </ul>
+                  </details>
                 </div>
               </div>
               <div class="col-12">
@@ -40,7 +46,7 @@
               </div>
               <div class="col-md-12">
                 <div class="send">
-                  <a id="send_message" class="px-btn theme" href="#"><span>Contact Us</span> <i class="arrow"></i></a>
+                  <a id="send_message" class="px-btn theme" href="#"><span>Create vote</span> <i class="arrow"></i></a>
                 </div>
               </div>
             </div>
