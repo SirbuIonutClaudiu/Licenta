@@ -9,7 +9,6 @@
       <div class="col-md-1"> </div>
       <div class="col-md-10">
         <div class="contact-form">
-          <form action="/" method="post" class="contactform contact_form" id="contact_form">
             <div class="returnmessage valid-feedback p-15px-b" data-success="Your message has been received, We will contact you soon."></div>
             <div class="empty_notice invalid-feedback p-15px-b"><span>Please Fill Required Fields</span></div>
             <div class="row">
@@ -36,7 +35,10 @@
               </div>
               <div class="col-12">
                 <div class="form-group">
-                  <input id="subject" type="text" placeholder="Subject" class="form-control">
+                  <input id="subject" type="text" style="color: #556B2F;"
+                         placeholder="Subject" class="form-control"
+                         [(ngModel)]="subject" maxlength="{{maxLength}}">
+                  <p class="error" *ngIf="subjectError">Subject has a maximum size of 50 characters</p>
                 </div>
               </div>
               <div class="col-md-12">
@@ -50,7 +52,6 @@
                 </div>
               </div>
             </div>
-          </form>
         </div>
       </div>
       <div class="col-md-1"> </div>
