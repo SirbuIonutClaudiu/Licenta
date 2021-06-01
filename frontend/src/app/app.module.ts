@@ -7,11 +7,13 @@ import { InternationalPhoneNumberModule } from 'ng-phone-number';
 import { NgxMaskModule, IConfig } from 'ngx-mask';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatInputModule } from '@angular/material/input';
+
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
 import { HomeComponent } from './home/home.component';
+
 import { authInterceptorProviders } from './_helpers/auth.interceptor';
 import { EmailSuccessfullComponent } from './email-successfull/email-successfull.component';
 import { UserProfileComponent } from './user-profile/user-profile.component';
@@ -22,7 +24,6 @@ import { VisitorsService} from './_services/visitors.service';
 import { MembersComponent } from './members/members.component';
 import { AddVoteComponent } from './add-vote/add-vote.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { RichTextEditorModule } from '@syncfusion/ej2-angular-richtexteditor';
 
 import {
   NgxMatDatetimePickerModule,
@@ -56,8 +57,7 @@ import {
     MatInputModule,
     NgxMatDatetimePickerModule,
     NgxMatTimepickerModule,
-    NgxMatNativeDateModule,
-    RichTextEditorModule
+    NgxMatNativeDateModule
   ],
   providers: [
     authInterceptorProviders,

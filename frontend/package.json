@@ -22,7 +22,6 @@
     "@angular/platform-browser": "~11.0.1",
     "@angular/platform-browser-dynamic": "~11.0.1",
     "@angular/router": "~11.0.1",
-    "@syncfusion/ej2-angular-richtexteditor": "^19.1.65",
     "@types/google-libphonenumber": "^7.4.21",
     "angular2-cookie": "^1.2.6",
     "component": "^1.1.0",

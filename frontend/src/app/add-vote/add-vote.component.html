@@ -13,7 +13,7 @@
             <div class="empty_notice invalid-feedback p-15px-b"><span>Please Fill Required Fields</span></div>
             <div class="row">
               <div class="col-md-6">
-                <div class="form-group float-md-left">
+                <div class="form-group">
                   <mat-form-field>
                     <input matInput [ngxMatDatetimePicker]="picker" style="color: #556B2F;"
                            placeholder="Choose a date and time" [disabled]="true">
@@ -24,7 +24,7 @@
                 </div>
               </div>
               <div class="col-md-6">
-                <div class="form-group float-md-right">
+                <div class="form-group">
                   <details>
                     <summary #test>{{duration}}</summary>
                     <ul>
@@ -35,21 +35,15 @@
               </div>
               <div class="col-12">
                 <div class="form-group">
-                  <input id="subject" type="text"
-                         placeholder="Subject" class="form-control subjectInput"
+                  <input id="subject" type="text" style="color: #556B2F;"
+                         placeholder="Subject" class="form-control"
                          [(ngModel)]="subject" maxlength="{{maxLength}}">
                   <p class="error" *ngIf="subjectError">Subject has a maximum size of 50 characters</p>
                 </div>
               </div>
               <div class="col-md-12">
                 <div class="form-group">
-                  <ejs-richtexteditor id='iframeRTE' [toolbarSettings]='tools' [iframeSettings]='iframe' [height]='height'>
-                    <ng-template #valueTemplate>
-                      <p>The Rich Text Editor component is WYSIWYG ("what you see is what you get") editor
-                        that provides the best user experience to create and update the content.
-                        Users can format their content using standard toolbar commands.</p>
-                    </ng-template>
-                  </ejs-richtexteditor>
+                  <textarea id="message" placeholder="Message" class="form-control" rows="3"></textarea>
                 </div>
               </div>
               <div class="col-md-12">
