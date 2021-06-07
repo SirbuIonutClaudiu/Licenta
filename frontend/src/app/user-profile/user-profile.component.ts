@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {TokenStorageService} from '../_services/token-storage.service';
 import {UserService} from '../_services/user.service';
 import {membruSenat} from '../_services/membruSenat';
@@ -12,7 +12,15 @@ import {ActivatedRoute} from '@angular/router';
   styleUrls: ['./user-profile.component.css']
 })
 export class UserProfileComponent implements OnInit {
+
+  constructor(private tokenStorageService: TokenStorageService,
+              private userService: UserService, private _Activatedroute: ActivatedRoute, ) {
+    this.getMemberById(Number(this._Activatedroute.snapshot.paramMap.get('id')));
+    this.editSiteClicked();
+    this.editLandlineClicked();
+  }
   retrievedImage: any;
+  auxImage: any;
   email = '';
   name = '';
   website = '';
@@ -76,14 +84,7 @@ export class UserProfileComponent implements OnInit {
   isPhoneCodeEditable = false;
   isPhoneNumberEditable = false;
   isLandlineEditable = false;
-
-
-  constructor(private tokenStorageService: TokenStorageService,
-              private userService: UserService, private _Activatedroute: ActivatedRoute,) {
-    this.getMemberById(Number(this._Activatedroute.snapshot.paramMap.get('id')));
-    this.editSiteClicked();
-    this.editLandlineClicked();
-  }
+  isImageEditable = false;
 
   ngOnInit(): void {
     this.checklist();
@@ -367,5 +368,21 @@ export class UserProfileComponent implements OnInit {
 
   discardEmailChange(): void {
     this.isEmailEditable = false;
+  }
+
+  enableImageChangable(event: any): void {
+    let reader = new FileReader();
+    reader.readAsDataURL(event.target.files[0]);
+    reader.onload = (event) => {
+      this.auxImage = this.retrievedImage;
+      // @ts-ignore
+      this.retrievedImage = event.target.result;
+      this.isImageEditable = true;
+    }
+  }
+
+  discardImageChange(): void {
+    this.retrievedImage = this.auxImage;
+    this.isImageEditable = false;
   }
 }

@@ -213,3 +213,21 @@ input:focus {
   outline: none;
 }
 
+.noMarginTop {
+  margin-top: 0 !important;
+}
+
+.imageOverlay {
+  position: relative;
+  transform: translate(-115%,-110%);
+  opacity: 60%;
+}
+
+.imageOverlay:hover {
+  opacity: 100%;
+}
+
+.marginTop {
+  margin-top: 5%;
+}
+

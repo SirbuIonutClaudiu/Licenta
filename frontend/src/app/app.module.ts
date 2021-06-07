@@ -24,6 +24,7 @@ import { AddVoteComponent } from './add-vote/add-vote.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RichTextEditorModule } from '@syncfusion/ej2-angular-richtexteditor';
 import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
+import { SwitchModule } from '@syncfusion/ej2-angular-buttons';
 
 import {
   NgxMatDatetimePickerModule,
@@ -59,6 +60,7 @@ import {
     NgxMatTimepickerModule,
     NgxMatNativeDateModule,
     RichTextEditorModule,
+    SwitchModule,
     NgMultiSelectDropDownModule.forRoot()
   ],
   providers: [

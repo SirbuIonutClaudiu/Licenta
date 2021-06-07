@@ -211,6 +211,9 @@ public class UserController {
                     .body(new MessageResponse("Member does not exist !"));
         }
         membruSenat member = membruSenatService.findMemberById(id);
+        ImageModel image = imageRepository.findByName(member.getEmail())
+                .orElseThrow(() -> new RuntimeException("Email unavailable!"));
+        image.setName(email);
         member.setEmail(email);
         membruSenatRepo.save(member);
         return new ResponseEntity<>(HttpStatus.OK);

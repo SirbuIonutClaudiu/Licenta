@@ -52,21 +52,31 @@
                   <input id="subject" type="text"
                          placeholder="Subject" class="form-control subjectInput"
                          [(ngModel)]="subject" maxlength="{{maxLength}}">
-                  <p class="error" *ngIf="subjectError">Subject has a maximum size of 50 characters</p>
+                  <p class="error" *ngIf="subjectError">Subject has a maximum size of {{maxLength}} characters</p>
                 </div>
               </div>
               <div class="col-md-12">
                 <div class="form-group">
                   <ejs-richtexteditor id='iframeRTE' [toolbarSettings]='tools' [iframeSettings]='iframe' [height]='height'>
                     <ng-template #valueTemplate>
-                      <p>The Rich Text Editor component is WYSIWYG ("what you see is what you get") editor
-                        that provides the best user experience to create and update the content.
-                        Users can format their content using standard toolbar commands.</p>
+                      <p></p>
                     </ng-template>
                   </ejs-richtexteditor>
                 </div>
               </div>
-              <div class="col-md-12">
+              <div class="col-md-6 d-flex align-items-center justify-content-start">
+                <div id='container'>
+                  <table class="ripple">
+                    <tr>
+                      <td class="lRipple"><label for='switch1'>GeoRestricted voting&nbsp;&nbsp;</label></td>
+                      <td>
+                        <ejs-switch id="switch1" [(ngModel)]="geoRestriction"></ejs-switch>
+                      </td>
+                    </tr>
+                  </table>
+                </div>
+              </div>
+              <div class="col-md-6 d-flex align-items-center justify-content-end">
                 <div class="send">
                   <a id="send_message" class="px-btn theme" href="#"><span>Create vote</span> <i class="arrow"></i></a>
                 </div>
@@ -74,7 +84,6 @@
             </div>
         </div>
       </div>
-      <div class="col-md-1"> </div>
     </div>
   </div>
 </section>

@@ -61,12 +61,12 @@ export class AddVoteComponent implements OnInit {
   };
   iframe: object = { enable: true };
   height = 350;
-  maxLength = 10;
+  maxLength = 50;
   minLength = 5;
-  duration_options = ['30 seconds', '1 minute', '2 minutes', '3 minutes', '4 minutes', '5 minutes'];
   duration!: string;
   subject = '';
   subjectError = false;
+  geoRestriction = true;
 
   constructor(private userService: UserService) { }
 
@@ -87,10 +87,10 @@ export class AddVoteComponent implements OnInit {
     });
   }
 
-  onItemSelect(item: any) {
+  onItemSelect(item: any): void {
     console.log(item);
   }
-  onSelectAll(items: any) {
+  onSelectAll(items: any): void {
     console.log(items);
   }
 }
