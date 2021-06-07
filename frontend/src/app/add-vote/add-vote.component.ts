@@ -1,5 +1,6 @@
 import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {UserService} from '../_services/user.service';
+import { IDropdownSettings } from 'ng-multiselect-dropdown';
 import { ToolbarService, LinkService, ImageService, HtmlEditorService } from '@syncfusion/ej2-angular-richtexteditor';
 
 @Component({
@@ -10,6 +11,44 @@ import { ToolbarService, LinkService, ImageService, HtmlEditorService } from '@s
 })
 export class AddVoteComponent implements OnInit {
   @ViewChild('test', {static: false}) test!: ElementRef;
+  dropdownList1 = [
+    { item_id: 1, item_text: 'Comisia didactica' },
+    { item_id: 2, item_text: 'Comisia stiintifica' },
+    { item_id: 3, item_text: 'Comisia de asigurare a calitatii si relatii internationale' },
+    { item_id: 4, item_text: 'Comisia privind drepturile si obligatiile studentilor' },
+    { item_id: 5, item_text: 'Comisia de buget–finante' },
+    { item_id: 6, item_text: 'Comisia juridica' }
+  ];
+  dropdownSettings1: IDropdownSettings = {
+    singleSelection: false,
+    idField: 'item_id',
+    textField: 'item_text',
+    selectAllText: 'Select All',
+    unSelectAllText: 'UnSelect All',
+    itemsShowLimit: 2
+  };
+  roles = [];
+  dropdownList2 = [
+    { item_id: 1, item_text: '30 seconds' },
+    { item_id: 2, item_text: '1 minute' },
+    { item_id: 3, item_text: '2 minutes' },
+    { item_id: 4, item_text: '3 minutes' },
+    { item_id: 5, item_text: '4 minutes' },
+    { item_id: 6, item_text: '5 minutes' }
+  ];
+  dropdownSettings2: IDropdownSettings = {
+    singleSelection: true,
+    idField: 'item_id',
+    textField: 'item_text'
+  };
+  dropdownSettings: IDropdownSettings = {
+    singleSelection: false,
+    idField: 'item_id',
+    textField: 'item_text',
+    selectAllText: 'Select All',
+    unSelectAllText: 'UnSelect All',
+    itemsShowLimit: 2
+  };
   public tools: object = {
     items: ['Undo', 'Redo', '|',
       'Bold', 'Italic', 'Underline', 'StrikeThrough', '|',
@@ -25,7 +64,7 @@ export class AddVoteComponent implements OnInit {
   maxLength = 10;
   minLength = 5;
   duration_options = ['30 seconds', '1 minute', '2 minutes', '3 minutes', '4 minutes', '5 minutes'];
-  duration = 'Duration';
+  duration!: string;
   subject = '';
   subjectError = false;
 
@@ -48,10 +87,10 @@ export class AddVoteComponent implements OnInit {
     });
   }
 
-  selectDuration(option: string) {
-    this.duration = option;
-    this.test.nativeElement.click();
-    this.test.nativeElement.style.cssText += 'color: #556B2F;';
+  onItemSelect(item: any) {
+    console.log(item);
   }
-
+  onSelectAll(items: any) {
+    console.log(items);
+  }
 }

@@ -12,8 +12,7 @@
             <div class="returnmessage valid-feedback p-15px-b" data-success="Your message has been received, We will contact you soon."></div>
             <div class="empty_notice invalid-feedback p-15px-b"><span>Please Fill Required Fields</span></div>
             <div class="row">
-              <div class="col-md-6">
-                <div class="form-group float-md-left">
+              <div class="col-md-3 d-flex align-items-center justify-content-start">
                   <mat-form-field>
                     <input matInput [ngxMatDatetimePicker]="picker" style="color: #556B2F;"
                            placeholder="Choose a date and time" [disabled]="true">
@@ -21,16 +20,31 @@
                     <ngx-mat-datetime-picker #picker [showSpinners]=true [showSeconds]=false [disabled]="false">
                     </ngx-mat-datetime-picker>
                   </mat-form-field>
+              </div>
+              <div class="col-md-5 d-flex align-items-center justify-content-center">
+                <div class="w-75">
+                  <ng-multiselect-dropdown
+                    [placeholder]="'Vote visibility'"
+                    [settings]="dropdownSettings1"
+                    [data]="dropdownList1"
+                    [(ngModel)]="roles"
+                    (onSelect)="onItemSelect($event)"
+                    (onSelectAll)="onSelectAll($event)"
+                  >
+                  </ng-multiselect-dropdown>
                 </div>
               </div>
-              <div class="col-md-6">
-                <div class="form-group float-md-right">
-                  <details>
-                    <summary #test>{{duration}}</summary>
-                    <ul>
-                      <li *ngFor="let option of duration_options" (click)="selectDuration(option)">{{option}}</li>
-                    </ul>
-                  </details>
+              <div class="col-md-4 d-flex align-items-center justify-content-end">
+                <div class="w-75">
+                  <ng-multiselect-dropdown
+                    [placeholder]="'Duration'"
+                    [settings]="dropdownSettings2"
+                    [data]="dropdownList2"
+                    [(ngModel)]="duration"
+                    (onSelect)="onItemSelect($event)"
+                    (onSelectAll)="onSelectAll($event)"
+                  >
+                  </ng-multiselect-dropdown>
                 </div>
               </div>
               <div class="col-12">

@@ -81,12 +81,12 @@ export class UserProfileComponent implements OnInit {
   constructor(private tokenStorageService: TokenStorageService,
               private userService: UserService, private _Activatedroute: ActivatedRoute,) {
     this.getMemberById(Number(this._Activatedroute.snapshot.paramMap.get('id')));
+    this.editSiteClicked();
+    this.editLandlineClicked();
   }
 
   ngOnInit(): void {
     this.checklist();
-    this.editSiteClicked();
-    this.editLandlineClicked();
   }
 
   addNumber(): void {
