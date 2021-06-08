@@ -5,6 +5,7 @@ import {membruSenat} from '../_services/membruSenat';
 // @ts-ignore
 import {PhoneNumberFormat, PhoneNumberUtil, ShortNumberInfo} from 'google-libphonenumber';
 import {ActivatedRoute} from '@angular/router';
+import {HttpClient} from '@angular/common/http';
 
 @Component({
   selector: 'app-user-profile',
@@ -13,12 +14,11 @@ import {ActivatedRoute} from '@angular/router';
 })
 export class UserProfileComponent implements OnInit {
 
-  constructor(private tokenStorageService: TokenStorageService,
-              private userService: UserService, private _Activatedroute: ActivatedRoute, ) {
+  constructor(private tokenStorageService: TokenStorageService, private httpClient: HttpClient,
+              private userService: UserService, private _Activatedroute: ActivatedRoute) {
     this.getMemberById(Number(this._Activatedroute.snapshot.paramMap.get('id')));
-    this.editSiteClicked();
-    this.editLandlineClicked();
   }
+  selectedFile!: File;
   retrievedImage: any;
   auxImage: any;
   email = '';
@@ -37,6 +37,7 @@ export class UserProfileComponent implements OnInit {
   digitSix: null;
   codeError = false;
   websiteError = false;
+  imageError = false;
   twoFactorError = false;
   twoFactor = false;
   isPhoneNumber = false;
@@ -242,6 +243,7 @@ export class UserProfileComponent implements OnInit {
         this.isLandlineEditable = true;
       }
       else {
+        this.isLandlineEditable = false;
         this.landline = ((this.landline.substring(0, 3) !== '+40') ? '+40 ' : '') + this.landline;
         this.landline = this.landline.substring(0, 6) + ' ' + this.landline.substring(6);
         this.userService.updateLandline(this.member.id, this.landline).subscribe(
@@ -305,6 +307,8 @@ export class UserProfileComponent implements OnInit {
           const region = phoneUtil.getRegionCodeForNumber(number);
           this.member.phoneNumber = phoneUtil.format(number, PNF.NATIONAL);
         }
+        this.editSiteClicked();
+        this.editLandlineClicked();
       } );
   }
 
@@ -371,18 +375,37 @@ export class UserProfileComponent implements OnInit {
   }
 
   enableImageChangable(event: any): void {
-    let reader = new FileReader();
+    const reader = new FileReader();
+    this.selectedFile = event.target.files[0];
     reader.readAsDataURL(event.target.files[0]);
     reader.onload = (event) => {
       this.auxImage = this.retrievedImage;
       // @ts-ignore
       this.retrievedImage = event.target.result;
       this.isImageEditable = true;
-    }
+    };
   }
 
   discardImageChange(): void {
     this.retrievedImage = this.auxImage;
     this.isImageEditable = false;
+  }
+
+  applyImageChange(): void {
+    const uploadImageData = new FormData();
+    uploadImageData.append('imageFile', this.selectedFile, this.selectedFile.name);
+    uploadImageData.append('memberEmail', this.member.email);
+    this.httpClient.post('http://localhost:8081/api/users/upload', uploadImageData)
+      .subscribe(ans => {
+        this.isImageEditable = false;
+      },
+        err => {
+        this.imageError = true;
+        this.discardImageChange();
+        this.userService.sleep(4).subscribe(
+          ans => {
+            this.imageError = false;
+          });
+        });
   }
 }

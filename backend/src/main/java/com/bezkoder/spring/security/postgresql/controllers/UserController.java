@@ -314,6 +314,11 @@ public class UserController {
                     .badRequest()
                     .body(new MessageResponse("File is larger than 2MB !"));
         }
+        if(imageRepository.existsByName(email)) {
+            ImageModel img2Bdeleted = imageRepository.findByName(email)
+                    .orElseThrow(() -> new RuntimeException("Image file error!"));
+            imageRepository.delete(img2Bdeleted);
+        }
         ImageModel img = new ImageModel(email, file.getContentType(),
                 compressBytes(file.getBytes()));
         imageRepository.save(img);
