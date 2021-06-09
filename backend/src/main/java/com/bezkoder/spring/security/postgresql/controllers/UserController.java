@@ -1,6 +1,9 @@
 package com.bezkoder.spring.security.postgresql.controllers;
 
 import com.bezkoder.spring.security.postgresql.models.*;
+import com.bezkoder.spring.security.postgresql.payload.request.NewPasswordRequest;
+import com.bezkoder.spring.security.postgresql.payload.request.PasswordRequest;
+import com.bezkoder.spring.security.postgresql.payload.request.SignupRequest;
 import com.bezkoder.spring.security.postgresql.payload.request.WebsiteRequest;
 import com.bezkoder.spring.security.postgresql.payload.response.MessageResponse;
 import com.bezkoder.spring.security.postgresql.payload.response.UserResponse;
@@ -15,10 +18,15 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import com.twilio.Twilio;
 import com.twilio.rest.verify.v2.service.VerificationCheck;
+
+import javax.annotation.PostConstruct;
 import javax.validation.Valid;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -47,6 +55,9 @@ public class UserController {
 
     @Autowired
     PasswordResetTokenRepository PRTrepository;
+
+    @Autowired
+    PasswordEncoder encoder;
 
     @Autowired
     RoleRepository roleRepository;
@@ -303,6 +314,38 @@ public class UserController {
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deleteMember(@PathVariable("id") Long id) {
         membruSenatService.deleteMemberById(id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping("/check_password")
+    public ResponseEntity<?> checkPassword(@Valid @RequestBody PasswordRequest passwordRequest) {
+        if(!membruSenatRepo.existsById(passwordRequest.getId())) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new MessageResponse("Member does not exist !"));
+        }
+        membruSenat member = membruSenatService.findMemberById(passwordRequest.getId());
+        BCryptPasswordEncoder bEn = new BCryptPasswordEncoder();
+        if(bEn.matches(passwordRequest.getPassword(), member.getPassword())) {
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+        else {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new MessageResponse("Wrong password !"));
+        }
+    }
+
+    @PostMapping("/change_password")
+    public ResponseEntity<?> changePassword(@Valid @RequestBody NewPasswordRequest newPasswordRequest) {
+        if(!membruSenatRepo.existsById(newPasswordRequest.getId())) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new MessageResponse("Member does not exist !"));
+        }
+        membruSenat member = membruSenatService.findMemberById(newPasswordRequest.getId());
+        member.setPassword(encoder.encode(newPasswordRequest.getNewPassword()));
+        membruSenatRepo.save(member);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

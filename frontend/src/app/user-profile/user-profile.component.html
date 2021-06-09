@@ -22,11 +22,11 @@
               <div class="mt-3 noMarginTop">
                 <div class="row" *ngIf="isImageEditable">
                   <div class="col">
-                    <a class="btn btn-xs btn-bold btn-danger activateBtn" (click)="discardImageChange()">
+                    <a class="btn btn-xs btn-bold btn-danger activateBtn rounded-pill" (click)="discardImageChange()">
                       <i class="fa fa-times-circle fa-lg"></i> Cancel</a>
                   </div>
                   <div class="col">
-                    <a class="btn btn-xs btn-bold btn-success activateBtn" (click)="applyImageChange()">
+                    <a class="btn btn-xs btn-bold btn-success activateBtn rounded-pill" (click)="applyImageChange()">
                       <i class="fa fa-floppy-o fa-lg"></i> Apply</a>
                   </div>
                 </div>
@@ -39,9 +39,9 @@
                   </select>
                 </div>
                 <div *ngIf="isRoleEditable">
-                  <a class="btn btn-xs btn-bold btn-danger activateBtn roleBtnLeft" (click)="discardRoleChange()">
+                  <a class="btn btn-xs btn-bold btn-danger activateBtn roleBtnLeft rounded-pill" (click)="discardRoleChange()">
                     <i class="fa fa-times-circle fa-lg"></i> Cancel</a>
-                  <a class="btn btn-xs btn-bold btn-success activateBtn roleBtnRight" (click)="applyRoleChanges()">
+                  <a class="btn btn-xs btn-bold btn-success activateBtn roleBtnRight rounded-pill" (click)="applyRoleChanges()">
                     <i class="fa fa-floppy-o fa-lg"></i> Apply</a>
                 </div>
               </div>
@@ -103,16 +103,20 @@
                 {{member.name}}
               </div>
               <div class="col-md-6" *ngIf="isNameEditable">
-                <input class="customInput" placeholder={{name}} [(ngModel)]="this.name" *ngIf="isNameEditable">
+                <input class="customInput"
+                       placeholder={{name}}
+                       [(ngModel)]="this.name"
+                       (keydown.enter)="SaveNewName()"
+                       *ngIf="isNameEditable">
               </div>
               <div class="col-md-3 card-hover-show" *ngIf="!isNameEditable">
-              <a class="btn btn-xs btn-bold btn-warning activateBtn" (click)="EditName()">
-                <i class="fa fa-pencil fa-lg"></i> Edit</a>
+              <a class="btn btn-xs btn-bold btn-warning activateBtn rounded-pill" (click)="EditName()">
+                <i class="fa fa-pencil fa-lg"></i>&nbsp;&nbsp;Edit</a>
               </div>
               <div class="col-md-4 card-hover-show" *ngIf="isNameEditable">
-                <a class="btn btn-xs btn-bold btn-success activateBtn" (click)="SaveNewName()"  style="margin-right: 5%;">
+                <a class="btn btn-xs btn-bold btn-success activateBtn rounded-pill" (click)="SaveNewName()"  style="margin-right: 5%;">
                   <i class="fa fa-floppy-o fa-lg"></i> Save</a>
-                <a class="btn btn-xs btn-bold btn-danger activateBtn" (click)="discardNameChange()">
+                <a class="btn btn-xs btn-bold btn-danger activateBtn rounded-pill" (click)="discardNameChange()">
                   <i class="fa fa-times-circle fa-lg"></i> Cancel</a>
               </div>
             </div>
@@ -126,16 +130,19 @@
                 {{member.email}}
               </div>
               <div class="col-md-6" *ngIf="isEmailEditable">
-                <input placeholder="Enter name" [(ngModel)]="member.email" *ngIf="isEmailEditable">
+                <input placeholder="Enter email"
+                       [(ngModel)]="member.email"
+                       (keydown.enter)="SaveNewEmail()"
+                       *ngIf="isEmailEditable">
               </div>
               <div class="col-md-3 card-hover-show" *ngIf="!isEmailEditable">
-                <a class="btn btn-xs btn-bold btn-warning activateBtn" (click)="EditEmail()">
-                  <i class="fa fa-pencil fa-lg"></i> Edit</a>
+                <a class="btn btn-xs btn-bold btn-warning activateBtn rounded-pill" (click)="EditEmail()">
+                  <i class="fa fa-pencil fa-lg"></i>&nbsp;&nbsp;Edit</a>
               </div>
               <div class="col-md-4 card-hover-show" *ngIf="isEmailEditable">
-                <a class="btn btn-xs btn-bold btn-success activateBtn" (click)="SaveNewEmail()" style="margin-right: 5%;">
+                <a class="btn btn-xs btn-bold btn-success activateBtn rounded-pill" (click)="SaveNewEmail()" style="margin-right: 5%;">
                   <i class="fa fa-floppy-o fa-lg"></i> Save</a>
-                <a class="btn btn-xs btn-bold btn-danger activateBtn" (click)="discardEmailChange()">
+                <a class="btn btn-xs btn-bold btn-danger activateBtn rounded-pill" (click)="discardEmailChange()">
                   <i class="fa fa-times-circle fa-lg"></i> Cancel</a>
               </div>
             </div>
@@ -151,7 +158,8 @@
                                             [defaultCountry]="'ro'"
                                             [locale]="'en'"
                                             name="phone_number"
-                                            [(ngModel)]="phoneNumber">
+                                            [(ngModel)]="phoneNumber"
+                                            (keydown.enter)="addNumber()">
                 </international-phone-number>
                 <div class="d-flex flex-row md-6" *ngIf="isPhoneCodeEditable">
                   <input type="text"
@@ -208,19 +216,19 @@
                 {{member.phoneNumber}}
               </div>
               <div class="col-md-3 card-hover-show" *ngIf="isPhoneNumber && !isPhoneNumberEditable">
-                <a class="btn btn-xs btn-bold btn-warning activateBtn" (click)="EditPhoneNumber()">
-                  <i class="fa fa-pencil fa-lg"></i> Edit</a>
+                <a class="btn btn-xs btn-bold btn-warning activateBtn rounded-pill" (click)="EditPhoneNumber()">
+                  <i class="fa fa-pencil fa-lg"></i>&nbsp;&nbsp;Edit</a>
               </div>
               <div class="col-md-5 card-hover-show" *ngIf="!isPhoneNumber || isPhoneNumberEditable">
-                <a class="btn btn-xs btn-bold btn-primary activateBtn" (click)="addNumber()" style="margin-right: 5%;">
+                <a class="btn btn-xs btn-bold btn-primary activateBtn rounded-pill" (click)="addNumber()" style="margin-right: 5%;">
                   <i class="fa fa-mobile fa-lg"></i>&nbsp;&nbsp;Add number</a>
-                <a class="btn btn-xs btn-bold btn-danger activateBtn" (click)="discardPhoneChange()" *ngIf="isPhoneNumber">
+                <a class="btn btn-xs btn-bold btn-danger activateBtn rounded-pill" (click)="discardPhoneChange()" *ngIf="isPhoneNumber">
                   <i class="fa fa-times-circle fa-lg"></i> Cancel</a>
               </div>
               <div class="col-md-5 card-hover-show" *ngIf="isPhoneCodeEditable">
-                <a class="btn btn-xs btn-bold btn-success activateBtn" (click)="confirmCode()" style="margin-right: 5%;">
+                <a class="btn btn-xs btn-bold btn-success activateBtn rounded-pill" (click)="confirmCode()" style="margin-right: 5%;">
                   <i class="fa fa-check-circle-o fa-lg"></i> &nbsp;Confirm</a>
-                <a class="btn btn-xs btn-bold btn-info activateBtn" (click)="resendCode()">
+                <a class="btn btn-xs btn-bold btn-info activateBtn rounded-pill" (click)="resendCode()">
                   <i class="fa fa-repeat fa-lg"></i> Resend</a>
               </div>
                 <div class="d-flex smsError" *ngIf="codeError">
@@ -237,17 +245,134 @@
                 {{member.address}}
               </div>
               <div class="col-md-6" [hidden]="!isAddressEditable">
-                <input id="googleAddress" type="text" class="form-control">
+                <input id="googleAddress"
+                       type="text"
+                       class="form-control"
+                       (keydown.enter)="SaveAddress()">
               </div>
               <div class="col-md-3 card-hover-show" *ngIf="!isAddressEditable">
-                <a id="edit" class="btn btn-xs btn-bold btn-warning activateBtn" (click)="EditAddress()">
-                  <i class="fa fa-pencil fa-lg"></i> Edit</a>
+                <a id="edit" class="btn btn-xs btn-bold btn-warning activateBtn rounded-pill" (click)="EditAddress()">
+                  <i class="fa fa-pencil fa-lg"></i>&nbsp;&nbsp;Edit</a>
               </div>
               <div class="col-md-4 card-hover-show" *ngIf="isAddressEditable">
-                <a class="btn btn-xs btn-bold btn-success activateBtn" (click)="SaveAddress()" style="margin-right: 5%;">
+                <a class="btn btn-xs btn-bold btn-success activateBtn rounded-pill" (click)="SaveAddress()" style="margin-right: 5%;">
                   <i class="fa fa-floppy-o fa-lg"></i> Save</a>
-                <a class="btn btn-xs btn-bold btn-danger activateBtn" (click)="discardAddressChange()">
+                <a class="btn btn-xs btn-bold btn-danger activateBtn rounded-pill" (click)="discardAddressChange()">
                   <i class="fa fa-times-circle fa-lg"></i> Cancel</a>
+              </div>
+            </div>
+            <hr>
+
+            <div class="row">
+              <div class="col-sm-2">
+                <h6 class="col-mb-0"><b>Password</b></h6>
+              </div>
+              <div class="col-md-6 d-flex align-items-center justify-content-start" *ngIf="!isPasswordVerified && !isNewPasswordInserted">
+                <div class="input-group-prepend">
+                  <span id="inputGroup-sizing-default"
+                        [ngClass]="{'successfull': passwordChangeSuccess}"
+                        class="input-group-text" >
+                    Old password
+                  </span>
+                </div>
+                <input [type]="(showPassword || passwordChangeSuccess) ? 'text' : 'password'"
+                       [ngClass]="{'successfull': passwordChangeSuccess}"
+                       aria-label="Default" [(ngModel)]="oldPassword"
+                       aria-describedby="inputGroup-sizing-default"
+                       (keydown.enter)="checkOldPassword()">
+                <div class="input-group-append" *ngIf="!showPassword">
+                  <button type="button"
+                          class="btn btn-outline-success showPass"
+                          id="inputGroupFileAddon04"
+                          title="Show"
+                          (click)="toggleShowPassword()">
+                    <i class="fa fa-eye" aria-hidden="true"></i>
+                  </button>
+                </div>
+                <div class="input-group-append" *ngIf="showPassword">
+                  <button type="button"
+                          class="btn btn-outline-success showPass"
+                          id="inputGroupFileAddon04"
+                          title="Don't show"
+                          (click)="toggleShowPassword()">
+                    <i class="fa fa-eye-slash" aria-hidden="true"></i>
+                  </button>
+                </div>
+              </div>
+
+              <div class="col-md-6 d-flex align-items-center justify-content-start" *ngIf="isPasswordVerified && !isNewPasswordInserted">
+                <div class="input-group-prepend">
+                  <span class="input-group-text" id="inputGroup-sizing-default">New password</span>
+                </div>
+                <input [type]="showPassword ? 'text' : 'password'"
+                       aria-label="Default" [(ngModel)]="newPassword"
+                       aria-describedby="inputGroup-sizing-default"
+                       (keydown.enter)="verifyNewPassword()">
+                <div class="input-group-append" *ngIf="!showPassword">
+                  <button type="button"
+                          class="btn btn-outline-success showPass"
+                          id="inputGroupFileAddon04"
+                          title="Show"
+                          (click)="toggleShowPassword()">
+                    <i class="fa fa-eye" aria-hidden="true"></i>
+                  </button>
+                </div>
+                <div class="input-group-append" *ngIf="showPassword">
+                  <button type="button"
+                          class="btn btn-outline-success showPass"
+                          id="inputGroupFileAddon04"
+                          title="Don't show"
+                          (click)="toggleShowPassword()">
+                    <i class="fa fa-eye-slash" aria-hidden="true"></i>
+                  </button>
+                </div>
+              </div>
+
+              <div class="col-md-6 d-flex align-items-center justify-content-start" *ngIf="isPasswordVerified && isNewPasswordInserted">
+                <div class="input-group-prepend">
+                  <span class="input-group-text" id="inputGroup-sizing-default">Verify password</span>
+                </div>
+                <input [type]="showPassword ? 'text' : 'password'"
+                       aria-label="Default" [(ngModel)]="passwordVerify"
+                       aria-describedby="inputGroup-sizing-default"
+                       (keydown.enter)="confirmNewPassword()">
+                <div class="input-group-append" *ngIf="!showPassword">
+                  <button type="button"
+                          class="btn btn-outline-success showPass"
+                          id="inputGroupFileAddon04"
+                          title="Show"
+                          (click)="toggleShowPassword()">
+                    <i class="fa fa-eye" aria-hidden="true"></i>
+                  </button>
+                </div>
+                <div class="input-group-append" *ngIf="showPassword">
+                  <button type="button"
+                          class="btn btn-outline-success showPass"
+                          id="inputGroupFileAddon04"
+                          title="Don't show"
+                          (click)="toggleShowPassword()">
+                    <i class="fa fa-eye-slash" aria-hidden="true"></i>
+                  </button>
+                </div>
+              </div>
+
+              <div class="col-md-4 d-flex align-items-center justify-content-end" *ngIf="!isPasswordVerified && !isNewPasswordInserted">
+                <a class="btn btn-xs btn-bold btn-success activateBtn rounded-pill" (click)="checkOldPassword()">
+                  <i class="fa fa-share"></i>&nbsp;&nbsp;Change</a>
+              </div>
+
+              <div class="col-md-4 d-flex align-items-center justify-content-end" *ngIf="isPasswordVerified && !isNewPasswordInserted">
+                <a class="btn btn-xs btn-bold btn-info activateBtn rounded-pill" (click)="verifyNewPassword()">
+                  <i class="fa fa-share"></i>&nbsp;&nbsp;Verify</a>
+              </div>
+
+              <div class="col-md-4 d-flex align-items-center justify-content-end" *ngIf="isPasswordVerified && isNewPasswordInserted">
+                <a class="btn btn-xs btn-bold btn-primary activateBtn rounded-pill" (click)="confirmNewPassword()">
+                  <i class="fa fa-share"></i>&nbsp;&nbsp;Confirm</a>
+              </div>
+
+              <div class="col-md-12 d-flex align-items-center justify-content-center error" *ngIf="isPasswordError">
+                {{passwordError}}
               </div>
             </div>
 

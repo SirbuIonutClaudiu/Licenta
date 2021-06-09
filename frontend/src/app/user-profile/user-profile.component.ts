@@ -21,6 +21,9 @@ export class UserProfileComponent implements OnInit {
   selectedFile!: File;
   retrievedImage: any;
   auxImage: any;
+  oldPassword = '';
+  newPassword = '';
+  passwordVerify = '';
   email = '';
   name = '';
   website = '';
@@ -37,10 +40,16 @@ export class UserProfileComponent implements OnInit {
   digitSix: null;
   codeError = false;
   websiteError = false;
+  passwordError = 'sdadadaa';
+  isPasswordError = false;
   imageError = false;
   twoFactorError = false;
   twoFactor = false;
   isPhoneNumber = false;
+  isPasswordVerified = false;
+  isNewPasswordInserted = false;
+  passwordChangeSuccess = false;
+  showPassword = false;
   public token: string | null = ' ';
   public member: membruSenat = {
     id: 0,
@@ -115,6 +124,113 @@ export class UserProfileComponent implements OnInit {
           this.errorMessage = err.error.message;
         });
     }
+  }
+
+  toggleShowPassword(): void {
+    this.showPassword = !this.showPassword;
+  }
+
+  checkOldPassword(): void {
+    this.userService.checkPassword(this.member.id, this.oldPassword).subscribe(
+      ans => {
+        this.isPasswordVerified = true;
+        this.showPassword = false;
+      },
+      error => {
+        this.isPasswordError = true;
+        this.passwordError = 'Wrong password !';
+        this.userService.sleep(2).subscribe(
+          ans => {
+            this.isPasswordError = false;
+          });
+      });
+  }
+
+  verifyNewPassword(): void {
+    if (!this.passwordConditions()) {
+      this.isNewPasswordInserted = true;
+      this.showPassword = false;
+    }
+    else {
+      this.isPasswordError = true;
+      this.userService.sleep(this.passwordConditions()).subscribe(
+        ans => {
+          this.isPasswordError = false;
+        });
+    }
+  }
+
+  confirmNewPassword(): void {
+    if (this.newPassword !== this.passwordVerify) {
+      this.passwordError = 'Passwords do not match !';
+      this.isPasswordError = true;
+      this.userService.sleep(3).subscribe(
+        ans => {
+          this.isPasswordError = false;
+        });
+    }
+    else {
+      this.userService.changePassword(this.member.id, this.newPassword).subscribe(
+        ans => {
+          this.passwordChangeProtocol();
+        },
+        err => {
+          this.passwordError = err.error.message;
+          this.isPasswordError = true;
+          this.userService.sleep(3).subscribe(
+            ans => {
+              this.isPasswordError = false;
+            });
+        });
+    }
+  }
+
+  passwordChangeProtocol(): void {
+    this.isPasswordVerified = false;
+    this.isNewPasswordInserted = false;
+    this.showPassword = false;
+    this.newPassword = '';
+    this.passwordVerify = '';
+    this.oldPassword = 'Password changed !';
+    this.passwordChangeSuccess = true;
+    this.userService.sleep(4).subscribe(
+      ans => {
+        this.oldPassword = '';
+        this.passwordChangeSuccess = false;
+      }
+    );
+  }
+
+
+  passwordConditions(): number {
+    if (this.newPassword.length < 8) {
+      this.passwordError = 'Password must be at least 8 characters long !';
+      return 3;
+    }
+    if (this.newPassword.length > 120) {
+      this.passwordError = 'Password must be shorter than 120 characters long !';
+      return 4;
+    }
+    let hasSmall = false;
+    let hasCaps = false;
+    let hasNumber = false;
+    for (let it = 0; it < this.newPassword.length; it++) {
+      const charCode = this.newPassword.charCodeAt(it);
+      if (charCode >= 97 && charCode <= 122) {
+        hasSmall = true;
+      }
+      if (charCode >= 65 && charCode <= 90) {
+        hasCaps = true;
+      }
+      if (charCode >= 48 && charCode <= 57) {
+        hasNumber = true;
+      }
+    }
+    if (!hasNumber || !hasSmall || !hasCaps) {
+      this.passwordError = 'Password must contain at least : one lowercase, one uppercase and one number';
+      return 7;
+    }
+    return 0;
   }
 
   confirmCode(): void {

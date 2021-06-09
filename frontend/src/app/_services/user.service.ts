@@ -98,6 +98,20 @@ export class UserService {
     }, this.httpOptions);
   }
 
+  checkPassword(id: number, password: string): Observable<any> {
+    return this.http.post(API_URL + 'check_password', {
+      id,
+      password
+    }, this.httpOptions);
+  }
+
+  changePassword(id: number, newPassword: string): Observable<any> {
+    return this.http.post(API_URL + 'change_password', {
+      id,
+      newPassword
+    }, this.httpOptions);
+  }
+
   toggle_2FA(id: number): Observable<any> {
     return this.http.post(API_URL + 'toggle_2FA/' + id, this.httpOptions);
   }

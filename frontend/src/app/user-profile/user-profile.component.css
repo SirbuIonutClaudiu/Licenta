@@ -130,6 +130,10 @@ select {
   color: red;
 }
 
+.successfull {
+  color: green;
+}
+
 .clickable {
   cursor: pointer;
   color: deepskyblue;
@@ -229,5 +233,16 @@ input:focus {
 
 .marginTop {
   margin-top: 5%;
+}
+
+.showPass {
+  outline: none !important;
+  box-shadow: none !important;
+  border:none !important;
+  background-color: white;
+}
+
+.showPass:hover {
+  background-color: #9da0a4;
 }
 
