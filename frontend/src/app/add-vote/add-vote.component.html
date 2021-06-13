@@ -15,12 +15,13 @@
               <div class="col-md-3 d-flex align-items-center justify-content-start">
                   <mat-form-field>
                     <input matInput [ngxMatDatetimePicker]="picker" style="color: #556B2F;"
-                           placeholder="Choose a date and time" [disabled]="true">
+                           placeholder="Choose a date and time" [disabled]="true" [(ngModel)]="date" (ngModelChange)="change()">
                     <mat-datepicker-toggle matSuffix [for]="$any(picker)"></mat-datepicker-toggle>
                     <ngx-mat-datetime-picker #picker [showSpinners]=true [showSeconds]=false [disabled]="false">
                     </ngx-mat-datetime-picker>
                   </mat-form-field>
               </div>
+              <p id="date_formated" hidden>{{ date | date :'medium'}}</p>
               <div class="col-md-5 d-flex align-items-center justify-content-center">
                 <div class="w-75">
                   <ng-multiselect-dropdown

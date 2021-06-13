@@ -201,7 +201,6 @@ export class UserProfileComponent implements OnInit {
     );
   }
 
-
   passwordConditions(): number {
     if (this.newPassword.length < 8) {
       this.passwordError = 'Password must be at least 8 characters long !';

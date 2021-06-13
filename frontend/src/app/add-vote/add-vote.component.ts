@@ -67,11 +67,22 @@ export class AddVoteComponent implements OnInit {
   subject = '';
   subjectError = false;
   geoRestriction = true;
+  date: any;
+  date_formated!: Date;
 
   constructor(private userService: UserService) { }
 
   ngOnInit(): void {
     this.addInputMaxLength();
+  }
+
+  change(): void {
+    this.userService.sleep(1).subscribe(
+      answ => {
+        // @ts-ignore
+        this.date_formated= document.getElementById('date_formated').innerText;
+        alert(this.date_formated);
+      });
   }
 
   addInputMaxLength(): void {
