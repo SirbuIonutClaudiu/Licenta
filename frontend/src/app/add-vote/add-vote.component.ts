@@ -2,6 +2,7 @@ import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {UserService} from '../_services/user.service';
 import { IDropdownSettings } from 'ng-multiselect-dropdown';
 import { ToolbarService, LinkService, ImageService, HtmlEditorService } from '@syncfusion/ej2-angular-richtexteditor';
+import {VoteService} from '../_services/vote.service';
 
 @Component({
   selector: 'app-add-vote',
@@ -11,6 +12,14 @@ import { ToolbarService, LinkService, ImageService, HtmlEditorService } from '@s
 })
 export class AddVoteComponent implements OnInit {
   @ViewChild('test', {static: false}) test!: ElementRef;
+  ERoles = new Map([
+    ['Sterge rolul precedent', 'ROLE_DELETE'],
+    ['Comisia didactica', 'ROLE_DIDACTIC'],
+    ['Comisia stiintifica', 'ROLE_STIINTIFIC'],
+    ['Comisia de asigurare a calitatii si relatii internationale', 'ROLE_CALITATE'],
+    ['Comisia privind drepturile si obligatiile studentilor', 'ROLE_DREPTURI'],
+    ['Comisia de buget–finante', 'ROLE_BUGET'],
+    ['Comisia juridica', 'ROLE_JURIDIC'] ]);
   dropdownList1 = [
     { item_id: 1, item_text: 'Comisia didactica' },
     { item_id: 2, item_text: 'Comisia stiintifica' },
@@ -27,7 +36,6 @@ export class AddVoteComponent implements OnInit {
     unSelectAllText: 'UnSelect All',
     itemsShowLimit: 2
   };
-  roles = [];
   dropdownList2 = [
     { item_id: 1, item_text: '30 seconds' },
     { item_id: 2, item_text: '1 minute' },
@@ -63,14 +71,16 @@ export class AddVoteComponent implements OnInit {
   height = 350;
   maxLength = 50;
   minLength = 5;
-  duration!: string;
+  duration!: number;
   subject = '';
   subjectError = false;
+  content = '';
+  roles = [];
   geoRestriction = true;
   date: any;
-  date_formated!: Date;
+  dateFormated!: Date;
 
-  constructor(private userService: UserService) { }
+  constructor(private userService: UserService, private voteService: VoteService) { }
 
   ngOnInit(): void {
     this.addInputMaxLength();
@@ -80,8 +90,7 @@ export class AddVoteComponent implements OnInit {
     this.userService.sleep(1).subscribe(
       answ => {
         // @ts-ignore
-        this.date_formated= document.getElementById('date_formated').innerText;
-        alert(this.date_formated);
+        this.dateFormated = document.getElementById('date_formated').innerText;
       });
   }
 
@@ -98,10 +107,36 @@ export class AddVoteComponent implements OnInit {
     });
   }
 
-  onItemSelect(item: any): void {
-    console.log(item);
+  onDurationSelect(duration: any): void {
+    this.duration = duration.item_id;
   }
-  onSelectAll(items: any): void {
-    console.log(items);
+
+  onDurationDeselect(): void {
+    this.duration = 0;
+  }
+
+  onRoleSelect(role: any): void {
+   // @ts-ignore
+    this.roles.push(this.ERoles.get(role.item_text));
+  }
+
+  onRoleDeselect(role: any): void {
+    // @ts-ignore
+    this.roles.splice(this.roles.indexOf(this.ERoles.get(role.item_text)), 1);
+  }
+
+  onRoleSelectAll(roles: any): void {
+    for (const role in roles) {
+      // @ts-ignore
+      this.roles.push(this.ERoles.get(roles[role].item_text));
+    }
+  }
+
+  onRoleDeselectAll(): void {
+    this.roles = [];
+  }
+
+  submitForm(): void {
+    this.voteService.newVote(this.subject, this.content, this.dateFormated, this.duration, this.geoRestriction, this.roles).subscribe();
   }
 }

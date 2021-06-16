@@ -1,7 +1,11 @@
 package com.bezkoder.spring.security.postgresql.controllers;
 
+import com.bezkoder.spring.security.postgresql.models.ERole;
+import com.bezkoder.spring.security.postgresql.models.Role;
 import com.bezkoder.spring.security.postgresql.models.Vote;
 import com.bezkoder.spring.security.postgresql.payload.request.NewVoteRequest;
+import com.bezkoder.spring.security.postgresql.payload.response.UserResponse;
+import com.bezkoder.spring.security.postgresql.repository.RoleRepository;
 import com.bezkoder.spring.security.postgresql.repository.VoteRepository;
 import com.bezkoder.spring.security.postgresql.security.services.VoteService;
 import lombok.AllArgsConstructor;
@@ -16,10 +20,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import javax.validation.Valid;
-import java.util.Calendar;
-import java.util.Date;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @EnableAsync
 @EnableScheduling
@@ -29,51 +33,53 @@ import java.util.Date;
 public class VotingController {
 
     @Autowired
-    private VoteRepository voteRepository;
+    private final VoteRepository voteRepository;
 
     @Autowired
-    private VoteService voteService;
+    private final VoteService voteService;
 
-    @PostMapping("/add_vote")
-    public ResponseEntity<?> addVote() {
-        String subject = "subj";
-        String content = "cont";
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.SECOND, 5);
-        Date startAt = calendar.getTime();
-        calendar.add(Calendar.SECOND, 8);
-        Date endAt = calendar.getTime();
-        Vote newVote = new Vote(subject, content, startAt, endAt);
-        voteRepository.save(newVote);
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
+    @Autowired
+    private final RoleRepository roleRepository;
 
     @PostMapping("/new_vote")
-    public ResponseEntity<?> newVote(@Valid @RequestBody NewVoteRequest newVoteRequest) {
-        Calendar endAt = Calendar.getInstance();
-        endAt.setTime(newVoteRequest.getStartAt());
-        switch(newVoteRequest.getDuration()) {
-            case 1: endAt.add(Calendar.SECOND, 30);
-            case 2: endAt.add(Calendar.MINUTE, 1);
-            case 3: endAt.add(Calendar.MINUTE, 2);
-            case 4: endAt.add(Calendar.MINUTE, 3);
-            case 5: endAt.add(Calendar.MINUTE, 4);
-            case 6: endAt.add(Calendar.MINUTE, 5);
+    public ResponseEntity<?> newVote(@Valid @RequestBody NewVoteRequest newVoteRequest) throws ParseException {
+        List<Role> roles = new ArrayList<Role>();
+        for(ERole role : newVoteRequest.getRoles()) {
+            Role newRole = roleRepository.findByName(role)
+                    .orElseThrow(() -> new RuntimeException("Role does not exist !"));
+            roles.add(newRole);
         }
-        System.out.println(newVoteRequest);
-        System.out.println(endAt);
+        int dateLength = newVoteRequest.getStartAt().length();
+        SimpleDateFormat formatter = new SimpleDateFormat("MMM dd, yyyy, HH:mm:ss");
+        Date startAt = formatter.parse(newVoteRequest.getStartAt());
+        Calendar startAt_aux = Calendar.getInstance();
+        startAt_aux.setTime(startAt);
+        if(newVoteRequest.getStartAt().substring(dateLength-2, dateLength).equals("PM")) {
+            startAt_aux.add(Calendar.HOUR, 12);
+            startAt = startAt_aux.getTime();
+        }
+        Calendar endAt = Calendar.getInstance();
+        endAt.setTime(startAt);
+        switch(newVoteRequest.getDuration()) {
+            case 1: endAt.add(Calendar.SECOND, 30); break;
+            case 2: endAt.add(Calendar.MINUTE, 1); break;
+            case 3: endAt.add(Calendar.MINUTE, 2); break;
+            case 4: endAt.add(Calendar.MINUTE, 3); break;
+            case 5: endAt.add(Calendar.MINUTE, 4); break;
+            case 6: endAt.add(Calendar.MINUTE, 5); break;
+        }
         Vote newVote = new Vote(newVoteRequest.getSubject(), newVoteRequest.getContent(),
-                newVoteRequest.getStartAt(), endAt.getTime());
+                startAt, endAt.getTime(), newVoteRequest.isGeoRestricted(), roles);
         voteRepository.save(newVote);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    //@Async
-    //@Scheduled(fixedRate = 1000)
+    @Async
+    @Scheduled(fixedRate = 1000)
     public void scheduleFixedRateTaskAsync() throws InterruptedException {
         voteService.returnIdles().forEach(vote -> {
             Date now = new Date();
-            if(now.after(vote.getEndAt()) && vote.isActive()) {
+            if(now.after(vote.getEndAt())) {
                 vote.endVote();
                 voteRepository.save(vote);
             }

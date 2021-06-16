@@ -124,6 +124,10 @@
   transform: rotate(45deg);
 }
 
+.px-btn:hover {
+  cursor: pointer;
+}
+
 .error {
   color: red;
   font-weight: 500;
