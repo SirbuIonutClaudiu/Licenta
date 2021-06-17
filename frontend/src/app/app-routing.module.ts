@@ -11,6 +11,7 @@ import {ForgotPasswordComponent} from './forgot-password/forgot-password.compone
 import {ChangePasswordComponent} from './change-password/change-password.component';
 import {MembersComponent} from './members/members.component';
 import {AddVoteComponent} from './add-vote/add-vote.component';
+import {VoteComponent} from './vote/vote.component';
 
 const routes: Routes = [
   { path: 'home', component: HomeComponent },
@@ -20,6 +21,7 @@ const routes: Routes = [
   { path: 'email_successfull/:answer', component: EmailSuccessfullComponent },
   { path: 'sms_verification', component: SmsVerificationComponent },
   { path: 'add_vote', component: AddVoteComponent },
+  { path: 'vote', component: VoteComponent},
   { path: 'forgot_password', component: ForgotPasswordComponent },
   { path: 'change_password/:code', component: ChangePasswordComponent },
   { path: 'members', component: MembersComponent },

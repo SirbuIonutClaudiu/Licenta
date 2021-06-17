@@ -31,6 +31,7 @@ import {
   NgxMatNativeDateModule,
   NgxMatTimepickerModule
 } from '@angular-material-components/datetime-picker';
+import { VoteComponent } from './vote/vote.component';
 
 @NgModule({
   declarations: [
@@ -44,7 +45,8 @@ import {
     ForgotPasswordComponent,
     ChangePasswordComponent,
     MembersComponent,
-    AddVoteComponent
+    AddVoteComponent,
+    VoteComponent
   ],
   imports: [
     BrowserModule,
