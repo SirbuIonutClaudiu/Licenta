@@ -1,4 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import {VoteService} from '../_services/vote.service';
+import {Vote} from '../_services/Vote';
+import {ActivatedRoute} from '@angular/router';
 
 @Component({
   selector: 'app-vote',
@@ -6,16 +9,33 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./vote.component.css']
 })
 export class VoteComponent implements OnInit {
-
-  isClosed = false;
-  isOpen = false;
+  public vote: Vote = {
+    id: 0,
+    subject: ' ',
+    content: ' ',
+    geoRestricted: false,
+    active: false,
+    idle: false,
+    roles: []
+  };
   for = false;
   against = false;
   blank = false;
 
-  constructor() { }
+  constructor(private voteService: VoteService, private _Activatedroute: ActivatedRoute) { }
 
   ngOnInit(): void {
+    this.getVoteById(Number(this._Activatedroute.snapshot.paramMap.get('id')));
+  }
+
+  getVoteById(id: number): void {
+    this.voteService.getVoteById(id).subscribe(
+      (response: Vote) => {
+        this.vote = response;
+      },
+      error => {
+        alert(error.message);
+      });
   }
 
   toggleFor(): void {

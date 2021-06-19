@@ -1,6 +1,7 @@
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
+import {Vote} from './Vote';
 
 const VOTE_API = 'http://localhost:8081/api/voting/';
 
@@ -23,5 +24,9 @@ export class VoteService {
       geoRestricted,
       roles
     }, httpOptions);
+  }
+
+  getVoteById(id: number): Observable<Vote> {
+    return this.http.get<Vote>(VOTE_API + 'find/' + id, httpOptions);
   }
 }

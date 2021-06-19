@@ -21,7 +21,7 @@ const routes: Routes = [
   { path: 'email_successfull/:answer', component: EmailSuccessfullComponent },
   { path: 'sms_verification', component: SmsVerificationComponent },
   { path: 'add_vote', component: AddVoteComponent },
-  { path: 'vote', component: VoteComponent},
+  { path: 'vote/:id', component: VoteComponent},
   { path: 'forgot_password', component: ForgotPasswordComponent },
   { path: 'change_password/:code', component: ChangePasswordComponent },
   { path: 'members', component: MembersComponent },

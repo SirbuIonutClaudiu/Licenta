@@ -13,11 +13,6 @@ import {HttpClient} from '@angular/common/http';
   styleUrls: ['./user-profile.component.css']
 })
 export class UserProfileComponent implements OnInit {
-
-  constructor(private tokenStorageService: TokenStorageService, private httpClient: HttpClient,
-              private userService: UserService, private _Activatedroute: ActivatedRoute) {
-    this.getMemberById(Number(this._Activatedroute.snapshot.paramMap.get('id')));
-  }
   selectedFile!: File;
   retrievedImage: any;
   auxImage: any;
@@ -95,6 +90,11 @@ export class UserProfileComponent implements OnInit {
   isPhoneNumberEditable = false;
   isLandlineEditable = false;
   isImageEditable = false;
+
+  constructor(private tokenStorageService: TokenStorageService, private httpClient: HttpClient,
+              private userService: UserService, private _Activatedroute: ActivatedRoute) {
+    this.getMemberById(Number(this._Activatedroute.snapshot.paramMap.get('id')));
+  }
 
   ngOnInit(): void {
     this.checklist();

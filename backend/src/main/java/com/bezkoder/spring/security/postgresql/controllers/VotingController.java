@@ -4,7 +4,7 @@ import com.bezkoder.spring.security.postgresql.models.ERole;
 import com.bezkoder.spring.security.postgresql.models.Role;
 import com.bezkoder.spring.security.postgresql.models.Vote;
 import com.bezkoder.spring.security.postgresql.payload.request.NewVoteRequest;
-import com.bezkoder.spring.security.postgresql.payload.response.UserResponse;
+import com.bezkoder.spring.security.postgresql.payload.response.VoteResponse;
 import com.bezkoder.spring.security.postgresql.repository.RoleRepository;
 import com.bezkoder.spring.security.postgresql.repository.VoteRepository;
 import com.bezkoder.spring.security.postgresql.security.services.VoteService;
@@ -16,10 +16,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -40,6 +37,24 @@ public class VotingController {
 
     @Autowired
     private final RoleRepository roleRepository;
+
+    @GetMapping("/find/{id}")
+    public ResponseEntity<VoteResponse> getVoteById(@PathVariable("id") Long id) {
+        Vote vote = voteRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Vote not found !"));
+        VoteResponse voteResponse = voteToVoteResponse(vote);
+        return new ResponseEntity<>(voteResponse, HttpStatus.OK);
+    }
+
+    private VoteResponse voteToVoteResponse(Vote vote) {
+        return new VoteResponse( vote.getId(),
+                                 vote.getSubject(),
+                                 vote.getContent(),
+                                 vote.isGeoRestricted(),
+                                 vote.isActive(),
+                                 vote.isIdle(),
+                                 vote.getRoles());
+    }
 
     @PostMapping("/new_vote")
     public ResponseEntity<?> newVote(@Valid @RequestBody NewVoteRequest newVoteRequest) throws ParseException {
