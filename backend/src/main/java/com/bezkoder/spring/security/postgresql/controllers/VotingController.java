@@ -38,6 +38,20 @@ public class VotingController {
     @Autowired
     private final RoleRepository roleRepository;
 
+    @GetMapping("/is_not_first/{id}")
+    public ResponseEntity<?> isNotFirst(@PathVariable("id") Long id) {
+        Vote vote = voteRepository.findById(id-1)
+                .orElseThrow(() -> new RuntimeException("Vote not found !"));
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping("/is_not_last/{id}")
+    public ResponseEntity<?> isNotLast(@PathVariable("id") Long id) {
+        Vote vote = voteRepository.findById(id+1)
+                .orElseThrow(() -> new RuntimeException("Vote not found !"));
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
     @GetMapping("/find/{id}")
     public ResponseEntity<VoteResponse> getVoteById(@PathVariable("id") Long id) {
         Vote vote = voteRepository.findById(id)

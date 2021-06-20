@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {VoteService} from '../_services/vote.service';
 import {Vote} from '../_services/Vote';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 
 @Component({
   selector: 'app-vote',
@@ -18,14 +18,20 @@ export class VoteComponent implements OnInit {
     idle: false,
     roles: []
   };
+  id = 0;
+  isLast = true;
+  isFirst = true;
   for = false;
   against = false;
   blank = false;
+  ableToVote = false;
 
-  constructor(private voteService: VoteService, private _Activatedroute: ActivatedRoute) { }
+  constructor(private voteService: VoteService, private _Activatedroute: ActivatedRoute, private router: Router) { }
 
   ngOnInit(): void {
-    this.getVoteById(Number(this._Activatedroute.snapshot.paramMap.get('id')));
+    this.id = Number(this._Activatedroute.snapshot.paramMap.get('id'));
+    this.getVoteById(this.id);
+    this.checkVotePosition(this.id);
   }
 
   getVoteById(id: number): void {
@@ -38,21 +44,45 @@ export class VoteComponent implements OnInit {
       });
   }
 
+  checkVotePosition(id: number): void {
+    this.voteService.isNotFirst(id).subscribe(
+      ans => {
+        this.isFirst = false;
+      });
+    this.voteService.isNotLast(id).subscribe(
+      ans => {
+        this.isLast = false;
+      });
+  }
+
   toggleFor(): void {
     this.for = !this.for;
     this.against = false;
     this.blank = false;
+    this.toggleAbilityToVote();
   }
 
   toggleAgainst(): void {
     this.against = !this.against;
     this.for = false;
     this.blank = false;
+    this.toggleAbilityToVote();
   }
 
   toggleBlank(): void {
     this.blank = !this.blank;
     this.for = false;
     this.against = false;
+    this.toggleAbilityToVote();
+  }
+
+  navToVote(id: number) {
+    this.router.routeReuseStrategy.shouldReuseRoute = () => false;
+    this.router.onSameUrlNavigation = 'reload';
+    this.router.navigate([`vote/${id}`]);
+  }
+
+  toggleAbilityToVote(): void {
+    this.ableToVote = (this.for || this.against || this.blank) ? true : false;
   }
 }

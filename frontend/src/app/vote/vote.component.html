@@ -71,14 +71,32 @@
               </button>
             </label>
           </div>
+          <div class="row" *ngIf="ableToVote">
+            <div class="col"></div>
+            <div class="col h-50">
+              <a href="http://marcel-pirnay.be/" class="custom_btn">
+                <svg width="277" height="62">
+                  <defs>
+                    <linearGradient id="grad1">
+                      <stop offset="0%" stop-color="#FF8282"/>
+                      <stop offset="100%" stop-color="#E178ED" />
+                    </linearGradient>
+                  </defs>
+                  <rect x="5" y="5" rx="25" fill="none" stroke="url(#grad1)" width="266" height="50"></rect>
+                </svg>
+                <span>Cast vote</span>
+              </a>
+            </div>
+            <div class="col"></div>
+          </div>
         </div>
         <div class="d-flex flex-row justify-content-between align-items-center p-3 bg-white custom_div_thin">
-          <button class="btn btn-primary d-flex align-items-center btn-danger" type="button">
+          <button class="btn btn-primary d-flex align-items-center btn-danger" type="button" [disabled]="isFirst" (click)="navToVote(id-1)">
             <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 21 18" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="bi bi-caret-left mr-2 icon-inline text-light custom_img">
               <path fill-rule="evenodd" d="M10 12.796V3.204L4.519 8 10 12.796zm-.659.753-5.48-4.796a1 1 0 0 1 0-1.506l5.48-4.796A1 1 0 0 1 11 3.204v9.592a1 1 0 0 1-1.659.753z"/>
             </svg>Previous vote
           </button>
-          <button class="btn btn-primary border-success align-items-center btn-success" type="button">Next vote
+          <button class="btn btn-primary border-success align-items-center btn-success" type="button" [disabled]="isLast" (click)="navToVote(id+1)">Next vote
             <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 21 18" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="bi bi-caret-right mr-2 icon-inline text-light custom_img">
               <path fill-rule="evenodd" d="M6 12.796V3.204L11.481 8 6 12.796zm.659.753 5.48-4.796a1 1 0 0 0 0-1.506L6.66 2.451C6.011 1.885 5 2.345 5 3.204v9.592a1 1 0 0 0 1.659.753z"/>
             </svg>

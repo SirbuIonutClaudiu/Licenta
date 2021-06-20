@@ -29,4 +29,12 @@ export class VoteService {
   getVoteById(id: number): Observable<Vote> {
     return this.http.get<Vote>(VOTE_API + 'find/' + id, httpOptions);
   }
+
+  isNotFirst(id: number): Observable<any> {
+    return this.http.get(VOTE_API + 'is_not_first/' + id, httpOptions);
+  }
+
+  isNotLast(id: number): Observable<any> {
+    return this.http.get(VOTE_API + 'is_not_last/' + id, httpOptions);
+  }
 }
