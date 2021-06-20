@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import {VoteService} from '../_services/vote.service';
 import {Vote} from '../_services/Vote';
 import {ActivatedRoute, Router} from '@angular/router';
+import {TokenStorageService} from '../_services/token-storage.service';
 
 @Component({
   selector: 'app-vote',
@@ -77,12 +78,10 @@ export class VoteComponent implements OnInit {
   }
 
   navToVote(id: number) {
-    this.router.routeReuseStrategy.shouldReuseRoute = () => false;
-    this.router.onSameUrlNavigation = 'reload';
-    this.router.navigate([`vote/${id}`]);
+    this.router.navigate(['vote', id]).then(page => { window.location.reload(); });
   }
 
   toggleAbilityToVote(): void {
-    this.ableToVote = (this.for || this.against || this.blank) ? true : false;
+    this.ableToVote = (this.for || this.against || this.blank);
   }
 }

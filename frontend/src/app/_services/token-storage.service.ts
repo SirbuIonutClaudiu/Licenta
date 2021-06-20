@@ -51,4 +51,15 @@ export class TokenStorageService {
     const user = this.getUser();
     return user.token;
   }
+
+  public getRoles(): any {
+    const user = this.getUser();
+    return user.roles;
+  }
+
+  public setRoles(roles: any): void {
+    const user = this.getUser();
+    user.roles = roles;
+    this.saveUser(user);
+  }
 }

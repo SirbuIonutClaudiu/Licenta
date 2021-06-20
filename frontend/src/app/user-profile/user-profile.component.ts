@@ -78,7 +78,8 @@ export class UserProfileComponent implements OnInit {
     ['Comisia de asigurare a calitatii si relatii internationale', 'ROLE_CALITATE'],
     ['Comisia privind drepturile si obligatiile studentilor', 'ROLE_DREPTURI'],
     ['Comisia de buget–finante', 'ROLE_BUGET'],
-    ['Comisia juridica', 'ROLE_JURIDIC'] ]);
+    ['Comisia juridica', 'ROLE_JURIDIC'],
+    ['Utilizator', 'ROLE_USER']]);
   defaultOption = 'Attribute a user role';
   selectedRole = 'Attribute a user role';
   isRoleEditable = false;
@@ -404,10 +405,19 @@ export class UserProfileComponent implements OnInit {
     };
   }
 
+  updateRoles(): void {
+    const newRoles: (string | undefined)[] = [];
+    this.member.roles.forEach(role => {
+      newRoles.push(this.ERoles.get(role));
+    });
+    this.tokenStorageService.setRoles(newRoles);
+  }
+
   public getMemberById(id: number): void {
     this.userService.getMemberById(id).subscribe(
       (response: membruSenat) => {
         this.member = response;
+        this.updateRoles();
         this.name = this.member.name;
         this.getImage(this.member.email);
         this.member.website = (this.member.website == null) ? 'No website available' : this.member.website;

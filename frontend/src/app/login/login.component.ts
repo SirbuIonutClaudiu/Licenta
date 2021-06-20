@@ -40,6 +40,7 @@ export class LoginComponent implements OnInit {
       this.visitorsService.getGEOLocation(this.ipAddress).subscribe(res => {
         this.locationResponse = res;
         this.loginLocation = this.locationResponse['country_name'] + '/' + this.locationResponse['district'];
+        alert(this.loginLocation);
       });
     });
   }
