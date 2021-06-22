@@ -32,6 +32,7 @@ import {
   NgxMatTimepickerModule
 } from '@angular-material-components/datetime-picker';
 import { VoteComponent } from './vote/vote.component';
+import { AllVotesComponent } from './all-votes/all-votes.component';
 
 @NgModule({
   declarations: [
@@ -46,7 +47,8 @@ import { VoteComponent } from './vote/vote.component';
     ChangePasswordComponent,
     MembersComponent,
     AddVoteComponent,
-    VoteComponent
+    VoteComponent,
+    AllVotesComponent
   ],
   imports: [
     BrowserModule,

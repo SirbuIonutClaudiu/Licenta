@@ -1,15 +1,12 @@
 package com.bezkoder.spring.security.postgresql.security.jwt;
 
 import java.util.Date;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
-
 import com.bezkoder.spring.security.postgresql.security.services.UserDetailsImpl;
-
 import io.jsonwebtoken.*;
 
 @Component
@@ -50,7 +47,6 @@ public class JwtUtils {
     } catch (IllegalArgumentException e) {
       logger.error("JWT claims string is empty: {}", e.getMessage());
     }
-
     return false;
   }
 }

@@ -40,7 +40,6 @@ export class LoginComponent implements OnInit {
       this.visitorsService.getGEOLocation(this.ipAddress).subscribe(res => {
         this.locationResponse = res;
         this.loginLocation = this.locationResponse['country_name'] + '/' + this.locationResponse['district'];
-        alert(this.loginLocation);
       });
     });
   }
@@ -63,7 +62,7 @@ export class LoginComponent implements OnInit {
             this.isLoginFailed = false;
             this.isLoggedIn = true;
             this.roles = this.tokenStorage.getUser().roles;
-            this.router.navigate(['user_profile']);
+            this.router.navigate(['user_profile/'+this.user.id]);
           }
         });
       },

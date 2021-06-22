@@ -3,10 +3,13 @@ package com.bezkoder.spring.security.postgresql.controllers;
 import com.bezkoder.spring.security.postgresql.models.ERole;
 import com.bezkoder.spring.security.postgresql.models.Role;
 import com.bezkoder.spring.security.postgresql.models.Vote;
+import com.bezkoder.spring.security.postgresql.models.membruSenat;
 import com.bezkoder.spring.security.postgresql.payload.request.NewVoteRequest;
 import com.bezkoder.spring.security.postgresql.payload.response.VoteResponse;
 import com.bezkoder.spring.security.postgresql.repository.RoleRepository;
 import com.bezkoder.spring.security.postgresql.repository.VoteRepository;
+import com.bezkoder.spring.security.postgresql.security.jwt.JwtUtils;
+import com.bezkoder.spring.security.postgresql.security.services.MembruSenatService;
 import com.bezkoder.spring.security.postgresql.security.services.VoteService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +41,38 @@ public class VotingController {
     @Autowired
     private final RoleRepository roleRepository;
 
+    @Autowired
+    private final JwtUtils jwtUtils;
+
+    @Autowired
+    private final MembruSenatService membruSenatService;
+
+    @GetMapping("/all_votes")
+    public List<Vote> getAllVotes(@RequestHeader("Authorization") String auth) {
+        List<Vote> result = new ArrayList<>();
+        List<Role> roles = getRolesFromAuthentication(auth);
+        Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
+                .orElseThrow(() -> new RuntimeException("Role ADMIN does not exist !"));
+        if(roles.contains(adminRole)) {
+            return voteRepository.findAll();
+        }
+        voteRepository.findAll().forEach( vote -> {
+            roles.forEach( role -> {
+                if(vote.getRoles().contains(role)) {
+                    result.add(vote);
+                }
+            });
+        });
+        return result;
+    }
+
+    private List<Role> getRolesFromAuthentication(String auth) {
+        String token = auth.substring(7,auth.length());
+        String email = jwtUtils.getEmailFromJwtToken(token);
+        membruSenat member = membruSenatService.findMemberByEmail(email);
+        return new ArrayList<>(member.getRoles());
+    }
+
     @GetMapping("/is_not_first/{id}")
     public ResponseEntity<?> isNotFirst(@PathVariable("id") Long id) {
         Vote vote = voteRepository.findById(id-1)
@@ -53,21 +88,10 @@ public class VotingController {
     }
 
     @GetMapping("/find/{id}")
-    public ResponseEntity<VoteResponse> getVoteById(@PathVariable("id") Long id) {
+    public ResponseEntity<Vote> getVoteById(@PathVariable("id") Long id) {
         Vote vote = voteRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Vote not found !"));
-        VoteResponse voteResponse = voteToVoteResponse(vote);
-        return new ResponseEntity<>(voteResponse, HttpStatus.OK);
-    }
-
-    private VoteResponse voteToVoteResponse(Vote vote) {
-        return new VoteResponse( vote.getId(),
-                                 vote.getSubject(),
-                                 vote.getContent(),
-                                 vote.isGeoRestricted(),
-                                 vote.isActive(),
-                                 vote.isIdle(),
-                                 vote.getRoles());
+        return new ResponseEntity<>(vote, HttpStatus.OK);
     }
 
     @PostMapping("/new_vote")

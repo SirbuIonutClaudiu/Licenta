@@ -14,6 +14,8 @@ export class VoteComponent implements OnInit {
     id: 0,
     subject: ' ',
     content: ' ',
+    startAt: new Date(),
+    endAt: new Date(),
     geoRestricted: false,
     active: false,
     idle: false,

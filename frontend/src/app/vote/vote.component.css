@@ -90,6 +90,7 @@ label.radio input:checked+span {
   font-weight: bolder;
   border-width: medium;
 }
+
 .custom_btn {
   margin-top: 0;
   position: relative;
@@ -139,4 +140,27 @@ label.radio input:checked+span {
   stroke-width: 4;
   stroke-dasharray: 196, 543;
   stroke-dashoffset: 437;
+}
+
+.start_end_img {
+  width: 40%;
+  margin-right: 10%;
+}
+
+.startAt {
+  background-color: #F8F8FF;
+  color: green;
+  font-weight: bolder;
+}
+
+.middle {
+  background-color: #F8F8FF;
+  color: #DAA520;
+  font-weight: bolder;
+}
+
+.endAt {
+  background-color: #F8F8FF;
+  color: red;
+  font-weight: bolder;
 }
