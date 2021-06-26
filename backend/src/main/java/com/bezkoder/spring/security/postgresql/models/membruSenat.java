@@ -2,11 +2,10 @@ package com.bezkoder.spring.security.postgresql.models;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -82,6 +81,18 @@ public class membruSenat {
             joinColumns = @JoinColumn(name = "member_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
+
+    public boolean hasAuthorityToVote(Vote vote) {
+        AtomicBoolean authorization = new AtomicBoolean(false);
+        this.roles.forEach(memberRole -> {
+            vote.getRoles().forEach(voteRole -> {
+                if(memberRole.equals(voteRole)) {
+                    authorization.set(true);
+                }
+            });
+        });
+        return authorization.get();
+    }
 
     public membruSenat(String name, String institutionalCode, String address, String email, String password,
                        String applicationDate, boolean verifiedApplication, boolean verifiedEmail, boolean activated2FA) {

@@ -137,6 +137,9 @@ export class AddVoteComponent implements OnInit {
   }
 
   submitForm(): void {
-    this.voteService.newVote(this.subject, this.content, this.dateFormated, this.duration, this.geoRestriction, this.roles).subscribe();
+    this.voteService.newVote(this.subject, this.content, this.dateFormated, this.duration, this.geoRestriction, this.roles).subscribe(
+      ans => {
+        window.location.reload();
+      });
   }
 }

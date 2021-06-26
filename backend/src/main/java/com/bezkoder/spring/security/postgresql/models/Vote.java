@@ -39,6 +39,11 @@ public class Vote {
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private List<Role> roles;
 
+    @OneToOne(fetch = FetchType.LAZY,
+            cascade =  CascadeType.ALL,
+            mappedBy = "vote")
+    private VoteResult voteResult;
+
     public void startVote() {
         this.active = true;
     }

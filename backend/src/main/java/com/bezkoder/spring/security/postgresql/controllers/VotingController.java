@@ -1,13 +1,13 @@
 package com.bezkoder.spring.security.postgresql.controllers;
 
-import com.bezkoder.spring.security.postgresql.models.ERole;
-import com.bezkoder.spring.security.postgresql.models.Role;
-import com.bezkoder.spring.security.postgresql.models.Vote;
-import com.bezkoder.spring.security.postgresql.models.membruSenat;
+import com.bezkoder.spring.security.postgresql.models.*;
 import com.bezkoder.spring.security.postgresql.payload.request.NewVoteRequest;
-import com.bezkoder.spring.security.postgresql.payload.response.VoteResponse;
+import com.bezkoder.spring.security.postgresql.payload.request.VoteRequest;
+import com.bezkoder.spring.security.postgresql.payload.response.MessageResponse;
+import com.bezkoder.spring.security.postgresql.repository.MemberChoiceRepository;
 import com.bezkoder.spring.security.postgresql.repository.RoleRepository;
 import com.bezkoder.spring.security.postgresql.repository.VoteRepository;
+import com.bezkoder.spring.security.postgresql.repository.VoteResultRepository;
 import com.bezkoder.spring.security.postgresql.security.jwt.JwtUtils;
 import com.bezkoder.spring.security.postgresql.security.services.MembruSenatService;
 import com.bezkoder.spring.security.postgresql.security.services.VoteService;
@@ -39,6 +39,12 @@ public class VotingController {
     private final VoteService voteService;
 
     @Autowired
+    private final VoteResultRepository voteResultRepository;
+
+    @Autowired
+    private final MemberChoiceRepository memberChoiceRepository;
+
+    @Autowired
     private final RoleRepository roleRepository;
 
     @Autowired
@@ -56,13 +62,11 @@ public class VotingController {
         if(roles.contains(adminRole)) {
             return voteRepository.findAll();
         }
-        voteRepository.findAll().forEach( vote -> {
-            roles.forEach( role -> {
-                if(vote.getRoles().contains(role)) {
-                    result.add(vote);
-                }
-            });
-        });
+        voteRepository.findAll().forEach( vote -> roles.forEach(role -> {
+            if(vote.getRoles().contains(role)) {
+                result.add(vote);
+            }
+        }));
         return result;
     }
 
@@ -71,6 +75,12 @@ public class VotingController {
         String email = jwtUtils.getEmailFromJwtToken(token);
         membruSenat member = membruSenatService.findMemberByEmail(email);
         return new ArrayList<>(member.getRoles());
+    }
+
+    private membruSenat getMemberFromAuthentication(String auth) {
+        String token = auth.substring(7,auth.length());
+        String email = jwtUtils.getEmailFromJwtToken(token);
+        return membruSenatService.findMemberByEmail(email);
     }
 
     @GetMapping("/is_not_first/{id}")
@@ -123,7 +133,40 @@ public class VotingController {
         }
         Vote newVote = new Vote(newVoteRequest.getSubject(), newVoteRequest.getContent(),
                 startAt, endAt.getTime(), newVoteRequest.isGeoRestricted(), roles);
-        voteRepository.save(newVote);
+        voteService.customSave(newVote);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping("/vote")
+    public ResponseEntity<?> Vote(@RequestHeader("Authorization") String auth, @Valid @RequestBody VoteRequest voteRequest) {
+        Vote vote = voteRepository.findById(voteRequest.getVote_id())
+                .orElseThrow(() -> new RuntimeException("Vote not found !"));
+        if(!vote.isIdle()) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new MessageResponse("Vote closed !"));
+        }
+        if(!vote.isActive()) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new MessageResponse("Vote is not open at this moment !"));
+        }
+        membruSenat member = getMemberFromAuthentication(auth);
+        if(!member.hasAuthorityToVote(vote)){
+            return ResponseEntity
+                    .badRequest()
+                    .body(new MessageResponse("Member does not have authority to vote !"));
+        }
+        VoteResult voteResult = vote.getVoteResult();
+        if(voteResult.userVoted(member)) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new MessageResponse("Member already voted once !"));
+        }
+        MemberChoice newVote = new MemberChoice(member.getId(), voteRequest.getChoice());
+        voteResult.getMemberChoices().add(newVote);
+        memberChoiceRepository.save(newVote);
+        voteResultRepository.save(voteResult);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
