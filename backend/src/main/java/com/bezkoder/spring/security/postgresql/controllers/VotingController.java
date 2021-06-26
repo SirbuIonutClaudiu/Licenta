@@ -4,6 +4,7 @@ import com.bezkoder.spring.security.postgresql.models.*;
 import com.bezkoder.spring.security.postgresql.payload.request.NewVoteRequest;
 import com.bezkoder.spring.security.postgresql.payload.request.VoteRequest;
 import com.bezkoder.spring.security.postgresql.payload.response.MessageResponse;
+import com.bezkoder.spring.security.postgresql.payload.response.VoteResponse;
 import com.bezkoder.spring.security.postgresql.repository.MemberChoiceRepository;
 import com.bezkoder.spring.security.postgresql.repository.RoleRepository;
 import com.bezkoder.spring.security.postgresql.repository.VoteRepository;
@@ -98,10 +99,22 @@ public class VotingController {
     }
 
     @GetMapping("/find/{id}")
-    public ResponseEntity<Vote> getVoteById(@PathVariable("id") Long id) {
+    public ResponseEntity<VoteResponse> getVoteById(@PathVariable("id") Long id) {
         Vote vote = voteRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Vote not found !"));
-        return new ResponseEntity<>(vote, HttpStatus.OK);
+        return new ResponseEntity<>(VoteToVoteResponse(vote), HttpStatus.OK);
+    }
+
+    private VoteResponse VoteToVoteResponse(Vote vote) {
+        return new VoteResponse( vote.getId(),
+                                 vote.getSubject(),
+                                 vote.getContent(),
+                                 vote.getStartAt(),
+                                 vote.getEndAt(),
+                                 vote.isGeoRestricted(),
+                                 vote.isActive(),
+                                 vote.isIdle(),
+                                 vote.getRoles() );
     }
 
     @PostMapping("/new_vote")
@@ -139,8 +152,10 @@ public class VotingController {
 
     @PostMapping("/vote")
     public ResponseEntity<?> Vote(@RequestHeader("Authorization") String auth, @Valid @RequestBody VoteRequest voteRequest) {
+        System.out.println("Accessed !!!");
         Vote vote = voteRepository.findById(voteRequest.getVote_id())
                 .orElseThrow(() -> new RuntimeException("Vote not found !"));
+        System.out.println("0 !!!");
         if(!vote.isIdle()) {
             return ResponseEntity
                     .badRequest()
@@ -151,18 +166,22 @@ public class VotingController {
                     .badRequest()
                     .body(new MessageResponse("Vote is not open at this moment !"));
         }
+        System.out.println("1 !!!");
         membruSenat member = getMemberFromAuthentication(auth);
+        System.out.println("2 !!!");
         if(!member.hasAuthorityToVote(vote)){
             return ResponseEntity
                     .badRequest()
                     .body(new MessageResponse("Member does not have authority to vote !"));
         }
         VoteResult voteResult = vote.getVoteResult();
+        System.out.println("3 !!!");
         if(voteResult.userVoted(member)) {
             return ResponseEntity
                     .badRequest()
-                    .body(new MessageResponse("Member already voted once !"));
+                    .body(new MessageResponse("Member already voted !"));
         }
+        System.out.println("Got here !!!");
         MemberChoice newVote = new MemberChoice(member.getId(), voteRequest.getChoice());
         voteResult.getMemberChoices().add(newVote);
         memberChoiceRepository.save(newVote);

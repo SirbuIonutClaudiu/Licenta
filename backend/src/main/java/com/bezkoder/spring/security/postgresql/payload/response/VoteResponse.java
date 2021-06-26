@@ -14,6 +14,8 @@ public class VoteResponse {
     private Long id;
     private String subject;
     private String content;
+    private Date startAt;
+    private Date endAt;
     private boolean geoRestricted;
     private boolean active;
     private boolean idle;

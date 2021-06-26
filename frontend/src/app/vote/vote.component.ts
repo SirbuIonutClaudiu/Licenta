@@ -86,4 +86,15 @@ export class VoteComponent implements OnInit {
   toggleAbilityToVote(): void {
     this.ableToVote = (this.for || this.against || this.blank);
   }
+
+  castVote(): void {
+    const choice = this.for ? 'for' : (this.against ? 'against' : 'blank');
+    this.voteService.castVote(this.id, choice).subscribe(
+      ans => {
+        window.location.reload();
+      },
+      error => {
+        alert(error.error.message);
+      });
+  }
 }
