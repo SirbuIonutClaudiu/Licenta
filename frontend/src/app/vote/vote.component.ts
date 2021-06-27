@@ -1,8 +1,22 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {VoteService} from '../_services/vote.service';
 import {Vote} from '../_services/Vote';
 import {ActivatedRoute, Router} from '@angular/router';
-import {TokenStorageService} from '../_services/token-storage.service';
+import { ChartComponent } from 'ng-apexcharts';
+import {VoteCountResponse} from '../_services/VoteCountResponse';
+
+import {
+  ApexNonAxisChartSeries,
+  ApexResponsive,
+  ApexChart
+} from 'ng-apexcharts';
+
+export type ChartOptions = {
+  series: ApexNonAxisChartSeries;
+  chart: ApexChart;
+  responsive: ApexResponsive[];
+  labels: any;
+};
 
 @Component({
   selector: 'app-vote',
@@ -10,6 +24,15 @@ import {TokenStorageService} from '../_services/token-storage.service';
   styleUrls: ['./vote.component.css']
 })
 export class VoteComponent implements OnInit {
+  @ViewChild('chart') chart: ChartComponent;
+  public chartOptions: Partial<ChartOptions>;
+
+  public VoteResult: VoteCountResponse = {
+    for_count: 0,
+    against_count: 0,
+    blank_count: 0,
+    absent_count: 0
+  };
   public vote: Vote = {
     id: 0,
     subject: ' ',
@@ -37,10 +60,45 @@ export class VoteComponent implements OnInit {
     this.checkVotePosition(this.id);
   }
 
+  getVoteResult(id: number): void {
+    if (!this.vote.idle) {
+      this.voteService.getvoteResult(id).subscribe(
+        (response: VoteCountResponse) => {
+          this.VoteResult = response;
+          this.setChartOptions();
+        });
+    }
+  }
+
+  setChartOptions(): void {
+    this.chartOptions = {
+      series: [this.VoteResult.for_count, this.VoteResult.against_count, this.VoteResult.blank_count, this.VoteResult.absent_count],
+      chart: {
+        width: 380,
+        type: 'pie'
+      },
+      labels: ['For', 'Against', 'Blank', 'Absent'],
+      responsive: [
+        {
+          breakpoint: 480,
+          options: {
+            chart: {
+              width: 200
+            },
+            legend: {
+              position: 'bottom'
+            }
+          }
+        }
+      ]
+    };
+  }
+
   getVoteById(id: number): void {
     this.voteService.getVoteById(id).subscribe(
       (response: Vote) => {
         this.vote = response;
+        this.getVoteResult(this.vote.id);
       },
       error => {
         alert(error.message);
@@ -79,7 +137,7 @@ export class VoteComponent implements OnInit {
     this.toggleAbilityToVote();
   }
 
-  navToVote(id: number) {
+  navToVote(id: number): void {
     this.router.navigate(['vote', id]).then(page => { window.location.reload(); });
   }
 

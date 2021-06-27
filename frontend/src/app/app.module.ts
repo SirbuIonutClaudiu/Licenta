@@ -33,6 +33,7 @@ import {
 } from '@angular-material-components/datetime-picker';
 import { VoteComponent } from './vote/vote.component';
 import { AllVotesComponent } from './all-votes/all-votes.component';
+import {NgApexchartsModule} from 'ng-apexcharts';
 
 @NgModule({
   declarations: [
@@ -65,6 +66,7 @@ import { AllVotesComponent } from './all-votes/all-votes.component';
     NgxMatNativeDateModule,
     RichTextEditorModule,
     SwitchModule,
+    NgApexchartsModule,
     NgMultiSelectDropDownModule.forRoot()
   ],
   providers: [

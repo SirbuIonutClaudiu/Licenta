@@ -1,6 +1,5 @@
 package com.bezkoder.spring.security.postgresql.security.services;
 
-import com.bezkoder.spring.security.postgresql.models.MemberChoice;
 import com.bezkoder.spring.security.postgresql.models.Vote;
 import com.bezkoder.spring.security.postgresql.models.VoteResult;
 import com.bezkoder.spring.security.postgresql.repository.MemberChoiceRepository;
@@ -12,7 +11,6 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
 @Transactional

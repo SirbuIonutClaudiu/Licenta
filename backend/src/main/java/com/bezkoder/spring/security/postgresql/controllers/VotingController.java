@@ -4,6 +4,7 @@ import com.bezkoder.spring.security.postgresql.models.*;
 import com.bezkoder.spring.security.postgresql.payload.request.NewVoteRequest;
 import com.bezkoder.spring.security.postgresql.payload.request.VoteRequest;
 import com.bezkoder.spring.security.postgresql.payload.response.MessageResponse;
+import com.bezkoder.spring.security.postgresql.payload.response.VoteCountResponse;
 import com.bezkoder.spring.security.postgresql.payload.response.VoteResponse;
 import com.bezkoder.spring.security.postgresql.repository.MemberChoiceRepository;
 import com.bezkoder.spring.security.postgresql.repository.RoleRepository;
@@ -11,6 +12,7 @@ import com.bezkoder.spring.security.postgresql.repository.VoteRepository;
 import com.bezkoder.spring.security.postgresql.repository.VoteResultRepository;
 import com.bezkoder.spring.security.postgresql.security.jwt.JwtUtils;
 import com.bezkoder.spring.security.postgresql.security.services.MembruSenatService;
+import com.bezkoder.spring.security.postgresql.security.services.VoteResultService;
 import com.bezkoder.spring.security.postgresql.security.services.VoteService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +55,9 @@ public class VotingController {
 
     @Autowired
     private final MembruSenatService membruSenatService;
+
+    @Autowired
+    private final VoteResultService voteResultService;
 
     @GetMapping("/all_votes")
     public List<Vote> getAllVotes(@RequestHeader("Authorization") String auth) {
@@ -152,10 +157,8 @@ public class VotingController {
 
     @PostMapping("/vote")
     public ResponseEntity<?> Vote(@RequestHeader("Authorization") String auth, @Valid @RequestBody VoteRequest voteRequest) {
-        System.out.println("Accessed !!!");
         Vote vote = voteRepository.findById(voteRequest.getVote_id())
                 .orElseThrow(() -> new RuntimeException("Vote not found !"));
-        System.out.println("0 !!!");
         if(!vote.isIdle()) {
             return ResponseEntity
                     .badRequest()
@@ -166,27 +169,35 @@ public class VotingController {
                     .badRequest()
                     .body(new MessageResponse("Vote is not open at this moment !"));
         }
-        System.out.println("1 !!!");
         membruSenat member = getMemberFromAuthentication(auth);
-        System.out.println("2 !!!");
         if(!member.hasAuthorityToVote(vote)){
             return ResponseEntity
                     .badRequest()
                     .body(new MessageResponse("Member does not have authority to vote !"));
         }
         VoteResult voteResult = vote.getVoteResult();
-        System.out.println("3 !!!");
         if(voteResult.userVoted(member)) {
             return ResponseEntity
                     .badRequest()
                     .body(new MessageResponse("Member already voted !"));
         }
-        System.out.println("Got here !!!");
         MemberChoice newVote = new MemberChoice(member.getId(), voteRequest.getChoice());
         voteResult.getMemberChoices().add(newVote);
         memberChoiceRepository.save(newVote);
         voteResultRepository.save(voteResult);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping("/vote_result/{id}")
+    public ResponseEntity<VoteCountResponse> VoteResult(@PathVariable("id") Long id) {
+        Vote vote = voteRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Vote not found !"));
+        VoteResult voteResult = vote.getVoteResult();
+        VoteCountResponse voteCountResponse = new VoteCountResponse( voteResultService.getVoteCount(voteResult.getId(), "for"),
+                                                                     voteResultService.getVoteCount(voteResult.getId(), "against"),
+                                                                     voteResultService.getVoteCount(voteResult.getId(), "blank"),
+                                                                     voteResultService.getVoteCount(voteResult.getId(), "absent") );
+        return new ResponseEntity<>(voteCountResponse, HttpStatus.OK);
     }
 
     @Async

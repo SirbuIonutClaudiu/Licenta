@@ -38,6 +38,10 @@ export class VoteService {
     return this.http.get(VOTE_API + 'is_not_last/' + id, httpOptions);
   }
 
+  getvoteResult(id: number): Observable<any> {
+    return this.http.get(VOTE_API + 'vote_result/' + id, httpOptions);
+  }
+
   castVote(vote_id: number, choice: string): Observable<any> {
     return this.http.post(VOTE_API + 'vote', {
       vote_id,
