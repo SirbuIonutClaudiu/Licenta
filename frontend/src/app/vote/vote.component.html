@@ -85,13 +85,18 @@
           <div class="d-flex flex-row align-items-center question-title">
             <h5 class="mt-1 ml-2" [innerHTML]="vote.content"></h5>
           </div>
-          <div id="chart" *ngIf="!vote.idle">
-            <apx-chart
-              [series]="chartOptions.series"
-              [chart]="chartOptions.chart"
-              [labels]="chartOptions.labels"
-              [responsive]="chartOptions.responsive"
-            ></apx-chart>
+          <div class="row" *ngIf="!vote.idle">
+            <div class="col-3"></div>
+            <div id="chart" class="col-3">
+              <apx-chart
+                [series]="chartOptions.series"
+                [title]="chartOptions.title"
+                [chart]="chartOptions.chart"
+                [labels]="chartOptions.labels"
+                [responsive]="chartOptions.responsive"
+              ></apx-chart>
+            </div>
+            <div class="col-3"></div>
           </div>
           <div class="ans ml-2" *ngIf="vote.active">
             <label class="radio">

@@ -76,21 +76,22 @@ public class membruSenat {
     @Column(name = "verification_code", length = 64)
     private String verificationCode;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(	name = "user_roles",
             joinColumns = @JoinColumn(name = "member_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
 
     public boolean hasAuthorityToVote(Vote vote) {
+        if(!this.isVerifiedEmail() || !this.isVerifiedApplication() || this.roles.isEmpty()) {
+            return false;
+        }
         AtomicBoolean authorization = new AtomicBoolean(false);
-        this.roles.forEach(memberRole -> {
-            vote.getRoles().forEach(voteRole -> {
-                if(memberRole.equals(voteRole)) {
-                    authorization.set(true);
-                }
-            });
-        });
+        this.roles.forEach(memberRole -> vote.getRoles().forEach(voteRole -> {
+            if(memberRole.equals(voteRole)) {
+                authorization.set(true);
+            }
+        }));
         return authorization.get();
     }
 

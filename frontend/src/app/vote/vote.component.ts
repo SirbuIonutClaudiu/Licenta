@@ -8,13 +8,15 @@ import {VoteCountResponse} from '../_services/VoteCountResponse';
 import {
   ApexNonAxisChartSeries,
   ApexResponsive,
-  ApexChart
+  ApexChart,
+  ApexTitleSubtitle
 } from 'ng-apexcharts';
 
 export type ChartOptions = {
   series: ApexNonAxisChartSeries;
   chart: ApexChart;
   responsive: ApexResponsive[];
+  title: ApexTitleSubtitle;
   labels: any;
 };
 
@@ -25,7 +27,7 @@ export type ChartOptions = {
 })
 export class VoteComponent implements OnInit {
   @ViewChild('chart') chart: ChartComponent;
-  public chartOptions: Partial<ChartOptions>;
+  public chartOptions!: Partial<ChartOptions>;
 
   public VoteResult: VoteCountResponse = {
     for_count: 0,
@@ -76,6 +78,17 @@ export class VoteComponent implements OnInit {
       chart: {
         width: 380,
         type: 'pie'
+      },
+      title: {
+        text: 'Vote results',
+        align: 'center',
+        offsetX: -40,
+        offsetY: 0,
+        floating: false,
+        style: {
+          fontWeight:  'bold',
+          color:  '#663399'
+        },
       },
       labels: ['For', 'Against', 'Blank', 'Absent'],
       responsive: [

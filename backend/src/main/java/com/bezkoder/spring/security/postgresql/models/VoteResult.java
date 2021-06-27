@@ -23,7 +23,7 @@ public class VoteResult {
     @JoinColumn(name = "vote_id", nullable = false)
     private Vote vote;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(	name = "vote_result_members",
             joinColumns = @JoinColumn(name = "result_id"),
             inverseJoinColumns = @JoinColumn(name = "choice_id"))

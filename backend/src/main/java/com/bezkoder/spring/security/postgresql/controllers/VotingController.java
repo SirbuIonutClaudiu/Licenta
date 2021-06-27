@@ -22,6 +22,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.text.ParseException;
@@ -205,14 +206,35 @@ public class VotingController {
     public void scheduleFixedRateTaskAsync() throws InterruptedException {
         voteService.returnIdles().forEach(vote -> {
             Date now = new Date();
-            if(now.after(vote.getEndAt())) {
-                vote.endVote();
-                voteRepository.save(vote);
+            Calendar startAt = Calendar.getInstance();
+            startAt.setTime(vote.getStartAt());
+            Calendar endAt = Calendar.getInstance();
+            endAt.setTime(vote.getEndAt());
+            if(now.after(endAt.getTime())) {
+                this.endVote(vote);
             }
-            else if(now.after(vote.getStartAt()) && now.before(vote.getEndAt()) && !vote.isActive()) {
-                vote.startVote();
-                voteRepository.save(vote);
+            else if(now.after(startAt.getTime()) && now.before(endAt.getTime()) && !vote.isActive()) {
+                this.startVote(vote);
             }
         });
+    }
+
+    private void endVote(Vote vote) {
+        vote.endVote();
+        voteRepository.save(vote);
+        VoteResult voteResult = vote.getVoteResult();
+        membruSenatService.returnAll().forEach(membruSenat -> {
+            if(membruSenat.hasAuthorityToVote(vote) && !voteResult.userVoted(membruSenat)) {
+                MemberChoice newVote = new MemberChoice(membruSenat.getId(), "absent");
+                voteResult.getMemberChoices().add(newVote);
+                memberChoiceRepository.save(newVote);
+            }
+        });
+        voteResultRepository.save(voteResult);
+    }
+
+    private void startVote(Vote vote) {
+        vote.startVote();
+        voteRepository.save(vote);
     }
 }

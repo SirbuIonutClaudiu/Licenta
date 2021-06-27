@@ -33,7 +33,7 @@ public class Vote {
 
     private boolean idle;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(	name = "vote_roles",
             joinColumns = @JoinColumn(name = "vote_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
