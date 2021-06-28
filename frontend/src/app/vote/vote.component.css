@@ -164,3 +164,42 @@ label.radio input:checked+span {
   color: red;
   font-weight: bolder;
 }
+
+article {
+  background: linear-gradient(
+    to right,
+    hsl(98 100% 62%),
+    hsl(204 100% 59%)
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-align: center;
+}
+
+.custom_h1 {
+  font-size: 50px;
+  line-height: 1.1;
+  margin: 0;
+}
+
+.custom_div {
+  min-block-size: 100%;
+  min-inline-size: 100%;
+  box-sizing: border-box;
+  display: grid;
+  place-content: center;
+  font-family: system-ui, serif;
+  font-size: min(200%, 5vmin);
+}
+
+.voted {
+  color: #228B22;
+  size: 25px;
+  font-weight: bolder;
+}
+
+.not_voted {
+  color: #DC143C;
+  size: 25px;
+  font-weight: bolder;
+}

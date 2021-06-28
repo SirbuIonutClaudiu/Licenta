@@ -83,3 +83,12 @@
     </div>
   </div>
 </section>
+<div class="container" *ngIf="formSubmitError">
+  <div class="row">
+    <div class="col"></div>
+    <div class="col error_container d-flex justify-content-center">
+      {{errorMessage}}
+    </div>
+    <div class="col"></div>
+  </div>
+</div>

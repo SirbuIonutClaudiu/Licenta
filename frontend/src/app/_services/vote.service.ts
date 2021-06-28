@@ -30,6 +30,11 @@ export class VoteService {
     return this.http.get<Vote>(VOTE_API + 'find/' + id, httpOptions);
   }
 
+  // tslint:disable-next-line:variable-name
+  userVoted(vote_id: number): Observable<boolean> {
+    return this.http.get<boolean>(VOTE_API + 'user_voted/' + vote_id, httpOptions);
+  }
+
   isNotFirst(id: number): Observable<any> {
     return this.http.get(VOTE_API + 'is_not_first/' + id, httpOptions);
   }
@@ -42,6 +47,7 @@ export class VoteService {
     return this.http.get(VOTE_API + 'vote_result/' + id, httpOptions);
   }
 
+  // tslint:disable-next-line:variable-name
   castVote(vote_id: number, choice: string): Observable<any> {
     return this.http.post(VOTE_API + 'vote', {
       vote_id,

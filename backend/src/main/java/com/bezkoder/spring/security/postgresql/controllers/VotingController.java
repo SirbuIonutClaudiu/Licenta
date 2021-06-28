@@ -6,10 +6,7 @@ import com.bezkoder.spring.security.postgresql.payload.request.VoteRequest;
 import com.bezkoder.spring.security.postgresql.payload.response.MessageResponse;
 import com.bezkoder.spring.security.postgresql.payload.response.VoteCountResponse;
 import com.bezkoder.spring.security.postgresql.payload.response.VoteResponse;
-import com.bezkoder.spring.security.postgresql.repository.MemberChoiceRepository;
-import com.bezkoder.spring.security.postgresql.repository.RoleRepository;
-import com.bezkoder.spring.security.postgresql.repository.VoteRepository;
-import com.bezkoder.spring.security.postgresql.repository.VoteResultRepository;
+import com.bezkoder.spring.security.postgresql.repository.*;
 import com.bezkoder.spring.security.postgresql.security.jwt.JwtUtils;
 import com.bezkoder.spring.security.postgresql.security.services.MembruSenatService;
 import com.bezkoder.spring.security.postgresql.security.services.VoteResultService;
@@ -22,7 +19,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.text.ParseException;
@@ -41,6 +37,9 @@ public class VotingController {
 
     @Autowired
     private final VoteService voteService;
+
+    @Autowired
+    membruSenatRepository membruSenatRepo;
 
     @Autowired
     private final VoteResultRepository voteResultRepository;
@@ -199,6 +198,15 @@ public class VotingController {
                                                                      voteResultService.getVoteCount(voteResult.getId(), "blank"),
                                                                      voteResultService.getVoteCount(voteResult.getId(), "absent") );
         return new ResponseEntity<>(voteCountResponse, HttpStatus.OK);
+    }
+
+    @GetMapping("/user_voted/{vote_id}")
+    public ResponseEntity<?> userVoted(@RequestHeader("Authorization") String auth, @PathVariable("vote_id") Long vote_id) {
+        membruSenat member = getMemberFromAuthentication(auth);
+        Vote vote = voteRepository.findById(vote_id)
+                .orElseThrow(() -> new RuntimeException("Vote not found !"));
+        VoteResult voteResult = vote.getVoteResult();
+        return new ResponseEntity<>(voteResult.userVoted(member), HttpStatus.OK);
     }
 
     @Async

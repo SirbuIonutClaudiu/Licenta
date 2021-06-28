@@ -138,3 +138,9 @@
   margin-top: 3%;
   margin-bottom: 5%;
 }
+
+.error_container {
+  background-color: #DC143C;
+  color: #FFFFFF;
+  font-weight: normal;
+}

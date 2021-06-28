@@ -79,6 +79,9 @@ export class AddVoteComponent implements OnInit {
   geoRestriction = true;
   date: any;
   dateFormated!: Date;
+  formSubmitError = true;
+  errorMessage = '';
+  errorTime = 0;
 
   constructor(private userService: UserService, private voteService: VoteService) { }
 
@@ -136,10 +139,80 @@ export class AddVoteComponent implements OnInit {
     this.roles = [];
   }
 
-  submitForm(): void {
-    this.voteService.newVote(this.subject, this.content, this.dateFormated, this.duration, this.geoRestriction, this.roles).subscribe(
+  setError(message: string, time: number): void {
+    this.errorMessage = message;
+    this.errorTime = time;
+  }
+
+  checkDateInput(): boolean {
+    if(this.dateFormated == null) {
+      this.setError("Date and time field cannot be empty !", 4);
+      return false;
+    }
+    return true;
+  }
+
+  checkRolesInput(): boolean {
+    if(this.roles.length == 0) {
+      this.setError("Vote visibility field cannot be empty !", 4);
+      return false;
+    }
+    return true;
+  }
+
+  checkDurationInput(): boolean {
+    if(this.duration == null) {
+      this.setError("Vote duration field cannot be empty !", 3);
+      return false;
+    }
+    return true;
+  }
+
+  checkSubjectInput(): boolean {
+    if(this.subject.length == 0) {
+      this.setError("Subject field cannot be empty !", 3);
+      return false;
+    }
+    else if(this.subject.length < 5) {
+      this.setError("Subject has to be at least 5 characters long !", 5);
+      return false;
+    }
+    return true;
+  }
+
+  checkContentInput(): boolean {
+    if(this.content.length == 0) {
+      this.setError("Vote explanation field cannot be empty !", 4);
+      return false;
+    }
+    return true;
+  }
+
+  checkFormCorrectness(): boolean {
+    return (this.checkDateInput() && this.checkRolesInput() && this.checkDurationInput() && this.checkSubjectInput() && this.checkContentInput());
+  }
+
+  showError(): void {
+    this.formSubmitError = true;
+    this.userService.sleep(this.errorTime).subscribe(
       ans => {
-        window.location.reload();
+        this.formSubmitError = false;
       });
+  }
+
+  submitForm(): void {
+    if(!this.checkFormCorrectness()) {
+      this.showError();
+    }
+    else {
+      this.voteService.newVote(this.subject, this.content, this.dateFormated, this.duration, this.geoRestriction, this.roles).subscribe(
+        ans => {
+          window.location.reload();
+        },
+        err => {
+          this.setError(err.error.message, 5);
+          this.showError();
+        });
+    }
   }
 }

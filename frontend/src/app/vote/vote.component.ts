@@ -53,6 +53,7 @@ export class VoteComponent implements OnInit {
   against = false;
   blank = false;
   ableToVote = false;
+  alreadyVoted = false;
 
   constructor(private voteService: VoteService, private _Activatedroute: ActivatedRoute, private router: Router) { }
 
@@ -107,14 +108,19 @@ export class VoteComponent implements OnInit {
     };
   }
 
+  userVoted(voteId: number): void {
+    this.voteService.userVoted(voteId).subscribe(
+      (ans: boolean) => {
+        this.alreadyVoted = ans;
+      });
+  }
+
   getVoteById(id: number): void {
     this.voteService.getVoteById(id).subscribe(
       (response: Vote) => {
         this.vote = response;
         this.getVoteResult(this.vote.id);
-      },
-      error => {
-        alert(error.message);
+        this.userVoted(this.vote.id);
       });
   }
 
