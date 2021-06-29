@@ -60,19 +60,23 @@ public class VotingController {
     private final VoteResultService voteResultService;
 
     @GetMapping("/all_votes")
-    public List<Vote> getAllVotes(@RequestHeader("Authorization") String auth) {
-        List<Vote> result = new ArrayList<>();
+    public List<VoteResponse> getAllVotes(@RequestHeader("Authorization") String auth) {
+        List<VoteResponse> result = new ArrayList<>();
         List<Role> roles = getRolesFromAuthentication(auth);
         Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
                 .orElseThrow(() -> new RuntimeException("Role ADMIN does not exist !"));
         if(roles.contains(adminRole)) {
-            return voteRepository.findAll();
+            voteRepository.findAll().forEach(vote -> {
+                result.add(VoteToVoteResponse(vote));
+            });
         }
-        voteRepository.findAll().forEach( vote -> roles.forEach(role -> {
-            if(vote.getRoles().contains(role)) {
-                result.add(vote);
-            }
-        }));
+        else {
+            voteRepository.findAll().forEach( vote -> roles.forEach(role -> {
+                if(vote.getRoles().contains(role)) {
+                    result.add(VoteToVoteResponse(vote));
+                }
+            }));
+        }
         return result;
     }
 

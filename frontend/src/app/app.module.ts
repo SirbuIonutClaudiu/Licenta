@@ -25,7 +25,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RichTextEditorModule } from '@syncfusion/ej2-angular-richtexteditor';
 import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
 import { SwitchModule } from '@syncfusion/ej2-angular-buttons';
-
+import {MatPaginatorModule} from '@angular/material/paginator';
 import {
   NgxMatDatetimePickerModule,
   NgxMatNativeDateModule,
@@ -67,6 +67,7 @@ import {NgApexchartsModule} from 'ng-apexcharts';
     RichTextEditorModule,
     SwitchModule,
     NgApexchartsModule,
+    MatPaginatorModule,
     NgMultiSelectDropDownModule.forRoot()
   ],
   providers: [
