@@ -3,6 +3,7 @@ package com.bezkoder.spring.security.postgresql.controllers;
 import com.bezkoder.spring.security.postgresql.models.*;
 import com.bezkoder.spring.security.postgresql.payload.request.NewVoteRequest;
 import com.bezkoder.spring.security.postgresql.payload.request.VoteRequest;
+import com.bezkoder.spring.security.postgresql.payload.request.VotesOrganizationRequest;
 import com.bezkoder.spring.security.postgresql.payload.response.MessageResponse;
 import com.bezkoder.spring.security.postgresql.payload.response.VoteCountResponse;
 import com.bezkoder.spring.security.postgresql.payload.response.VoteResponse;
@@ -24,6 +25,7 @@ import javax.validation.Valid;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @EnableAsync
 @EnableScheduling
@@ -60,24 +62,33 @@ public class VotingController {
     private final VoteResultService voteResultService;
 
     @GetMapping("/all_votes")
-    public List<VoteResponse> getAllVotes(@RequestHeader("Authorization") String auth) {
-        List<VoteResponse> result = new ArrayList<>();
-        List<Role> roles = getRolesFromAuthentication(auth);
+    public ResponseEntity<List<VoteResponse>> getAllVotes(@RequestHeader("Authorization") String auth,
+                                          @Valid @RequestBody VotesOrganizationRequest votesOrganizationRequest) {
         Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
-                .orElseThrow(() -> new RuntimeException("Role ADMIN does not exist !"));
-        if(roles.contains(adminRole)) {
-            voteRepository.findAll().forEach(vote -> {
-                result.add(VoteToVoteResponse(vote));
-            });
+                .orElseThrow(() -> new RuntimeException("Admin role not inserted !"));
+        List<Role> roles = getRolesFromAuthentication(auth);
+        List<VoteResponse> allVoteResponses = VoteResponseForUser(roles);
+        if(votesOrganizationRequest.isRoleRestriction() && !roles.contains(adminRole)) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
-        else {
-            voteRepository.findAll().forEach( vote -> roles.forEach(role -> {
-                if(vote.getRoles().contains(role)) {
-                    result.add(VoteToVoteResponse(vote));
-                }
-            }));
+        return new ResponseEntity<>(votesOrganizationRequest.SortVotesByRequest(allVoteResponses), HttpStatus.OK);
+    }
+
+    private List<VoteResponse> VoteResponseForUser(List<Role> roles) {
+        List<VoteResponse> result = new ArrayList<>();
+        voteRepository.findAll().forEach(vote -> {
+            result.add(VoteToVoteResponse(vote));
+        });
+        if(roleRepository.findByName(ERole.ROLE_ADMIN).isPresent()) {
+            if(roles.contains(roleRepository.findByName(ERole.ROLE_ADMIN).get())) {
+                return result;
+            }
+            else {
+                result.removeIf(currentVote -> (Collections.disjoint(currentVote.getRoles(), roles)));
+                return result;
+            }
         }
-        return result;
+        return null;
     }
 
     private List<Role> getRolesFromAuthentication(String auth) {

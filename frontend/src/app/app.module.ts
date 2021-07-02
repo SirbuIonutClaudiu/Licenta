@@ -26,6 +26,7 @@ import { RichTextEditorModule } from '@syncfusion/ej2-angular-richtexteditor';
 import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
 import { SwitchModule } from '@syncfusion/ej2-angular-buttons';
 import {MatPaginatorModule} from '@angular/material/paginator';
+import { ChartsModule, WavesModule } from 'angular-bootstrap-md';
 import {
   NgxMatDatetimePickerModule,
   NgxMatNativeDateModule,
@@ -68,6 +69,8 @@ import {NgApexchartsModule} from 'ng-apexcharts';
     SwitchModule,
     NgApexchartsModule,
     MatPaginatorModule,
+    WavesModule,
+    ChartsModule,
     NgMultiSelectDropDownModule.forRoot()
   ],
   providers: [
