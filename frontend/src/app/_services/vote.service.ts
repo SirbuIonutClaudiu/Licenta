@@ -3,6 +3,7 @@ import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
 import {Vote} from './Vote';
 import {membruSenat} from './membruSenat';
+import {VoteCountResponse} from './VoteCountResponse';
 
 const VOTE_API = 'http://localhost:8081/api/voting/';
 
@@ -27,8 +28,25 @@ export class VoteService {
     }, httpOptions);
   }
 
-  getAllVotes(): Observable<Vote[]> {
-    return this.http.get<Vote[]>(VOTE_API + 'all_votes', httpOptions);
+  getAllVotes(page: number, perPage: number, sortParameter: string, sortDirection: string, enableGeorestriction: boolean,
+              geoRestrictedOption: boolean, status: string, roleRestrictions: boolean, Eroles: string[]): Observable<Vote[]> {
+    return this.http.post<Vote[]>(VOTE_API + 'all_votes', {
+      page,
+      perPage,
+      sortParameter,
+      sortDirection,
+      enableGeorestriction,
+      geoRestrictedOption,
+      status,
+      roleRestrictions,
+      Eroles
+    }, httpOptions);
+  }
+
+  getAllVotesResults(votesIds: number[]): Observable<VoteCountResponse[]> {
+    return this.http.post<VoteCountResponse[]>(VOTE_API + 'votes_results', {
+      votesIds
+    }, httpOptions);
   }
 
   getVoteById(id: number): Observable<Vote> {

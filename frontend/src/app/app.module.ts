@@ -27,6 +27,9 @@ import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
 import { SwitchModule } from '@syncfusion/ej2-angular-buttons';
 import {MatPaginatorModule} from '@angular/material/paginator';
 import { ChartsModule, WavesModule } from 'angular-bootstrap-md';
+import { AccumulationChartModule } from '@syncfusion/ej2-angular-charts';
+import { PieSeriesService, AccumulationLegendService, AccumulationTooltipService, AccumulationAnnotationService,
+  AccumulationDataLabelService } from '@syncfusion/ej2-angular-charts';
 import {
   NgxMatDatetimePickerModule,
   NgxMatNativeDateModule,
@@ -71,12 +74,18 @@ import {NgApexchartsModule} from 'ng-apexcharts';
     MatPaginatorModule,
     WavesModule,
     ChartsModule,
+    AccumulationChartModule,
     NgMultiSelectDropDownModule.forRoot()
   ],
   providers: [
     authInterceptorProviders,
     VisitorsService,
-    CookieService],
+    CookieService,
+    PieSeriesService,
+    AccumulationLegendService,
+    AccumulationTooltipService,
+    AccumulationDataLabelService,
+    AccumulationAnnotationService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

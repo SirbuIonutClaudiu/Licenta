@@ -1,21 +1,8 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
-import {Vote} from '../_services/Vote';
+import {Component, OnInit} from '@angular/core';
+import {FontModel, LegendSettingsModel} from '@syncfusion/ej2-angular-charts';
 import {VoteService} from '../_services/vote.service';
-import { ChartComponent } from 'ng-apexcharts';
-
-import {
-  ApexNonAxisChartSeries,
-  ApexResponsive,
-  ApexChart
-} from 'ng-apexcharts';
+import {Vote} from '../_services/Vote';
 import {VoteCountResponse} from '../_services/VoteCountResponse';
-
-export type ChartOptions = {
-  series: ApexNonAxisChartSeries;
-  chart: ApexChart;
-  responsive: ApexResponsive[];
-  labels: any;
-};
 
 @Component({
   selector: 'app-all-votes',
@@ -23,70 +10,102 @@ export type ChartOptions = {
   styleUrls: ['./all-votes.component.css']
 })
 export class AllVotesComponent implements OnInit {
-  @ViewChild('chart') chart: ChartComponent;
-  public chartOptions: Partial<ChartOptions>;
-
-  public VoteResult: VoteCountResponse = {
-    for_count: 0,
-    against_count: 0,
-    blank_count: 0,
-    absent_count: 0
+  page = 0;
+  perPage = 20;
+  sortParameter = 'start';
+  sortDirection = 'asc';
+  enableGeorestriction = false;
+  geoRestrictedOption = false;
+  status = 'ended';
+  roleRestrictions = false;
+  Eroles = [];
+  votes!: Vote[];
+  votesResults!: VoteCountResponse[];
+  piedata = [
+    { x: 'for', y: 3, text: '' }, { x: 'against', y: 3.5, text: '' },
+    { x: 'blank', y: 7, text: '' }, { x: 'absent', y: 13.5, text: '' }];
+  chartsData!: [];
+  // tslint:disable-next-line:ban-types
+  public map: Object = 'fill';
+  // tslint:disable-next-line:ban-types
+  public datalabel!: Object;
+  public legendSettings!: LegendSettingsModel;
+  public backgrounds!: string[];
+  public palette = ['#DC143C', '#8A2BE2', '#006400', '#8FBC8F'];
+  public titleStyle = {
+    fontFamily: 'Arial',
+    fontWeight: 'bolder',
+    color: 'white',
+    size: '25px'
   };
-  public vote: Vote = {
-    id: 0,
-    subject: ' ',
-    content: ' ',
-    startAt: new Date(),
-    endAt: new Date(),
-    geoRestricted: false,
-    active: false,
-    idle: false,
-    roles: []
-  };
-  currentPage = 0;
-  pageSize = 15;
-  allVotes!: Vote[];
+  availableColors = ['#0dcaf0', '#BDB76B', '#fd3550', '#ffc107', '#DAA520'];
 
   constructor(private voteService: VoteService) {
-    this.chartOptions = {
-      series: [44, 55, 13, 43, 22],
-      chart: {
-        width: '100%',
-        type: 'pie'
-      },
-      labels: ['Team A', 'Team B', 'Team C', 'Team D', 'Team E'],
-      responsive: [
-        {
-          breakpoint: 480,
-          options: {
-            chart: {
-              width: 200
-            },
-            legend: {
-              show: false
-            }
-          }
-        }
-      ]
-    };
   }
 
   ngOnInit(): void {
-    //this.getAllVotes();
+    this.getAllVotes();
+  }
+
+  populatePieCharts(): void {
+    this.datalabel = {
+      visible: true,
+      name: 'text',
+      position: 'Inside',
+      font: {
+        color: 'white',
+        fontWeight: 'Bold',
+        size: '14px'
+      }};
+    this.legendSettings = {
+      visible: false
+    };
+    const aux: string[] = [];
+    for (const vote of this.votes) {
+      let color = this.availableColors[Math.floor(Math.random() * this.availableColors.length)];
+      while (color === aux[aux.length - 1]) {
+        color = this.availableColors[Math.floor(Math.random() * this.availableColors.length)];
+      }
+      aux.push(color);
+    }
+    this.backgrounds = aux;
+    this.insertChartsData();
+  }
+
+  insertChartsData(): void {
+    for (const voteResult of this.votesResults) {
+      this.piedata[0].y = voteResult.for_count;
+      this.piedata[0].text = 'for: ' + voteResult.for_count.toString();
+      this.piedata[1].y = voteResult.against_count;
+      this.piedata[1].text = 'against: ' + voteResult.against_count.toString();
+      this.piedata[2].y = voteResult.blank_count;
+      this.piedata[2].text = 'blank: ' + voteResult.blank_count.toString();
+      this.piedata[3].y = voteResult.absent_count;
+      this.piedata[3].text = 'absent: ' + voteResult.absent_count.toString();
+      // @ts-ignore
+      //this.chartsData.push(this.piedata);
+    }
   }
 
   getAllVotes(): void {
-    this.voteService.getAllVotes().subscribe(
-      (response: Vote[]) => {
-        this.allVotes = response;
-        let legend = document.getElementsByClassName('position-right');
-        // @ts-ignore
-        legend.item(0).remove();
+    this.voteService.getAllVotes(this.page, this.perPage, this.sortParameter,
+      this.sortDirection, this.enableGeorestriction, this.geoRestrictedOption,
+      this.status, this.roleRestrictions, this.Eroles).subscribe(
+      (answer: Vote[]) => {
+        this.votes = answer;
+        this.getAllVotesResults();
       });
   }
 
-  onPaginateChange(event: any) {
-    this.currentPage = event.pageIndex;
-    this.pageSize = event.pageSize;
+  getAllVotesResults(): void {
+    const votesIds: number[] = [];
+    this.votes.forEach(vote => {
+      votesIds.push(vote.id);
+    });
+    this.voteService.getAllVotesResults(votesIds).subscribe(
+      (answer: VoteCountResponse[]) => {
+        this.votesResults = answer;
+        this.populatePieCharts();
+      });
   }
 }

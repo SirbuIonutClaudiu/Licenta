@@ -4,6 +4,7 @@ import com.bezkoder.spring.security.postgresql.models.*;
 import com.bezkoder.spring.security.postgresql.payload.request.NewVoteRequest;
 import com.bezkoder.spring.security.postgresql.payload.request.VoteRequest;
 import com.bezkoder.spring.security.postgresql.payload.request.VotesOrganizationRequest;
+import com.bezkoder.spring.security.postgresql.payload.request.VotesResultsRequest;
 import com.bezkoder.spring.security.postgresql.payload.response.MessageResponse;
 import com.bezkoder.spring.security.postgresql.payload.response.VoteCountResponse;
 import com.bezkoder.spring.security.postgresql.payload.response.VoteResponse;
@@ -61,7 +62,7 @@ public class VotingController {
     @Autowired
     private final VoteResultService voteResultService;
 
-    @GetMapping("/all_votes")
+    @PostMapping("/all_votes")
     public ResponseEntity<List<VoteResponse>> getAllVotes(@RequestHeader("Authorization") String auth,
                                           @Valid @RequestBody VotesOrganizationRequest votesOrganizationRequest) {
         Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
@@ -213,6 +214,22 @@ public class VotingController {
                                                                      voteResultService.getVoteCount(voteResult.getId(), "blank"),
                                                                      voteResultService.getVoteCount(voteResult.getId(), "absent") );
         return new ResponseEntity<>(voteCountResponse, HttpStatus.OK);
+    }
+
+    @PostMapping("/votes_results")
+    public ResponseEntity<List<VoteCountResponse>> VoteResult(@Valid @RequestBody VotesResultsRequest votesResultsRequest) {
+        List<VoteCountResponse> result = new ArrayList<>();
+        votesResultsRequest.getVotesIds().forEach(voteId -> {
+            Vote vote = voteRepository.findById(voteId)
+                    .orElseThrow(() -> new RuntimeException("Vote not found !"));
+            VoteResult voteResult = vote.getVoteResult();
+            VoteCountResponse voteCountResponse = new VoteCountResponse( voteResultService.getVoteCount(voteResult.getId(), "for"),
+                    voteResultService.getVoteCount(voteResult.getId(), "against"),
+                    voteResultService.getVoteCount(voteResult.getId(), "blank"),
+                    voteResultService.getVoteCount(voteResult.getId(), "absent") );
+            result.add(voteCountResponse);
+        });
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @GetMapping("/user_voted/{vote_id}")
