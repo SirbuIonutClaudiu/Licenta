@@ -1,11 +1,15 @@
+<div>
+  <ejs-autocomplete id='atcelement' [dataSource]='palette' [placeholder]="searchPlaceholder"></ejs-autocomplete>
+</div>
+
 <div class="d-flex flex-wrap justify-content-center">
   <div class="p-2 voteElement" *ngFor="let vote of votes; index as i">
     <div class="row justify-content-md-center voteDiv" style="background-color: {{backgrounds[i]}}">
       <div class="col">
         <ejs-accumulationchart height="300px" [legendSettings]='legendSettings' [background]="backgrounds[i]"
-                               [title]="vote.id.toString()" [titleStyle]="titleStyle">
+                               [title]="vote.subject" [titleStyle]="titleStyle">
           <e-accumulation-series-collection>
-            <e-accumulation-series [dataSource]='piedata' xName='x' yName='y'
+            <e-accumulation-series [dataSource]='chartData(i)' xName='x' yName='y'
                                    [pointColorMapping]= 'map' [dataLabel]='datalabel'
                                    [palettes]="palette">
             </e-accumulation-series>
@@ -29,5 +33,14 @@
         {{votes[0].endAt | date :'mediumTime'}}
       </div>
     </div>
+  </div>
+</div>
+<div class="d-flex flex-row-reverse">
+  <div class="d-flex justify-content-end pager">
+    <mat-paginator [length]="100"
+                   [pageSize]=perPage
+                   [pageSizeOptions]="[6, 9, 12, 15, 30]"
+                   (page)="onPaginateChange($event)">
+    </mat-paginator>
   </div>
 </div>

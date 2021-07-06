@@ -30,14 +30,15 @@ import { ChartsModule, WavesModule } from 'angular-bootstrap-md';
 import { AccumulationChartModule } from '@syncfusion/ej2-angular-charts';
 import { PieSeriesService, AccumulationLegendService, AccumulationTooltipService, AccumulationAnnotationService,
   AccumulationDataLabelService } from '@syncfusion/ej2-angular-charts';
+import { VoteComponent } from './vote/vote.component';
+import { AllVotesComponent } from './all-votes/all-votes.component';
+import {NgApexchartsModule} from 'ng-apexcharts';
+import { AutoCompleteModule } from '@syncfusion/ej2-angular-dropdowns';
 import {
   NgxMatDatetimePickerModule,
   NgxMatNativeDateModule,
   NgxMatTimepickerModule
 } from '@angular-material-components/datetime-picker';
-import { VoteComponent } from './vote/vote.component';
-import { AllVotesComponent } from './all-votes/all-votes.component';
-import {NgApexchartsModule} from 'ng-apexcharts';
 
 @NgModule({
   declarations: [
@@ -75,6 +76,7 @@ import {NgApexchartsModule} from 'ng-apexcharts';
     WavesModule,
     ChartsModule,
     AccumulationChartModule,
+    AutoCompleteModule,
     NgMultiSelectDropDownModule.forRoot()
   ],
   providers: [

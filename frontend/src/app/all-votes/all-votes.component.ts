@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {FontModel, LegendSettingsModel} from '@syncfusion/ej2-angular-charts';
+import {LegendSettingsModel} from '@syncfusion/ej2-angular-charts';
 import {VoteService} from '../_services/vote.service';
 import {Vote} from '../_services/Vote';
 import {VoteCountResponse} from '../_services/VoteCountResponse';
@@ -11,7 +11,7 @@ import {VoteCountResponse} from '../_services/VoteCountResponse';
 })
 export class AllVotesComponent implements OnInit {
   page = 0;
-  perPage = 20;
+  perPage = 6;
   sortParameter = 'start';
   sortDirection = 'asc';
   enableGeorestriction = false;
@@ -22,16 +22,15 @@ export class AllVotesComponent implements OnInit {
   votes!: Vote[];
   votesResults!: VoteCountResponse[];
   piedata = [
-    { x: 'for', y: 3, text: '' }, { x: 'against', y: 3.5, text: '' },
-    { x: 'blank', y: 7, text: '' }, { x: 'absent', y: 13.5, text: '' }];
-  chartsData!: [];
+    { x: 'for', y: 3, text: 'a' }, { x: 'against', y: 3.5, text: 'sda' },
+    { x: 'blank', y: 7, text: 'asdff' }, { x: 'absent', y: 13.5, text: 'd' }];
   // tslint:disable-next-line:ban-types
   public map: Object = 'fill';
   // tslint:disable-next-line:ban-types
   public datalabel!: Object;
   public legendSettings!: LegendSettingsModel;
   public backgrounds!: string[];
-  public palette = ['#DC143C', '#8A2BE2', '#006400', '#8FBC8F'];
+  public palette = ['green', 'red', 'grey', 'DarkCyan'];
   public titleStyle = {
     fontFamily: 'Arial',
     fontWeight: 'bolder',
@@ -39,6 +38,7 @@ export class AllVotesComponent implements OnInit {
     size: '25px'
   };
   availableColors = ['#0dcaf0', '#BDB76B', '#fd3550', '#ffc107', '#DAA520'];
+  searchPlaceholder = 'Find a vote by subject';
 
   constructor(private voteService: VoteService) {
   }
@@ -69,22 +69,14 @@ export class AllVotesComponent implements OnInit {
       aux.push(color);
     }
     this.backgrounds = aux;
-    this.insertChartsData();
   }
 
-  insertChartsData(): void {
-    for (const voteResult of this.votesResults) {
-      this.piedata[0].y = voteResult.for_count;
-      this.piedata[0].text = 'for: ' + voteResult.for_count.toString();
-      this.piedata[1].y = voteResult.against_count;
-      this.piedata[1].text = 'against: ' + voteResult.against_count.toString();
-      this.piedata[2].y = voteResult.blank_count;
-      this.piedata[2].text = 'blank: ' + voteResult.blank_count.toString();
-      this.piedata[3].y = voteResult.absent_count;
-      this.piedata[3].text = 'absent: ' + voteResult.absent_count.toString();
-      // @ts-ignore
-      //this.chartsData.push(this.piedata);
-    }
+  chartData(nr: number): any {
+    return [
+      {x: 'for', y: this.votesResults[nr].for_count, text: 'for: ' + this.votesResults[nr].for_count.toString()},
+      {x: 'against', y: this.votesResults[nr].against_count, text: 'against: ' + this.votesResults[nr].against_count.toString()},
+      {x: 'blank', y: this.votesResults[nr].blank_count, text: 'blank: ' + this.votesResults[nr].blank_count.toString()},
+      {x: 'absent', y: this.votesResults[nr].absent_count, text: 'absent: ' + this.votesResults[nr].absent_count.toString()}];
   }
 
   getAllVotes(): void {
@@ -95,6 +87,11 @@ export class AllVotesComponent implements OnInit {
         this.votes = answer;
         this.getAllVotesResults();
       });
+  }
+
+  onPaginateChange(event: any): void {
+    this.page = event.pageIndex;
+    this.perPage = event.pageSize;
   }
 
   getAllVotesResults(): void {
