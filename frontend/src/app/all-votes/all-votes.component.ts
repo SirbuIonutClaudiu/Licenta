@@ -3,6 +3,9 @@ import {LegendSettingsModel} from '@syncfusion/ej2-angular-charts';
 import {VoteService} from '../_services/vote.service';
 import {Vote} from '../_services/Vote';
 import {VoteCountResponse} from '../_services/VoteCountResponse';
+import {VoteSearchSubject} from '../_services/VoteSearchSubject';
+import {FieldSettingsModel} from '@syncfusion/ej2-angular-dropdowns';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-all-votes',
@@ -39,12 +42,15 @@ export class AllVotesComponent implements OnInit {
   };
   availableColors = ['#0dcaf0', '#BDB76B', '#fd3550', '#ffc107', '#DAA520'];
   searchPlaceholder = 'Find a vote by subject';
+  voteSubjects = [{id: '', subject: ''}];
+  public field: FieldSettingsModel = {value: 'id', text: 'subject'};
 
-  constructor(private voteService: VoteService) {
+  constructor(private voteService: VoteService, private router: Router) {
   }
 
   ngOnInit(): void {
     this.getAllVotes();
+    this.getVotesSearchSubjects();
   }
 
   populatePieCharts(): void {
@@ -69,6 +75,40 @@ export class AllVotesComponent implements OnInit {
       aux.push(color);
     }
     this.backgrounds = aux;
+  }
+
+  nrOfDigits(num: number): number {
+    let nr = 0;
+    while (num) {
+      num = Math.floor(num / 10);
+      nr++;
+    }
+    return nr;
+  }
+
+  getVotesSearchSubjects(): void {
+    this.voteService.getVotesSearchSubjects().subscribe(
+      (result: VoteSearchSubject[]) => {
+        for (const vote of result) {
+          const voteSubject = {
+            id: vote.subject + vote.id.toString() + this.nrOfDigits(vote.id).toString(),
+            subject: vote.subject
+          };
+          this.voteSubjects.push(voteSubject);
+        }
+      });
+  }
+
+  voteSelected(event: any): void {
+    const valueString = event.value;
+    const nrSize = Number(valueString[valueString.length - 1]);
+    const idString = valueString.substring(valueString.length - 1 - nrSize, valueString.length - 1);
+    const id = Number(idString);
+    this.navToVote(id);
+  }
+
+  navToVote(id: number) {
+    this.router.navigate([`vote/${id}`]);
   }
 
   chartData(nr: number): any {

@@ -8,6 +8,7 @@ import com.bezkoder.spring.security.postgresql.payload.request.VotesResultsReque
 import com.bezkoder.spring.security.postgresql.payload.response.MessageResponse;
 import com.bezkoder.spring.security.postgresql.payload.response.VoteCountResponse;
 import com.bezkoder.spring.security.postgresql.payload.response.VoteResponse;
+import com.bezkoder.spring.security.postgresql.payload.response.VoteSubjectSearchResponse;
 import com.bezkoder.spring.security.postgresql.repository.*;
 import com.bezkoder.spring.security.postgresql.security.jwt.JwtUtils;
 import com.bezkoder.spring.security.postgresql.security.services.MembruSenatService;
@@ -15,6 +16,7 @@ import com.bezkoder.spring.security.postgresql.security.services.VoteResultServi
 import com.bezkoder.spring.security.postgresql.security.services.VoteService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.util.Pair;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
@@ -26,7 +28,6 @@ import javax.validation.Valid;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @EnableAsync
 @EnableScheduling
@@ -61,6 +62,18 @@ public class VotingController {
 
     @Autowired
     private final VoteResultService voteResultService;
+
+    @GetMapping("/search_subjects")
+    public ResponseEntity<List<VoteSubjectSearchResponse>> SearchSubjects(@RequestHeader("Authorization") String auth) {
+        List<VoteSubjectSearchResponse> result = new ArrayList<>();
+        List<Role> roles = getRolesFromAuthentication(auth);
+        List<VoteResponse> allVoteResponses = VoteResponseForUser(roles);
+        assert allVoteResponses != null;
+        allVoteResponses.forEach(voteResponse -> {
+            result.add(new VoteSubjectSearchResponse(voteResponse.getId(), voteResponse.getSubject()));
+        });
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
 
     @PostMapping("/all_votes")
     public ResponseEntity<List<VoteResponse>> getAllVotes(@RequestHeader("Authorization") String auth,
