@@ -28,13 +28,13 @@ export class AllVotesComponent implements OnInit {
     { x: 'for', y: 3, text: 'a' }, { x: 'against', y: 3.5, text: 'sda' },
     { x: 'blank', y: 7, text: 'asdff' }, { x: 'absent', y: 13.5, text: 'd' }];
   // tslint:disable-next-line:ban-types
-  public map: Object = 'fill';
+  map: Object = 'fill';
   // tslint:disable-next-line:ban-types
-  public datalabel!: Object;
-  public legendSettings!: LegendSettingsModel;
-  public backgrounds!: string[];
-  public palette = ['green', 'red', 'grey', 'DarkCyan'];
-  public titleStyle = {
+  datalabel!: Object;
+  legendSettings!: LegendSettingsModel;
+  backgrounds!: string[];
+  palette = ['green', 'red', 'grey', 'DarkCyan'];
+  titleStyle = {
     fontFamily: 'Arial',
     fontWeight: 'bolder',
     color: 'white',
@@ -43,7 +43,8 @@ export class AllVotesComponent implements OnInit {
   availableColors = ['#0dcaf0', '#BDB76B', '#fd3550', '#ffc107', '#DAA520'];
   searchPlaceholder = 'Find a vote by subject';
   voteSubjects = [{id: '', subject: ''}];
-  public field: FieldSettingsModel = {value: 'id', text: 'subject'};
+  field: FieldSettingsModel = {value: 'id', text: 'subject'};
+  sortByElements = ['Sort by start date ASC', 'Sort by end date ASC', 'Sort by start date DESC', 'Sort by end date DESC'];
 
   constructor(private voteService: VoteService, private router: Router) {
   }
@@ -111,6 +112,18 @@ export class AllVotesComponent implements OnInit {
     this.router.navigate([`vote/${id}`]);
   }
 
+  sortByChange(event: any): void {
+    this.sortParameter = (event.value === this.sortByElements[0] ||
+      (event.value === this.sortByElements[2]) ? 'start' : 'end');
+    this.sortDirection = (event.value === this.sortByElements[0] ||
+    (event.value === this.sortByElements[1]) ? 'asc' : 'desc');
+  }
+
+  onPaginateChange(event: any): void {
+    this.page = event.pageIndex;
+    this.perPage = event.pageSize;
+  }
+
   chartData(nr: number): any {
     return [
       {x: 'for', y: this.votesResults[nr].for_count, text: 'for: ' + this.votesResults[nr].for_count.toString()},
@@ -127,11 +140,6 @@ export class AllVotesComponent implements OnInit {
         this.votes = answer;
         this.getAllVotesResults();
       });
-  }
-
-  onPaginateChange(event: any): void {
-    this.page = event.pageIndex;
-    this.perPage = event.pageSize;
   }
 
   getAllVotesResults(): void {

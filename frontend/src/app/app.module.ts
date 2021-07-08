@@ -28,12 +28,14 @@ import { SwitchModule } from '@syncfusion/ej2-angular-buttons';
 import {MatPaginatorModule} from '@angular/material/paginator';
 import { ChartsModule, WavesModule } from 'angular-bootstrap-md';
 import { AccumulationChartModule } from '@syncfusion/ej2-angular-charts';
-import { PieSeriesService, AccumulationLegendService, AccumulationTooltipService, AccumulationAnnotationService,
-  AccumulationDataLabelService } from '@syncfusion/ej2-angular-charts';
 import { VoteComponent } from './vote/vote.component';
 import { AllVotesComponent } from './all-votes/all-votes.component';
 import {NgApexchartsModule} from 'ng-apexcharts';
 import { AutoCompleteModule } from '@syncfusion/ej2-angular-dropdowns';
+import { DropDownListModule } from '@syncfusion/ej2-angular-dropdowns';
+import { CheckBoxModule } from '@syncfusion/ej2-angular-buttons';
+import { PieSeriesService, AccumulationLegendService, AccumulationTooltipService, AccumulationAnnotationService,
+  AccumulationDataLabelService } from '@syncfusion/ej2-angular-charts';
 import {
   NgxMatDatetimePickerModule,
   NgxMatNativeDateModule,
@@ -77,6 +79,8 @@ import {
     ChartsModule,
     AccumulationChartModule,
     AutoCompleteModule,
+    DropDownListModule,
+    CheckBoxModule,
     NgMultiSelectDropDownModule.forRoot()
   ],
   providers: [

@@ -1,5 +1,31 @@
-<div>
-  <ejs-autocomplete id='atcelement' (change)="voteSelected($event)" [dataSource]='voteSubjects' [fields]="field" [placeholder]="searchPlaceholder"></ejs-autocomplete>
+<div class="container">
+  <div class="row d-flex justify-content-center">
+    <div class="col-2 mb-auto p-2">
+      <ejs-checkbox label="Filter by GeoRestriction" [(ngModel)]="enableGeorestriction"></ejs-checkbox>
+    </div>
+    <div class="col-3 mb-auto p-2" *ngIf="enableGeorestriction">
+      <table class="ripple">
+        <tr>
+          <td class="lRipple" *ngIf="geoRestrictedOption"><label for='switch1'>GeoRestricted &nbsp;&nbsp;</label></td>
+          <td class="rRipple" *ngIf="!geoRestrictedOption"><label for='switch1'>Not GeoRestricted &nbsp;&nbsp;</label></td>
+          <td>
+            <ejs-switch id="switch1" [(ngModel)]="geoRestrictedOption"></ejs-switch>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div class="col-5">
+      <ejs-autocomplete id='atcelement' (change)="voteSelected($event)" [dataSource]='voteSubjects'
+                        [fields]="field" [placeholder]="searchPlaceholder">
+      </ejs-autocomplete>
+    </div>
+    <div class="col-3">
+      <ejs-dropdownlist id='ddlelement' (change)="sortByChange($event)"
+                        [dataSource]='sortByElements' [value]="sortByElements[0]"
+                        placeholder = 'Sort by...'>
+      </ejs-dropdownlist>
+    </div>
+  </div>
 </div>
 
 <div class="d-flex flex-wrap justify-content-center">
