@@ -6,6 +6,8 @@ import {VoteCountResponse} from '../_services/VoteCountResponse';
 import {VoteSearchSubject} from '../_services/VoteSearchSubject';
 import {FieldSettingsModel} from '@syncfusion/ej2-angular-dropdowns';
 import {Router} from '@angular/router';
+import {IDropdownSettings} from 'ng-multiselect-dropdown';
+import {TokenStorageService} from '../_services/token-storage.service';
 
 @Component({
   selector: 'app-all-votes',
@@ -13,6 +15,31 @@ import {Router} from '@angular/router';
   styleUrls: ['./all-votes.component.css']
 })
 export class AllVotesComponent implements OnInit {
+  ERoles_map = new Map([
+    ['Sterge rolul precedent', 'ROLE_DELETE'],
+    ['Comisia didactica', 'ROLE_DIDACTIC'],
+    ['Comisia stiintifica', 'ROLE_STIINTIFIC'],
+    ['Comisia de asigurare a calitatii si relatii internationale', 'ROLE_CALITATE'],
+    ['Comisia privind drepturile si obligatiile studentilor', 'ROLE_DREPTURI'],
+    ['Comisia de buget–finante', 'ROLE_BUGET'],
+    ['Comisia juridica', 'ROLE_JURIDIC'] ]);
+  dropdownList = [
+    { item_id: 1, item_text: 'Comisia didactica' },
+    { item_id: 2, item_text: 'Comisia stiintifica' },
+    { item_id: 3, item_text: 'Comisia de asigurare a calitatii si relatii internationale' },
+    { item_id: 4, item_text: 'Comisia privind drepturile si obligatiile studentilor' },
+    { item_id: 5, item_text: 'Comisia de buget–finante' },
+    { item_id: 6, item_text: 'Comisia juridica' }
+  ];
+  dropdownSettings: IDropdownSettings = {
+    singleSelection: false,
+    idField: 'item_id',
+    textField: 'item_text',
+    selectAllText: 'Select All',
+    unSelectAllText: 'UnSelect All',
+    itemsShowLimit: 2
+  };
+  hasAdminPriviledge = false;
   page = 0;
   perPage = 6;
   sortParameter = 'start';
@@ -40,18 +67,23 @@ export class AllVotesComponent implements OnInit {
     color: 'white',
     size: '25px'
   };
-  availableColors = ['#0dcaf0', '#BDB76B', '#fd3550', '#ffc107', '#DAA520'];
+  availableColors = ['#DCDCDC', '#ADD8E6', '#F0E68C'];
   searchPlaceholder = 'Find a vote by subject';
   voteSubjects = [{id: '', subject: ''}];
   field: FieldSettingsModel = {value: 'id', text: 'subject'};
   sortByElements = ['Sort by start date ASC', 'Sort by end date ASC', 'Sort by start date DESC', 'Sort by end date DESC'];
 
-  constructor(private voteService: VoteService, private router: Router) {
+  constructor(private voteService: VoteService, private router: Router, private tokenStorageService: TokenStorageService) {
   }
 
   ngOnInit(): void {
     this.getAllVotes();
     this.getVotesSearchSubjects();
+    this.checkAdminPriviledge();
+  }
+
+  checkAdminPriviledge(): void {
+    this.hasAdminPriviledge = this.tokenStorageService.getRoles().includes('ROLE_ADMIN');
   }
 
   populatePieCharts(): void {
@@ -76,6 +108,35 @@ export class AllVotesComponent implements OnInit {
       aux.push(color);
     }
     this.backgrounds = aux;
+  }
+
+  onRoleSelect(role: any): void {
+    // @ts-ignore
+    this.Eroles.push(this.ERoles_map.get(role.item_text));
+    this.roleRestrictions = true;
+    this.getAllVotes();
+  }
+
+  onRoleDeselect(role: any): void {
+    // @ts-ignore
+    this.Eroles.splice(this.Eroles.indexOf(this.ERoles_map.get(role.item_text)), 1);
+    this.roleRestrictions = !!(this.Eroles.length);
+    this.getAllVotes();
+  }
+
+  onRoleSelectAll(roles: any): void {
+    for (const role of roles) {
+      // @ts-ignore
+      this.Eroles.push(this.ERoles_map.get(role.item_text));
+    }
+    this.roleRestrictions = true;
+    this.getAllVotes();
+  }
+
+  onRoleDeselectAll(): void {
+    this.Eroles = [];
+    this.roleRestrictions = false;
+    this.getAllVotes();
   }
 
   nrOfDigits(num: number): number {
@@ -108,6 +169,16 @@ export class AllVotesComponent implements OnInit {
     this.navToVote(id);
   }
 
+  enableGeoRestrictionChange(): void {
+    this.enableGeorestriction = !this.enableGeorestriction;
+    this.getAllVotes();
+  }
+
+  geoRestrictionOptionChange(): void {
+    this.geoRestrictedOption = !this.geoRestrictedOption;
+    this.getAllVotes();
+  }
+
   navToVote(id: number) {
     this.router.navigate([`vote/${id}`]);
   }
@@ -117,11 +188,13 @@ export class AllVotesComponent implements OnInit {
       (event.value === this.sortByElements[2]) ? 'start' : 'end');
     this.sortDirection = (event.value === this.sortByElements[0] ||
     (event.value === this.sortByElements[1]) ? 'asc' : 'desc');
+    this.getAllVotes();
   }
 
   onPaginateChange(event: any): void {
     this.page = event.pageIndex;
     this.perPage = event.pageSize;
+    this.getAllVotes();
   }
 
   chartData(nr: number): any {

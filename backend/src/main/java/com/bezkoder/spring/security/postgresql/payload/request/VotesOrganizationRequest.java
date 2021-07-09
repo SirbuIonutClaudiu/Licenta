@@ -7,7 +7,6 @@ import com.bezkoder.spring.security.postgresql.repository.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import java.util.*;
 import lombok.Data;
-import org.springframework.lang.Nullable;
 
 @Data
 public class VotesOrganizationRequest {
@@ -49,9 +48,7 @@ public class VotesOrganizationRequest {
 
     private List<Role> getRolesFromERoles() {
         List<Role> result = new ArrayList<>();
-        this.getEroles().forEach(eRole -> {
-            roleRepository.findByName(eRole).ifPresent(result::add);
-        });
+        this.getEroles().forEach(eRole -> roleRepository.findByName(eRole).ifPresent(result::add));
         return result;
     }
 

@@ -1,18 +1,9 @@
-<div class="container">
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+
+<div class="container" style="padding-top: 1%; padding-bottom: 2%; margin-top: 2%; background-color: #F0F8FF; border-radius: 25px;">
   <div class="row d-flex justify-content-center">
     <div class="col-2 mb-auto p-2">
-      <ejs-checkbox label="Filter by GeoRestriction" [(ngModel)]="enableGeorestriction"></ejs-checkbox>
-    </div>
-    <div class="col-3 mb-auto p-2" *ngIf="enableGeorestriction">
-      <table class="ripple">
-        <tr>
-          <td class="lRipple" *ngIf="geoRestrictedOption"><label for='switch1'>GeoRestricted &nbsp;&nbsp;</label></td>
-          <td class="rRipple" *ngIf="!geoRestrictedOption"><label for='switch1'>Not GeoRestricted &nbsp;&nbsp;</label></td>
-          <td>
-            <ejs-switch id="switch1" [(ngModel)]="geoRestrictedOption"></ejs-switch>
-          </td>
-        </tr>
-      </table>
+      <ejs-checkbox label="Filter by GeoRestriction" (change)="enableGeoRestrictionChange()"></ejs-checkbox>
     </div>
     <div class="col-5">
       <ejs-autocomplete id='atcelement' (change)="voteSelected($event)" [dataSource]='voteSubjects'
@@ -25,6 +16,33 @@
                         placeholder = 'Sort by...'>
       </ejs-dropdownlist>
     </div>
+  </div>
+  <div class="row d-flex justify-content-center">
+    <div class="col-3 d-flex justify-content-end" *ngIf="enableGeorestriction">
+      <table class="ripple">
+        <tr>
+          <td class="lRipple" *ngIf="geoRestrictedOption"><label for='switch1'>GeoRestricted &nbsp;&nbsp;</label></td>
+          <td class="rRipple" *ngIf="!geoRestrictedOption"><label for='switch1'>Not GeoRestricted &nbsp;&nbsp;</label></td>
+          <td>
+            <ejs-switch id="switch1" (change)="geoRestrictionOptionChange()"></ejs-switch>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div class="col-4" *ngIf="enableGeorestriction"></div>
+    <div class="col-7" *ngIf="!enableGeorestriction"></div>
+    <div class="col-4" *ngIf="hasAdminPriviledge">
+      <ng-multiselect-dropdown
+        [placeholder]="'Vote visibility'"
+        [settings]="dropdownSettings"
+        [data]="dropdownList"
+        (onSelect)="onRoleSelect($event)"
+        (onDeSelect)="onRoleDeselect($event)"
+        (onSelectAll)="onRoleSelectAll($event)"
+        (onDeSelectAll)="onRoleDeselectAll()">
+      </ng-multiselect-dropdown>
+    </div>
+    <div class="col-4" *ngIf="!hasAdminPriviledge"></div>
   </div>
 </div>
 
@@ -53,17 +71,22 @@
       </div>
       <div class="w-100 d-none d-md-block"></div>
       <div class="col d-flex justify-content-start dateDiv">
-        {{votes[0].startAt | date :'mediumTime'}}
+        {{vote.startAt| date :'mediumTime'}}
       </div>
       <div class="col d-flex justify-content-end dateDiv">
-        {{votes[0].endAt | date :'mediumTime'}}
+        {{vote.endAt | date :'mediumTime'}}
+      </div>
+      <div class="w-100 d-none d-md-block"></div>
+      <div class="col d-flex justify-content-center">
+        <a class="btn btn-xs btn-bold btn-light rounded-pill border border-dark mt-4" (click)="navToVote(vote.id)">
+          <i class="fa fa-arrow-circle-o-right fa-lg"></i> Access vote</a>
       </div>
     </div>
   </div>
 </div>
 <div class="d-flex flex-row-reverse">
   <div class="d-flex justify-content-end pager">
-    <mat-paginator [length]="100"
+    <mat-paginator [length]=voteSubjects.length
                    [pageSize]=perPage
                    [pageSizeOptions]="[6, 9, 12, 15, 30]"
                    (page)="onPaginateChange($event)">
