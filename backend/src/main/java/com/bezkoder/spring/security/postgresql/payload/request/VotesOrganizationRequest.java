@@ -38,7 +38,7 @@ public class VotesOrganizationRequest {
 
     public List<VoteResponse> SortVotesByRequest(List<VoteResponse> allVotes) {
         List<VoteResponse> result;
-        result = SortVotesBy(VotesPerPage(ShowGeoRestriction(ShowStatus(allVotes))));
+        result = VotesPerPage(SortVotesBy(ShowGeoRestriction(ShowStatus(allVotes))));
         return (this.roleRestriction ? ShowRoles(result) : result);
     }
 

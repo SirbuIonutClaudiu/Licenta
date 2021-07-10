@@ -32,7 +32,7 @@ public class VoteResult {
     public boolean userVoted(membruSenat member) {
         AtomicBoolean voted = new AtomicBoolean(false);
         this.getMemberChoices().forEach(memberChoice -> {
-            if(memberChoice.getMember_id().equals(member.getId())) {
+            if(memberChoice.getMember_id().equals(member.getId()) && !memberChoice.getChoice().equals("absent")) {
                 voted.set(true);
             }
         });

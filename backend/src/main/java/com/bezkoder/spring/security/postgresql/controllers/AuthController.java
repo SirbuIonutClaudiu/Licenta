@@ -93,6 +93,11 @@ public class AuthController {
 
 		membruSenat member = membruSenatRepo.findByEmail(loginRequest.getEmail())
 				.orElseThrow(() -> new RuntimeException("No such member !"));
+		if(!member.isVerifiedApplication()) {
+			return ResponseEntity
+					.badRequest()
+					.body(new MessageResponse("Your register application has not been reviewed by a moderator yet!"));
+		}
 		member.setLoginLocation(loginRequest.getLoginLocation());
 		membruSenatRepo.save(member);
 

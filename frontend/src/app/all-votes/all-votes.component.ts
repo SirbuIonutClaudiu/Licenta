@@ -46,7 +46,7 @@ export class AllVotesComponent implements OnInit {
   sortDirection = 'asc';
   enableGeorestriction = false;
   geoRestrictedOption = false;
-  status = 'ended';
+  status = 'all';
   roleRestrictions = false;
   Eroles = [];
   votes!: Vote[];
@@ -72,6 +72,7 @@ export class AllVotesComponent implements OnInit {
   voteSubjects = [{id: '', subject: ''}];
   field: FieldSettingsModel = {value: 'id', text: 'subject'};
   sortByElements = ['Sort by start date ASC', 'Sort by end date ASC', 'Sort by start date DESC', 'Sort by end date DESC'];
+  showVotes = ['Show all votes', 'Show ongoing votes', 'Show idle votes', 'Show finalized votes'];
 
   constructor(private voteService: VoteService, private router: Router, private tokenStorageService: TokenStorageService) {
   }
@@ -179,7 +180,7 @@ export class AllVotesComponent implements OnInit {
     this.getAllVotes();
   }
 
-  navToVote(id: number) {
+  navToVote(id: number): void {
     this.router.navigate([`vote/${id}`]);
   }
 
@@ -188,6 +189,13 @@ export class AllVotesComponent implements OnInit {
       (event.value === this.sortByElements[2]) ? 'start' : 'end');
     this.sortDirection = (event.value === this.sortByElements[0] ||
     (event.value === this.sortByElements[1]) ? 'asc' : 'desc');
+    this.getAllVotes();
+  }
+
+  showStatusChange(event: any): void {
+    this.status = (event.value === this.showVotes[0]) ? 'all' :
+      ((event.value === this.showVotes[1]) ? 'active' :
+        ((event.value === this.showVotes[2] ? 'idle' : 'ended')));
     this.getAllVotes();
   }
 
@@ -214,7 +222,7 @@ export class AllVotesComponent implements OnInit {
         this.getAllVotesResults();
       });
   }
-
+//
   getAllVotesResults(): void {
     const votesIds: number[] = [];
     this.votes.forEach(vote => {

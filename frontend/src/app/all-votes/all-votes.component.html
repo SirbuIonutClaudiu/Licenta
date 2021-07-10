@@ -29,8 +29,8 @@
         </tr>
       </table>
     </div>
-    <div class="col-4" *ngIf="enableGeorestriction"></div>
-    <div class="col-7" *ngIf="!enableGeorestriction"></div>
+    <div class="col-1" *ngIf="enableGeorestriction && !hasAdminPriviledge"></div>
+    <div class="col-4" *ngIf="!enableGeorestriction"></div>
     <div class="col-4" *ngIf="hasAdminPriviledge">
       <ng-multiselect-dropdown
         [placeholder]="'Vote visibility'"
@@ -42,7 +42,13 @@
         (onDeSelectAll)="onRoleDeselectAll()">
       </ng-multiselect-dropdown>
     </div>
-    <div class="col-4" *ngIf="!hasAdminPriviledge"></div>
+    <div class="col-3" *ngIf="!hasAdminPriviledge"></div>
+    <div class="col-3">
+      <ejs-dropdownlist id='sslelement' (change)="showStatusChange($event)"
+                        [dataSource]='showVotes' [value]="showVotes[0]"
+                        placeholder = 'Show...'>
+      </ejs-dropdownlist>
+    </div>
   </div>
 </div>
 
@@ -71,6 +77,13 @@
       </div>
       <div class="w-100 d-none d-md-block"></div>
       <div class="col d-flex justify-content-start dateDiv">
+        {{vote.startAt| date :'mediumDate'}}
+      </div>
+      <div class="col d-flex justify-content-end dateDiv">
+        {{vote.endAt | date :'mediumDate'}}
+      </div>
+      <div class="w-100 d-none d-md-block"></div>
+      <div class="col d-flex justify-content-start dateDiv">
         {{vote.startAt| date :'mediumTime'}}
       </div>
       <div class="col d-flex justify-content-end dateDiv">
@@ -84,6 +97,7 @@
     </div>
   </div>
 </div>
+
 <div class="d-flex flex-row-reverse">
   <div class="d-flex justify-content-end pager">
     <mat-paginator [length]=voteSubjects.length

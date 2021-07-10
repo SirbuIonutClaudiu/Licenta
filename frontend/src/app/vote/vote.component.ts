@@ -55,7 +55,7 @@ export class VoteComponent implements OnInit {
   ableToVote = false;
   alreadyVoted = false;
 
-  constructor(private voteService: VoteService, private _Activatedroute: ActivatedRoute, private router: Router) { }
+  constructor(private voteService: VoteService, private _Activatedroute: ActivatedRoute, private router: Router) {  }
 
   ngOnInit(): void {
     this.id = Number(this._Activatedroute.snapshot.paramMap.get('id'));

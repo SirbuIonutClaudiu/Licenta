@@ -16,7 +16,6 @@ import com.bezkoder.spring.security.postgresql.security.services.VoteResultServi
 import com.bezkoder.spring.security.postgresql.security.services.VoteService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.util.Pair;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
@@ -28,6 +27,7 @@ import javax.validation.Valid;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @EnableAsync
 @EnableScheduling
