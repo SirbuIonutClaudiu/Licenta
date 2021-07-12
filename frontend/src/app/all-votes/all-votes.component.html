@@ -54,8 +54,25 @@
 
 <div class="d-flex flex-wrap justify-content-center">
   <div class="p-2 voteElement" *ngFor="let vote of votes; index as i">
-    <div class="row justify-content-md-center voteDiv" style="background-color: {{backgrounds[i]}}">
-      <div class="col">
+    <div class="row justify-content-md-center voteDiv"
+         [ngClass]="{'border border-danger': vote.active}"
+         style="background-color: {{backgrounds[i]}};">
+      <div class="col d-flex justify-content-center titleStyle"
+           [class.redColor]="vote.active" *ngIf="vote.idle">
+        {{vote.subject}}
+      </div>
+      <div class="w-100 d-none d-md-block"></div>
+      <div class="col d-flex justify-content-end ongoing" *ngIf="vote.active">
+        ONGOING
+      </div>
+      <div class="col d-flex justify-content-start ongoing" *ngIf="vote.active">
+        <div class="spinner">
+          <div class="bounce1"></div>
+          <div class="bounce2"></div>
+          <div class="bounce3"></div>
+        </div>
+      </div>
+      <div class="col" *ngIf="!vote.idle">
         <ejs-accumulationchart height="300px" [legendSettings]='legendSettings' [background]="backgrounds[i]"
                                [title]="vote.subject" [titleStyle]="titleStyle">
           <e-accumulation-series-collection>
@@ -67,31 +84,65 @@
         </ejs-accumulationchart>
       </div>
       <div class="w-100 d-none d-md-block"></div>
-      <div class="col d-flex justify-content-start dateDiv">
+      <div class="col d-flex justify-content-start dateDiv" *ngIf="!vote.idle">
         <img height="25" width="25" src="data:image/svg+xml;base64,PHN2ZyBpZD0iQ2FwYV8xIiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCA1MTIgNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIHdpZHRoPSI1MTIiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGc+PHBhdGggZD0ibTI5MC43NyAyNDMuMjY4IDI3LjE3Ni0yNC40MjRjMTUuNzc5LTE0LjE4MSAyNy4wMTctMzIuNzA3IDMyLjMwNC01My4yNTNsMjUuMTQ1LTk3LjcxNC0xMTkuMzk1LTEyLjk3NS0xMTkuMzk1IDEyLjk3NSAyNS4xNDUgOTcuNzE1YzUuMjg3IDIwLjU0NiAxNi41MjUgMzkuMDcyIDMyLjMwNCA1My4yNTNsMjcuMTc2IDI0LjQyNGM3LjU2OCA2LjgwMSA3LjU2OCAxOC42NjMgMCAyNS40NjRsLTI3LjE3NiAyNC40MjRjLTE1Ljc3OSAxNC4xODEtMjcuMDE3IDMyLjcwNy0zMi4zMDQgNTMuMjUzbC0yNS4xNDUgOTcuNzE1aDIzOC43OWwtMjUuMTQ1LTk3LjcxNGMtNS4yODctMjAuNTQ2LTE2LjUyNS0zOS4wNzItMzIuMzA0LTUzLjI1M2wtMjcuMTc2LTI0LjQyNGMtNy41NjctNi44MDMtNy41NjctMTguNjY1IDAtMjUuNDY2eiIgZmlsbD0iI2VjZjRmZiIvPjxwYXRoIGQ9Im0zMTcuOTQ2IDI5My4xNTYtMjcuMTc2LTI0LjQyNGMtNy41NjgtNi44MDEtNy41NjgtMTguNjYzIDAtMjUuNDY0bDI3LjE3Ni0yNC40MjRjMTUuNzc5LTE0LjE4MSAyNy4wMTctMzIuNzA3IDMyLjMwNC01My4yNTNsMjUuMTQ1LTk3LjcxNC0yNi44ODUtMy40NDItMTkuNjI0IDMuNDQyLTE5Ljg0MyA3Ny4xMTFjLTUuMjg3IDIwLjU0Ni0xNi41MjUgMzkuMDcyLTMyLjMwNCA1My4yNTNsLTI3LjE3NiAyNC40MjRjLTcuNTY4IDYuODAxLTcuNTY4IDE4LjY2MiAwIDI1LjQ2NGwyNy4xNzYgMjQuNDI0YzE1Ljc3OSAxNC4xODEgMjcuMDE3IDMyLjcwNyAzMi4zMDQgNTMuMjUzbDIuMTU4IDguMzg1YzExLjY0NCA0NS4yNTEtMjIuNTI4IDg5LjMzLTY5LjI1MyA4OS4zM2gtMTAwLjA0bC01LjMwMiAyMC42MDQgMTc5LjE4MiAxMy40NDUgNTkuNjA4LTEzLjQ0NS0yNS4xNDUtOTcuNzE1Yy01LjI4OC0yMC41NDctMTYuNTI2LTM5LjA3My0zMi4zMDUtNTMuMjU0eiIgZmlsbD0iI2RkZWFmYiIvPjxwYXRoIGQ9Im0zODcuNjg3IDY3Ljg3N2gtMjYzLjM3NGMtMS4yNTUgMC0yLjMzMS0uODk5LTIuNTU0LTIuMTM0bC00LjQ3LTI0Ljc1NyAyNTAuNzEtOC43MjkgMjYuNzEyIDguNzI5LTQuNDcgMjQuNzU3Yy0uMjIzIDEuMjM1LTEuMjk5IDIuMTM0LTIuNTU0IDIuMTM0eiIgZmlsbD0iI2I5YzFjYiIvPjxwYXRoIGQ9Im00MDUuOTMyIDBoLTI5OS44NjRjLTEuNDMzIDAtMi41OTUgMS4xNjItMi41OTUgMi41OTV2MzUuNzk2YzAgMS40MzMgMS4xNjIgMi41OTUgMi41OTUgMi41OTVoMjk5Ljg2NWMxLjQzMyAwIDIuNTk1LTEuMTYyIDIuNTk1LTIuNTk1di0zNS43OTZjLS4wMDEtMS40MzMtMS4xNjItMi41OTUtMi41OTYtMi41OTV6IiBmaWxsPSIjZTQ5NTQyIi8+PHBhdGggZD0ibTM4Ny42ODcgNDQ0LjEyM2gtMjYzLjM3NGMtMS4yNTUgMC0yLjMzMS44OTktMi41NTQgMi4xMzRsLTQuNDcgMjQuNzU3IDE1Ni45MDMgMjUuNDc5IDEyMC41MTktMjUuNDc5LTQuNDctMjQuNzU3Yy0uMjIzLTEuMjM1LTEuMjk5LTIuMTM0LTIuNTU0LTIuMTM0eiIgZmlsbD0iI2I5YzFjYiIvPjxwYXRoIGQ9Im00MDUuOTMyIDUxMmgtMjk5Ljg2NGMtMS40MzMgMC0yLjU5NS0xLjE2Mi0yLjU5NS0yLjU5NXYtMzUuNzk2YzAtMS40MzMgMS4xNjItMi41OTUgMi41OTUtMi41OTVoMjk5Ljg2NWMxLjQzMyAwIDIuNTk1IDEuMTYyIDIuNTk1IDIuNTk1djM1Ljc5NmMtLjAwMSAxLjQzMy0xLjE2MiAyLjU5NS0yLjU5NiAyLjU5NXoiIGZpbGw9IiNlNDk1NDIiLz48cGF0aCBkPSJtMjY5LjkwNSAyMjAuNDY4Yy03LjkyNCA3LjIwNS0xOS44ODggNy4yMDMtMjcuODEyLS4wMDItLjA2OC0uMDYyLS4xMzYtLjEyMy0uMjA0LS4xODRsLTI3LjE3OC0yNC40MjZjLTExLjI4Ni0xMC4xNDMtMTkuMjUxLTIzLjI3My0yMy4wMzMtMzcuOTY4bC0xNC4wNDUtNTQuNTgxYy0uNTktMi4yOTMgMS4xNDItNC41MjcgMy41MS00LjUyN2gxNDkuNzExYzIuMzY4IDAgNC4xIDIuMjM0IDMuNTEgNC41MjdsLTE0LjA0NCA1NC41ODNjLTMuNzgyIDE0LjY5NS0xMS43NDUgMjcuODI0LTIzLjAzMiAzNy45NjdsLTI3LjE3NiAyNC40MjVjLS4wNjkuMDYyLS4xMzguMTI0LS4yMDcuMTg2eiIgZmlsbD0iI2Y5ZWZhZiIvPjxwYXRoIGQ9Im0zMDkuMDQzIDE0NC45ODdjLTUuMjg3IDIwLjU0Ni0xNi41MjUgMzkuMDcyLTMyLjMwNCA1My4yNTNsLTI3LjE3NiAyNC40MjRjLS41Ni41MDQtMS4wNzkgMS4wMzUtMS41NTYgMS41OSA3LjIyNCAzLjA0OCAxNS43NjkgMS43ODYgMjEuODk4LTMuNzg2LjA2OS0uMDYyLjEzNy0uMTI1LjIwNi0uMTg3bDI3LjE3Ni0yNC40MjVjMTEuMjg3LTEwLjE0MyAxOS4yNTEtMjMuMjcyIDIzLjAzMi0zNy45NjdsMTQuMDQ1LTU0LjU4MmMuNTktMi4yOTMtMS4xNDItNC41MjctMy41MS00LjUyN2gtOS45MjJ6IiBmaWxsPSIjZjZlNzgxIi8+PC9nPjwvc3ZnPg==" />
-        START
+        STARTED
       </div>
-      <div class="col d-flex justify-content-end dateDiv">
+      <div class="col d-flex justify-content-end dateDiv" *ngIf="!vote.idle">
         <img height="20" width="20" src="data:image/svg+xml;base64,PHN2ZyBoZWlnaHQ9IjUxMnB0IiB2aWV3Qm94PSItNjQgMCA1MTIgNTEyIiB3aWR0aD0iNTEycHQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0ibTMwMC43MzQzNzUgMzA4LjMzMjAzMWMyNS44MTY0MDYgMjMuMjMwNDY5IDQwLjU5NzY1NiA1Ni40NDUzMTMgNDAuNTk3NjU2IDkxLjE3NTc4MXY4NS44MjQyMTljMCA4LjgzMjAzMS03LjE2Nzk2OSAxNi0xNiAxNmgtMjY2LjY2NDA2MmMtOC44MzIwMzEgMC0xNi03LjE2Nzk2OS0xNi0xNnYtODUuODI0MjE5YzAtMzQuNzMwNDY4IDE0Ljc4MTI1LTY3Ljk2NDg0MyA0MC41OTc2NTYtOTEuMTc1NzgxbDM2LjExNzE4Ny0zMi40OTIxODdjNS42OTUzMTMtNS4xNDA2MjUgOC44MzIwMzItMTIuMTc5Njg4IDguODMyMDMyLTE5LjgzOTg0NHMtMy4xMzY3MTktMTQuNjk5MjE5LTguODMyMDMyLTE5LjgyMDMxMmwtMzYuMTE3MTg3LTMyLjUxMTcxOWMtMjUuODE2NDA2LTIzLjIzMDQ2OS00MC41OTc2NTYtNTYuNDQ1MzEzLTQwLjU5NzY1Ni05MS4xNzU3ODF2LTg1LjgyNDIxOWMwLTguODMyMDMxIDcuMTY3OTY5LTE2IDE2LTE2aDI2Ni42NjQwNjJjOC44MzIwMzEgMCAxNiA3LjE2Nzk2OSAxNiAxNnY4NS44MjQyMTljMCAzNC43MzA0NjgtMTQuNzgxMjUgNjcuOTY0ODQzLTQwLjU5NzY1NiA5MS4xNzU3ODFsLTM2LjExNzE4NyAzMi40OTIxODdjLTUuNjk1MzEzIDUuMTQwNjI1LTguODMyMDMyIDEyLjE3OTY4OC04LjgzMjAzMiAxOS44Mzk4NDRzMy4xMzY3MTkgMTQuNjk5MjE5IDguODMyMDMyIDE5LjgyMDMxMnptMCAwIiBmaWxsPSIjZWNlZmYxIi8+PHBhdGggZD0ibTEwNi42Njc5NjkgNDk2di05NC4zMTY0MDZjMC0xNS42Nzk2ODggNi4xMDE1NjItMzAuMzk4NDM4IDE3LjE5NTMxMi00MS40OTIxODhsNTYuODI4MTI1LTU2LjgzMjAzMWMzLjExNzE4OC0zLjEzNjcxOSA3LjIxMDkzOC00LjY5MTQwNiAxMS4zMDg1OTQtNC42OTE0MDZzOC4xOTE0MDYgMS41NTQ2ODcgMTEuMzA4NTk0IDQuNjkxNDA2bDU2LjgyODEyNSA1Ni44MzIwMzFjMTEuMDkzNzUgMTEuMDkzNzUgMTcuMTk1MzEyIDI1LjgxMjUgMTcuMTk1MzEyIDQxLjQ5MjE4OHY5NC4zMTY0MDZ6bTAgMCIgZmlsbD0iI2ZmYzEwNyIvPjxnIGZpbGw9IiM2MDdkOGIiPjxwYXRoIGQ9Im0zNjIuNjY3OTY5IDQ2OS4zMzIwMzFoLTM0MS4zMzU5MzhjLTExLjc5Njg3NSAwLTIxLjMzMjAzMSA5LjU1ODU5NC0yMS4zMzIwMzEgMjEuMzM1OTM4IDAgMTEuNzczNDM3IDkuNTM1MTU2IDIxLjMzMjAzMSAyMS4zMzIwMzEgMjEuMzMyMDMxaDM0MS4zMzU5MzhjMTEuNzk2ODc1IDAgMjEuMzMyMDMxLTkuNTU4NTk0IDIxLjMzMjAzMS0yMS4zMzIwMzEgMC0xMS43NzczNDQtOS41MzUxNTYtMjEuMzM1OTM4LTIxLjMzMjAzMS0yMS4zMzU5Mzh6bTAgMCIvPjxwYXRoIGQ9Im0zNjIuNjY3OTY5IDBoLTM0MS4zMzU5MzhjLTExLjc5Njg3NSAwLTIxLjMzMjAzMSA5LjU1ODU5NC0yMS4zMzIwMzEgMjEuMzMyMDMxIDAgMTEuNzc3MzQ0IDkuNTM1MTU2IDIxLjMzNTkzOCAyMS4zMzIwMzEgMjEuMzM1OTM4aDM0MS4zMzU5MzhjMTEuNzk2ODc1IDAgMjEuMzMyMDMxLTkuNTU4NTk0IDIxLjMzMjAzMS0yMS4zMzU5MzggMC0xMS43NzM0MzctOS41MzUxNTYtMjEuMzMyMDMxLTIxLjMzMjAzMS0yMS4zMzIwMzF6bTAgMCIvPjwvZz48L3N2Zz4=" />
-        END
+        ENDED
       </div>
-      <div class="w-100 d-none d-md-block"></div>
-      <div class="col d-flex justify-content-start dateDiv">
+      <div class="w-100 d-none d-md-block" *ngIf="!vote.idle"></div>
+      <div class="col d-flex justify-content-start dateDiv" *ngIf="!vote.idle">
         {{vote.startAt| date :'mediumDate'}}
       </div>
-      <div class="col d-flex justify-content-end dateDiv">
+      <div class="col d-flex justify-content-end dateDiv" *ngIf="!vote.idle">
         {{vote.endAt | date :'mediumDate'}}
       </div>
-      <div class="w-100 d-none d-md-block"></div>
-      <div class="col d-flex justify-content-start dateDiv">
+      <div class="w-100 d-none d-md-block" *ngIf="!vote.idle"></div>
+      <div class="col d-flex justify-content-start dateDiv" *ngIf="!vote.idle">
         {{vote.startAt| date :'mediumTime'}}
       </div>
-      <div class="col d-flex justify-content-end dateDiv">
+      <div class="col d-flex justify-content-end dateDiv" *ngIf="!vote.idle">
         {{vote.endAt | date :'mediumTime'}}
+      </div>
+      <div class="col d-flex justify-content-center dateDiv redColor" *ngIf="vote.active">
+        <img height="20" width="20" src="data:image/svg+xml;base64,PHN2ZyBoZWlnaHQ9IjUxMnB0IiB2aWV3Qm94PSItNjQgMCA1MTIgNTEyIiB3aWR0aD0iNTEycHQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0ibTMwMC43MzQzNzUgMzA4LjMzMjAzMWMyNS44MTY0MDYgMjMuMjMwNDY5IDQwLjU5NzY1NiA1Ni40NDUzMTMgNDAuNTk3NjU2IDkxLjE3NTc4MXY4NS44MjQyMTljMCA4LjgzMjAzMS03LjE2Nzk2OSAxNi0xNiAxNmgtMjY2LjY2NDA2MmMtOC44MzIwMzEgMC0xNi03LjE2Nzk2OS0xNi0xNnYtODUuODI0MjE5YzAtMzQuNzMwNDY4IDE0Ljc4MTI1LTY3Ljk2NDg0MyA0MC41OTc2NTYtOTEuMTc1NzgxbDM2LjExNzE4Ny0zMi40OTIxODdjNS42OTUzMTMtNS4xNDA2MjUgOC44MzIwMzItMTIuMTc5Njg4IDguODMyMDMyLTE5LjgzOTg0NHMtMy4xMzY3MTktMTQuNjk5MjE5LTguODMyMDMyLTE5LjgyMDMxMmwtMzYuMTE3MTg3LTMyLjUxMTcxOWMtMjUuODE2NDA2LTIzLjIzMDQ2OS00MC41OTc2NTYtNTYuNDQ1MzEzLTQwLjU5NzY1Ni05MS4xNzU3ODF2LTg1LjgyNDIxOWMwLTguODMyMDMxIDcuMTY3OTY5LTE2IDE2LTE2aDI2Ni42NjQwNjJjOC44MzIwMzEgMCAxNiA3LjE2Nzk2OSAxNiAxNnY4NS44MjQyMTljMCAzNC43MzA0NjgtMTQuNzgxMjUgNjcuOTY0ODQzLTQwLjU5NzY1NiA5MS4xNzU3ODFsLTM2LjExNzE4NyAzMi40OTIxODdjLTUuNjk1MzEzIDUuMTQwNjI1LTguODMyMDMyIDEyLjE3OTY4OC04LjgzMjAzMiAxOS44Mzk4NDRzMy4xMzY3MTkgMTQuNjk5MjE5IDguODMyMDMyIDE5LjgyMDMxMnptMCAwIiBmaWxsPSIjZWNlZmYxIi8+PHBhdGggZD0ibTEwNi42Njc5NjkgNDk2di05NC4zMTY0MDZjMC0xNS42Nzk2ODggNi4xMDE1NjItMzAuMzk4NDM4IDE3LjE5NTMxMi00MS40OTIxODhsNTYuODI4MTI1LTU2LjgzMjAzMWMzLjExNzE4OC0zLjEzNjcxOSA3LjIxMDkzOC00LjY5MTQwNiAxMS4zMDg1OTQtNC42OTE0MDZzOC4xOTE0MDYgMS41NTQ2ODcgMTEuMzA4NTk0IDQuNjkxNDA2bDU2LjgyODEyNSA1Ni44MzIwMzFjMTEuMDkzNzUgMTEuMDkzNzUgMTcuMTk1MzEyIDI1LjgxMjUgMTcuMTk1MzEyIDQxLjQ5MjE4OHY5NC4zMTY0MDZ6bTAgMCIgZmlsbD0iI2ZmYzEwNyIvPjxnIGZpbGw9IiM2MDdkOGIiPjxwYXRoIGQ9Im0zNjIuNjY3OTY5IDQ2OS4zMzIwMzFoLTM0MS4zMzU5MzhjLTExLjc5Njg3NSAwLTIxLjMzMjAzMSA5LjU1ODU5NC0yMS4zMzIwMzEgMjEuMzM1OTM4IDAgMTEuNzczNDM3IDkuNTM1MTU2IDIxLjMzMjAzMSAyMS4zMzIwMzEgMjEuMzMyMDMxaDM0MS4zMzU5MzhjMTEuNzk2ODc1IDAgMjEuMzMyMDMxLTkuNTU4NTk0IDIxLjMzMjAzMS0yMS4zMzIwMzEgMC0xMS43NzczNDQtOS41MzUxNTYtMjEuMzM1OTM4LTIxLjMzMjAzMS0yMS4zMzU5Mzh6bTAgMCIvPjxwYXRoIGQ9Im0zNjIuNjY3OTY5IDBoLTM0MS4zMzU5MzhjLTExLjc5Njg3NSAwLTIxLjMzMjAzMSA5LjU1ODU5NC0yMS4zMzIwMzEgMjEuMzMyMDMxIDAgMTEuNzc3MzQ0IDkuNTM1MTU2IDIxLjMzNTkzOCAyMS4zMzIwMzEgMjEuMzM1OTM4aDM0MS4zMzU5MzhjMTEuNzk2ODc1IDAgMjEuMzMyMDMxLTkuNTU4NTk0IDIxLjMzMjAzMS0yMS4zMzU5MzggMC0xMS43NzM0MzctOS41MzUxNTYtMjEuMzMyMDMxLTIxLjMzMjAzMS0yMS4zMzIwMzF6bTAgMCIvPjwvZz48L3N2Zz4=" />
+        ENDS AT
+      </div>
+      <div class="col d-flex justify-content-center dateDiv voteTitle" *ngIf="!vote.active && vote.idle">
+        <img height="20" width="20" src="data:image/svg+xml;base64,PHN2ZyBoZWlnaHQ9IjUxMnB0IiB2aWV3Qm94PSItNjQgMCA1MTIgNTEyIiB3aWR0aD0iNTEycHQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0ibTMwMC43MzQzNzUgMzA4LjMzMjAzMWMyNS44MTY0MDYgMjMuMjMwNDY5IDQwLjU5NzY1NiA1Ni40NDUzMTMgNDAuNTk3NjU2IDkxLjE3NTc4MXY4NS44MjQyMTljMCA4LjgzMjAzMS03LjE2Nzk2OSAxNi0xNiAxNmgtMjY2LjY2NDA2MmMtOC44MzIwMzEgMC0xNi03LjE2Nzk2OS0xNi0xNnYtODUuODI0MjE5YzAtMzQuNzMwNDY4IDE0Ljc4MTI1LTY3Ljk2NDg0MyA0MC41OTc2NTYtOTEuMTc1NzgxbDM2LjExNzE4Ny0zMi40OTIxODdjNS42OTUzMTMtNS4xNDA2MjUgOC44MzIwMzItMTIuMTc5Njg4IDguODMyMDMyLTE5LjgzOTg0NHMtMy4xMzY3MTktMTQuNjk5MjE5LTguODMyMDMyLTE5LjgyMDMxMmwtMzYuMTE3MTg3LTMyLjUxMTcxOWMtMjUuODE2NDA2LTIzLjIzMDQ2OS00MC41OTc2NTYtNTYuNDQ1MzEzLTQwLjU5NzY1Ni05MS4xNzU3ODF2LTg1LjgyNDIxOWMwLTguODMyMDMxIDcuMTY3OTY5LTE2IDE2LTE2aDI2Ni42NjQwNjJjOC44MzIwMzEgMCAxNiA3LjE2Nzk2OSAxNiAxNnY4NS44MjQyMTljMCAzNC43MzA0NjgtMTQuNzgxMjUgNjcuOTY0ODQzLTQwLjU5NzY1NiA5MS4xNzU3ODFsLTM2LjExNzE4NyAzMi40OTIxODdjLTUuNjk1MzEzIDUuMTQwNjI1LTguODMyMDMyIDEyLjE3OTY4OC04LjgzMjAzMiAxOS44Mzk4NDRzMy4xMzY3MTkgMTQuNjk5MjE5IDguODMyMDMyIDE5LjgyMDMxMnptMCAwIiBmaWxsPSIjZWNlZmYxIi8+PHBhdGggZD0ibTEwNi42Njc5NjkgNDk2di05NC4zMTY0MDZjMC0xNS42Nzk2ODggNi4xMDE1NjItMzAuMzk4NDM4IDE3LjE5NTMxMi00MS40OTIxODhsNTYuODI4MTI1LTU2LjgzMjAzMWMzLjExNzE4OC0zLjEzNjcxOSA3LjIxMDkzOC00LjY5MTQwNiAxMS4zMDg1OTQtNC42OTE0MDZzOC4xOTE0MDYgMS41NTQ2ODcgMTEuMzA4NTk0IDQuNjkxNDA2bDU2LjgyODEyNSA1Ni44MzIwMzFjMTEuMDkzNzUgMTEuMDkzNzUgMTcuMTk1MzEyIDI1LjgxMjUgMTcuMTk1MzEyIDQxLjQ5MjE4OHY5NC4zMTY0MDZ6bTAgMCIgZmlsbD0iI2ZmYzEwNyIvPjxnIGZpbGw9IiM2MDdkOGIiPjxwYXRoIGQ9Im0zNjIuNjY3OTY5IDQ2OS4zMzIwMzFoLTM0MS4zMzU5MzhjLTExLjc5Njg3NSAwLTIxLjMzMjAzMSA5LjU1ODU5NC0yMS4zMzIwMzEgMjEuMzM1OTM4IDAgMTEuNzczNDM3IDkuNTM1MTU2IDIxLjMzMjAzMSAyMS4zMzIwMzEgMjEuMzMyMDMxaDM0MS4zMzU5MzhjMTEuNzk2ODc1IDAgMjEuMzMyMDMxLTkuNTU4NTk0IDIxLjMzMjAzMS0yMS4zMzIwMzEgMC0xMS43NzczNDQtOS41MzUxNTYtMjEuMzM1OTM4LTIxLjMzMjAzMS0yMS4zMzU5Mzh6bTAgMCIvPjxwYXRoIGQ9Im0zNjIuNjY3OTY5IDBoLTM0MS4zMzU5MzhjLTExLjc5Njg3NSAwLTIxLjMzMjAzMSA5LjU1ODU5NC0yMS4zMzIwMzEgMjEuMzMyMDMxIDAgMTEuNzc3MzQ0IDkuNTM1MTU2IDIxLjMzNTkzOCAyMS4zMzIwMzEgMjEuMzM1OTM4aDM0MS4zMzU5MzhjMTEuNzk2ODc1IDAgMjEuMzMyMDMxLTkuNTU4NTk0IDIxLjMzMjAzMS0yMS4zMzU5MzggMC0xMS43NzM0MzctOS41MzUxNTYtMjEuMzMyMDMxLTIxLjMzMjAzMS0yMS4zMzIwMzF6bTAgMCIvPjwvZz48L3N2Zz4=" />
+        TO BE STARTED AT
+      </div>
+      <div class="w-100 d-none d-md-block" *ngIf="vote.idle"></div>
+      <div class="col d-flex justify-content-center dateDiv redColor" *ngIf="vote.active">
+        {{vote.endAt | date :'mediumTime'}}
+      </div>
+      <div class="col d-flex justify-content-center dateDiv greenColor" *ngIf="!vote.active && vote.idle">
+        {{vote.startAt | date :'mediumDate'}}
+      </div>
+      <div class="w-100 d-none d-md-block" *ngIf="!vote.active && vote.idle"></div>
+      <div class="col d-flex justify-content-center dateDiv greenColor" *ngIf="!vote.active && vote.idle">
+        {{vote.startAt | date :'mediumTime'}}
+      </div>
+      <div class="w-100 d-none d-md-block" *ngIf="!vote.active && vote.idle"></div>
+      <div  class="col d-flex justify-content-center customSpinner" *ngIf="!vote.active && vote.idle">
+        <sa-spinner-dotted></sa-spinner-dotted>
+      </div>
+      <div class="w-100 d-none d-md-block" *ngIf="!vote.active && vote.idle"></div>
+      <div class="col d-flex justify-content-center dateDiv greenColor" *ngIf="!vote.active && vote.idle">
+        <img height="20" width="20" src="data:image/svg+xml;base64,PHN2ZyBoZWlnaHQ9IjUxMnB0IiB2aWV3Qm94PSItNjQgMCA1MTIgNTEyIiB3aWR0aD0iNTEycHQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0ibTMwMC43MzQzNzUgMzA4LjMzMjAzMWMyNS44MTY0MDYgMjMuMjMwNDY5IDQwLjU5NzY1NiA1Ni40NDUzMTMgNDAuNTk3NjU2IDkxLjE3NTc4MXY4NS44MjQyMTljMCA4LjgzMjAzMS03LjE2Nzk2OSAxNi0xNiAxNmgtMjY2LjY2NDA2MmMtOC44MzIwMzEgMC0xNi03LjE2Nzk2OS0xNi0xNnYtODUuODI0MjE5YzAtMzQuNzMwNDY4IDE0Ljc4MTI1LTY3Ljk2NDg0MyA0MC41OTc2NTYtOTEuMTc1NzgxbDM2LjExNzE4Ny0zMi40OTIxODdjNS42OTUzMTMtNS4xNDA2MjUgOC44MzIwMzItMTIuMTc5Njg4IDguODMyMDMyLTE5LjgzOTg0NHMtMy4xMzY3MTktMTQuNjk5MjE5LTguODMyMDMyLTE5LjgyMDMxMmwtMzYuMTE3MTg3LTMyLjUxMTcxOWMtMjUuODE2NDA2LTIzLjIzMDQ2OS00MC41OTc2NTYtNTYuNDQ1MzEzLTQwLjU5NzY1Ni05MS4xNzU3ODF2LTg1LjgyNDIxOWMwLTguODMyMDMxIDcuMTY3OTY5LTE2IDE2LTE2aDI2Ni42NjQwNjJjOC44MzIwMzEgMCAxNiA3LjE2Nzk2OSAxNiAxNnY4NS44MjQyMTljMCAzNC43MzA0NjgtMTQuNzgxMjUgNjcuOTY0ODQzLTQwLjU5NzY1NiA5MS4xNzU3ODFsLTM2LjExNzE4NyAzMi40OTIxODdjLTUuNjk1MzEzIDUuMTQwNjI1LTguODMyMDMyIDEyLjE3OTY4OC04LjgzMjAzMiAxOS44Mzk4NDRzMy4xMzY3MTkgMTQuNjk5MjE5IDguODMyMDMyIDE5LjgyMDMxMnptMCAwIiBmaWxsPSIjZWNlZmYxIi8+PHBhdGggZD0ibTEwNi42Njc5NjkgNDk2di05NC4zMTY0MDZjMC0xNS42Nzk2ODggNi4xMDE1NjItMzAuMzk4NDM4IDE3LjE5NTMxMi00MS40OTIxODhsNTYuODI4MTI1LTU2LjgzMjAzMWMzLjExNzE4OC0zLjEzNjcxOSA3LjIxMDkzOC00LjY5MTQwNiAxMS4zMDg1OTQtNC42OTE0MDZzOC4xOTE0MDYgMS41NTQ2ODcgMTEuMzA4NTk0IDQuNjkxNDA2bDU2LjgyODEyNSA1Ni44MzIwMzFjMTEuMDkzNzUgMTEuMDkzNzUgMTcuMTk1MzEyIDI1LjgxMjUgMTcuMTk1MzEyIDQxLjQ5MjE4OHY5NC4zMTY0MDZ6bTAgMCIgZmlsbD0iI2ZmYzEwNyIvPjxnIGZpbGw9IiM2MDdkOGIiPjxwYXRoIGQ9Im0zNjIuNjY3OTY5IDQ2OS4zMzIwMzFoLTM0MS4zMzU5MzhjLTExLjc5Njg3NSAwLTIxLjMzMjAzMSA5LjU1ODU5NC0yMS4zMzIwMzEgMjEuMzM1OTM4IDAgMTEuNzczNDM3IDkuNTM1MTU2IDIxLjMzMjAzMSAyMS4zMzIwMzEgMjEuMzMyMDMxaDM0MS4zMzU5MzhjMTEuNzk2ODc1IDAgMjEuMzMyMDMxLTkuNTU4NTk0IDIxLjMzMjAzMS0yMS4zMzIwMzEgMC0xMS43NzczNDQtOS41MzUxNTYtMjEuMzM1OTM4LTIxLjMzMjAzMS0yMS4zMzU5Mzh6bTAgMCIvPjxwYXRoIGQ9Im0zNjIuNjY3OTY5IDBoLTM0MS4zMzU5MzhjLTExLjc5Njg3NSAwLTIxLjMzMjAzMSA5LjU1ODU5NC0yMS4zMzIwMzEgMjEuMzMyMDMxIDAgMTEuNzc3MzQ0IDkuNTM1MTU2IDIxLjMzNTkzOCAyMS4zMzIwMzEgMjEuMzM1OTM4aDM0MS4zMzU5MzhjMTEuNzk2ODc1IDAgMjEuMzMyMDMxLTkuNTU4NTk0IDIxLjMzMjAzMS0yMS4zMzU5MzggMC0xMS43NzM0MzctOS41MzUxNTYtMjEuMzMyMDMxLTIxLjMzMjAzMS0yMS4zMzIwMzF6bTAgMCIvPjwvZz48L3N2Zz4=" />
+        DURATION
+      </div>
+      <div class="w-100 d-none d-md-block"></div>
+      <div class="col d-flex justify-content-center dateDiv greenColor" *ngIf="!vote.active && vote.idle">
+        {{voteDuration(vote.startAt, vote.endAt)}}
       </div>
       <div class="w-100 d-none d-md-block"></div>
       <div class="col d-flex justify-content-center">
-        <a class="btn btn-xs btn-bold btn-light rounded-pill border border-dark mt-4" (click)="navToVote(vote.id)">
+        <a class="btn btn-xs btn-bold btn-light rounded-pill border mt-4"
+           [ngClass]="vote.active ? 'border-danger' : 'border-dark'"
+           (click)="navToVote(vote.id)">
           <i class="fa fa-arrow-circle-o-right fa-lg"></i> Access vote</a>
       </div>
     </div>

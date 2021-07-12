@@ -254,8 +254,8 @@ public class VotingController {
         return new ResponseEntity<>(voteResult.userVoted(member), HttpStatus.OK);
     }
 
-    @Async
-    @Scheduled(fixedRate = 1000)
+    //@Async
+    //@Scheduled(fixedRate = 1000)
     public void scheduleFixedRateTaskAsync() throws InterruptedException {
         voteService.returnIdles().forEach(vote -> {
             Date now = new Date();

@@ -15,7 +15,7 @@ import {TokenStorageService} from '../_services/token-storage.service';
   styleUrls: ['./all-votes.component.css']
 })
 export class AllVotesComponent implements OnInit {
-  ERoles_map = new Map([
+  ERolesMap = new Map([
     ['Sterge rolul precedent', 'ROLE_DELETE'],
     ['Comisia didactica', 'ROLE_DIDACTIC'],
     ['Comisia stiintifica', 'ROLE_STIINTIFIC'],
@@ -111,16 +111,28 @@ export class AllVotesComponent implements OnInit {
     this.backgrounds = aux;
   }
 
+  voteDuration(date1: Date, date2: Date): string {
+    const toDate1 = new Date(date1);
+    const toDate2 = new Date(date2);
+    const minutes = Math.abs((toDate2.getTime() - toDate1.getTime()) / 60000);
+    if (minutes) {
+      return (minutes.toString() + ' minutes');
+    }
+    else {
+      return '30 seconds';
+    }
+  }
+
   onRoleSelect(role: any): void {
     // @ts-ignore
-    this.Eroles.push(this.ERoles_map.get(role.item_text));
+    this.Eroles.push(this.ERolesMap.get(role.item_text));
     this.roleRestrictions = true;
     this.getAllVotes();
   }
 
   onRoleDeselect(role: any): void {
     // @ts-ignore
-    this.Eroles.splice(this.Eroles.indexOf(this.ERoles_map.get(role.item_text)), 1);
+    this.Eroles.splice(this.Eroles.indexOf(this.ERolesMap.get(role.item_text)), 1);
     this.roleRestrictions = !!(this.Eroles.length);
     this.getAllVotes();
   }
@@ -128,7 +140,7 @@ export class AllVotesComponent implements OnInit {
   onRoleSelectAll(roles: any): void {
     for (const role of roles) {
       // @ts-ignore
-      this.Eroles.push(this.ERoles_map.get(role.item_text));
+      this.Eroles.push(this.ERolesMap.get(role.item_text));
     }
     this.roleRestrictions = true;
     this.getAllVotes();

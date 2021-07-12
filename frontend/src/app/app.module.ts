@@ -34,6 +34,7 @@ import {NgApexchartsModule} from 'ng-apexcharts';
 import { AutoCompleteModule } from '@syncfusion/ej2-angular-dropdowns';
 import { DropDownListModule } from '@syncfusion/ej2-angular-dropdowns';
 import { CheckBoxModule } from '@syncfusion/ej2-angular-buttons';
+import { SpinnerDottedModule } from 'spinners-angular/spinner-dotted';
 import { PieSeriesService, AccumulationLegendService, AccumulationTooltipService, AccumulationAnnotationService,
   AccumulationDataLabelService } from '@syncfusion/ej2-angular-charts';
 import {
@@ -81,6 +82,7 @@ import {
     AutoCompleteModule,
     DropDownListModule,
     CheckBoxModule,
+    SpinnerDottedModule,
     NgMultiSelectDropDownModule.forRoot()
   ],
   providers: [
