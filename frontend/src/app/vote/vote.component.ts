@@ -54,7 +54,9 @@ export class VoteComponent implements OnInit {
   blank = false;
   ableToVote = false;
   alreadyVoted = false;
+  geoLocationValid = false;
 
+  // tslint:disable-next-line:variable-name
   constructor(private voteService: VoteService, private _Activatedroute: ActivatedRoute, private router: Router) {  }
 
   ngOnInit(): void {
@@ -115,12 +117,27 @@ export class VoteComponent implements OnInit {
       });
   }
 
+  checkGeolocation(id: number): void {
+    this.voteService.voteGeolocationValid(id).subscribe(
+      (ans: boolean) => {
+        this.geoLocationValid = ans;
+      },
+      err => {
+        this.geoLocationValid = false;
+      });
+  }
+
   getVoteById(id: number): void {
     this.voteService.getVoteById(id).subscribe(
       (response: Vote) => {
         this.vote = response;
-        this.getVoteResult(this.vote.id);
-        this.userVoted(this.vote.id);
+        if (!this.vote.idle) {
+          this.getVoteResult(this.vote.id);
+          this.userVoted(this.vote.id);
+        }
+        if (this.vote.active) {
+          this.checkGeolocation(this.vote.id);
+        }
       });
   }
 

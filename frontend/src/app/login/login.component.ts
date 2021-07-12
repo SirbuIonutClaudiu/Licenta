@@ -37,9 +37,10 @@ export class LoginComponent implements OnInit {
     this.visitorsService.getIpAddress().subscribe(res => {
       this.ipResponse = res;
       this.ipAddress = this.ipResponse.ip;
+      // tslint:disable-next-line:no-shadowed-variable
       this.visitorsService.getGEOLocation(this.ipAddress).subscribe(res => {
         this.locationResponse = res;
-        this.loginLocation = this.locationResponse['country_name'] + '/' + this.locationResponse['district'];
+        this.loginLocation = this.locationResponse.country_name + '/' + this.locationResponse.district;
       });
     });
   }
@@ -51,6 +52,7 @@ export class LoginComponent implements OnInit {
       data => {
         this.accessToken = data.accessToken;
         this.user = data;
+        // tslint:disable-next-line:no-shadowed-variable
         this.userService.check2FA(email).subscribe(data => {
           if (data.valueOf()) {
             this.tokenStorage.setEmail(email);
@@ -62,7 +64,7 @@ export class LoginComponent implements OnInit {
             this.isLoginFailed = false;
             this.isLoggedIn = true;
             this.roles = this.tokenStorage.getUser().roles;
-            this.router.navigate(['user_profile/'+this.user.id]);
+            this.router.navigate(['user_profile/' + this.user.id]);
           }
         });
       },
@@ -73,11 +75,7 @@ export class LoginComponent implements OnInit {
     );
   }
 
-  reloadPage(): void {
-    window.location.reload();
-  }
-
-  getEmail(): String {
+  getEmail(): string {
     return this.form.email;
   }
 }

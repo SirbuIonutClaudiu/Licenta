@@ -57,7 +57,8 @@
              maxlength="1"
              (keyup)="onDigitInput($event)"
              [(ngModel)]="digitSix"
-             name="digitSix">
+             name="digitSix"
+             (keydown.enter)="onSubmit()">
     </div>
     <button type="button"
             class="btn btn-success"

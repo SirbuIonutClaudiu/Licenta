@@ -113,7 +113,7 @@
               </div>
             </div>
           </div>
-          <div class="ans ml-2" *ngIf="vote.active && !alreadyVoted">
+          <div class="ans ml-2" *ngIf="vote.active && !alreadyVoted && geoLocationValid">
             <label class="radio">
               <button type="button"
                       [ngClass]="{'btn-success': for === true,
@@ -130,7 +130,7 @@
               </button>
             </label>
           </div>
-          <div class="ans ml-2" *ngIf="vote.active && !alreadyVoted">
+          <div class="ans ml-2" *ngIf="vote.active && !alreadyVoted && geoLocationValid">
             <label class="radio">
               <button type="button"
                       [ngClass]="{'btn-danger': against === true,
@@ -157,7 +157,7 @@
                 </h1>
               </article>
           </div>
-          <div class="ans ml-2" *ngIf="vote.active && !alreadyVoted">
+          <div class="ans ml-2" *ngIf="vote.active && !alreadyVoted && geoLocationValid">
             <label class="radio">
               <button type="button"
                       [ngClass]="{'btn-secondary': blank === true,
@@ -173,7 +173,17 @@
               </button>
             </label>
           </div>
-          <div class="row" *ngIf="ableToVote && vote.active" (click)="castVote()">
+          <div *ngIf="vote.active && !geoLocationValid">
+              <div class="alert alert-danger">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">
+                  ×</button>
+                <span class="glyphicon glyphicon-hand-right"></span> <strong> Warning</strong>
+                <hr class="message-inner-separator">
+                <p>
+                  Something went wrong. Check out if you already activated your email before.</p>
+            </div>
+          </div>
+          <div class="row" *ngIf="ableToVote && vote.active && geoLocationValid" (click)="castVote()">
             <div class="col"></div>
             <div class="col h-50">
               <a class="custom_btn">

@@ -88,6 +88,15 @@ public class VotingController {
         return new ResponseEntity<>(votesOrganizationRequest.SortVotesByRequest(allVoteResponses), HttpStatus.OK);
     }
 
+    @GetMapping("/vote_geolocation_validation/{voteId}")
+    public ResponseEntity<Boolean> validGeolocation(@RequestHeader("Authorization") String auth, @PathVariable("voteId") Long voteId) {
+        membruSenat member = getMemberFromAuthentication(auth);
+        Vote vote = voteRepository.findById(voteId)
+                .orElseThrow(() -> new RuntimeException("Vote not found !"));
+        boolean valid = !vote.isGeoRestricted() || member.getLoginLocation().equals("Romania/Brasov");
+        return new ResponseEntity<>(valid, HttpStatus.OK);
+    }
+
     private List<VoteResponse> VoteResponseForUser(List<Role> roles) {
         List<VoteResponse> result = new ArrayList<>();
         voteRepository.findAll().forEach(vote -> {

@@ -3,6 +3,7 @@ import {HttpClient, HttpHeaders} from '@angular/common/http';
 import { Observable } from 'rxjs';
 import {membruSenat} from './membruSenat';
 import {TokenStorageService} from './token-storage.service';
+import {Vote} from './Vote';
 
 const API_URL = 'http://localhost:8081/api/users/';
 

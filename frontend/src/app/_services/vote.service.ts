@@ -54,6 +54,10 @@ export class VoteService {
     return this.http.get<Vote>(VOTE_API + 'find/' + id, httpOptions);
   }
 
+  voteGeolocationValid(id: number): Observable<boolean> {
+    return this.http.get<boolean>(VOTE_API + 'vote_geolocation_validation/' + id, httpOptions);
+  }
+
   // tslint:disable-next-line:variable-name
   userVoted(vote_id: number): Observable<boolean> {
     return this.http.get<boolean>(VOTE_API + 'user_voted/' + vote_id, httpOptions);

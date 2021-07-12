@@ -152,6 +152,7 @@
 <div class="d-flex flex-row-reverse">
   <div class="d-flex justify-content-end pager">
     <mat-paginator [length]=voteSubjects.length
+                   showFirstLastButtons="true"
                    [pageSize]=perPage
                    [pageSizeOptions]="[6, 9, 12, 15, 30]"
                    (page)="onPaginateChange($event)">
