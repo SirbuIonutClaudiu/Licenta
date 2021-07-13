@@ -2,7 +2,6 @@ import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
 import {Vote} from './Vote';
-import {membruSenat} from './membruSenat';
 import {VoteCountResponse} from './VoteCountResponse';
 import {VoteSearchSubject} from './VoteSearchSubject';
 

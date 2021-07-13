@@ -82,12 +82,16 @@
     </div>
   </div>
 </section>
-<div class="container" *ngIf="formSubmitError">
-  <div class="row">
-    <div class="col"></div>
-    <div class="col error_container d-flex justify-content-center">
-      {{errorMessage}}
+<div class="row">
+  <div class="col-3"></div>
+  <div class="col-7" *ngIf="formSubmitError">
+    <div class="alert alert-danger">
+      <button type="button" class="close" data-dismiss="alert" aria-hidden="true">
+        ×</button>
+      <span class="glyphicon glyphicon-hand-right"></span> <strong> Warning</strong>
+      <hr class="message-inner-separator">
+        {{errorMessage}}
     </div>
-    <div class="col"></div>
   </div>
+  <div class="col-3"></div>
 </div>

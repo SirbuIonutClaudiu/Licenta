@@ -179,8 +179,7 @@
                   ×</button>
                 <span class="glyphicon glyphicon-hand-right"></span> <strong> Warning</strong>
                 <hr class="message-inner-separator">
-                <p>
-                  Something went wrong. Check out if you already activated your email before.</p>
+                  This vote is <b>GeoRestricted</b>. You cannot cast a vote logged in from outside of <b>Romania/Brasov</b>.
             </div>
           </div>
           <div class="row" *ngIf="ableToVote && vote.active && geoLocationValid" (click)="castVote()">

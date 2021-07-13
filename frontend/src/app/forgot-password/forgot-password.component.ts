@@ -17,14 +17,13 @@ export class ForgotPasswordComponent implements OnInit {
 
   constructor(private authService: AuthService) { }
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void { }
 
   onSubmit(): void {
     this.activatedForm = true;
     this.showFeedback = 0;
-    if(!this.validEmail()) {
-      this.errorMessage = "Insert a valid email address !";
+    if (!this.validEmail()) {
+      this.errorMessage = 'Insert a valid email address !';
       this.activatedForm = false;
       this.showFeedback = 2;
       return;
@@ -40,21 +39,16 @@ export class ForgotPasswordComponent implements OnInit {
         this.isLoginFailed = true;
         this.activatedForm = false;
         this.showFeedback = 2;
-      }
-    );
+      });
   }
 
   validEmail(): boolean {
-    if(this.email.indexOf('@') < 0) {
+    if (this.email.indexOf('@') < 0) {
       return false;
     }
-    if(this.email.substring(this.email.indexOf('@')).indexOf('.') < 0) {
+    if (this.email.substring(this.email.indexOf('@')).indexOf('.') < 0) {
       return false;
     }
-    if(this.email.length < 10) {
-      return false;
-    }
-    return true;
+    return this.email.length >= 10;
   }
-
 }

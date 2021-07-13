@@ -23,7 +23,7 @@ export class RegisterComponent implements OnInit {
   isLoading = false;
   selectedFile!: File;
   address = '';
-  applicationDate = formatDate(new Date().toDateString(),'longDate', 'en-US', '+0430');
+  applicationDate = formatDate(new Date().toDateString(), 'longDate', 'en-US', '+0430');
 
   constructor(private httpClient: HttpClient, private authService: AuthService, @Inject(DOCUMENT) private document: Document) { }
 
@@ -78,7 +78,7 @@ export class RegisterComponent implements OnInit {
     );
   }
 
-  public onFileChanged(event: any) {
+  public onFileChanged(event: any): void {
     this.selectedFile = event.target.files[0];
   }
 }

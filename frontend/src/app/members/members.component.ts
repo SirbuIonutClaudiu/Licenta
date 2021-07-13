@@ -71,7 +71,7 @@ export class MembersComponent implements OnInit {
         this.pages.push(0);
       }
     }
-    else if (page == this.getLastPage()) {
+    else if (page === this.getLastPage()) {
       if (page - 2 > 0) {
         this.pages.push(page - 2, page - 1, page);
       }
@@ -92,8 +92,9 @@ export class MembersComponent implements OnInit {
   selectMembersPerPage(): void {
     const start = (this.NumberOf(this.cookieService.get('page')) - 1) * this.option;
     for (let it = start; it < (start + this.option); it++) {
-      if(this.membriSenat[it])
-      this.selectedMembers.push(this.membriSenat[it]);
+      if (this.membriSenat[it]) {
+        this.selectedMembers.push(this.membriSenat[it]);
+      }
     }
   }
 
@@ -180,7 +181,7 @@ export class MembersComponent implements OnInit {
       error => {  } );
   }
 
-  navToProfile(id: number) {
+  navToProfile(id: number): void {
     this.router.navigate([`user_profile/${id}`]);
   }
 }

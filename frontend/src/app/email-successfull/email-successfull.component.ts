@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 
 @Component({
@@ -8,12 +8,12 @@ import {ActivatedRoute} from '@angular/router';
 })
 export class EmailSuccessfullComponent implements OnInit {
 
-  public answer: boolean = false;
+  public answer = false;
 
   constructor(private _Activatedroute: ActivatedRoute) {
   }
 
   ngOnInit(): void {
-    this.answer= (this._Activatedroute.snapshot.paramMap.get("answer") == "successfull");
+    this.answer = (this._Activatedroute.snapshot.paramMap.get('answer') === 'successfull');
   }
 }

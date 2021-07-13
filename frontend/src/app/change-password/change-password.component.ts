@@ -11,7 +11,7 @@ export class ChangePasswordComponent implements OnInit {
 
   password = '';
   verify = '';
-  code: string = '';
+  code = '';
   showFeedback = 0;
   errorMessage = '';
   successMessage = '';
@@ -25,7 +25,7 @@ export class ChangePasswordComponent implements OnInit {
               private authService: AuthService) { }
 
   ngOnInit(): void {
-    this.code = this._Activatedroute.snapshot.paramMap.get("code") || '';
+    this.code = this._Activatedroute.snapshot.paramMap.get('code') || '';
   }
 
   onSubmit(): void {
@@ -33,14 +33,14 @@ export class ChangePasswordComponent implements OnInit {
     this.verifyError = false;
     this.passwordMessage = 'The password must be 8-20 characters.';
     this.verifyMessage = 'To confirm, type the new password again.';
-    if(this.password.length < 8) {
-      this.passwordMessage = "Password must be at least 8 characters long.";
+    if (this.password.length < 8) {
+      this.passwordMessage = 'Password must be at least 8 characters long.';
       this.passwordError = true;
       return;
     }
-    if(this.password != this.verify) {
+    if (this.password !== this.verify) {
       this.verifyError = true;
-      this.verifyMessage = "Passwords do not match.";
+      this.verifyMessage = 'Passwords do not match.';
       return;
     }
     this.resetPassword();
@@ -56,9 +56,6 @@ export class ChangePasswordComponent implements OnInit {
         this.errorMessage = err.error.message;
         this.login = true;
         this.showFeedback = 2;
-      }
-    );
-
+      });
   }
-
 }

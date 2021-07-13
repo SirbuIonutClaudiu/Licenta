@@ -278,7 +278,7 @@ export class UserProfileComponent implements OnInit {
       error => {  } );
   }
 
-  onDigitInput(event: any) {
+  onDigitInput(event: any): void {
     let element;
     if (event.code !== 'Backspace') {
       element = event.srcElement.nextElementSibling;
@@ -503,6 +503,7 @@ export class UserProfileComponent implements OnInit {
     const reader = new FileReader();
     this.selectedFile = event.target.files[0];
     reader.readAsDataURL(event.target.files[0]);
+    // tslint:disable-next-line:no-shadowed-variable
     reader.onload = (event) => {
       this.auxImage = this.retrievedImage;
       // @ts-ignore

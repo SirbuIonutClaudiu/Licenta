@@ -79,7 +79,7 @@ export class AddVoteComponent implements OnInit {
   geoRestriction = true;
   date: any;
   dateFormated!: Date;
-  formSubmitError = true;
+  formSubmitError = false;
   errorMessage = '';
   errorTime = 0;
 

@@ -51,10 +51,7 @@ export class AllVotesComponent implements OnInit {
   Eroles = [];
   votes!: Vote[];
   votesResults!: VoteCountResponse[];
-  piedata = [
-    { x: 'for', y: 3, text: 'a' }, { x: 'against', y: 3.5, text: 'sda' },
-    { x: 'blank', y: 7, text: 'asdff' }, { x: 'absent', y: 13.5, text: 'd' }];
-  // tslint:disable-next-line:ban-types
+// tslint:disable-next-line:ban-types
   map: Object = 'fill';
   // tslint:disable-next-line:ban-types
   datalabel!: Object;
@@ -234,7 +231,7 @@ export class AllVotesComponent implements OnInit {
         this.getAllVotesResults();
       });
   }
-//
+
   getAllVotesResults(): void {
     const votesIds: number[] = [];
     this.votes.forEach(vote => {
@@ -245,5 +242,9 @@ export class AllVotesComponent implements OnInit {
         this.votesResults = answer;
         this.populatePieCharts();
       });
+  }
+
+  onPageActivate(event: any): void {
+    window.scroll(0, 0);
   }
 }

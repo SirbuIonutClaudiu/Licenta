@@ -155,7 +155,8 @@
                    showFirstLastButtons="true"
                    [pageSize]=perPage
                    [pageSizeOptions]="[6, 9, 12, 15, 30]"
-                   (page)="onPaginateChange($event)">
+                   (page)="onPaginateChange($event)"
+                   (activate)="onPageActivate($event)">
     </mat-paginator>
   </div>
 </div>
