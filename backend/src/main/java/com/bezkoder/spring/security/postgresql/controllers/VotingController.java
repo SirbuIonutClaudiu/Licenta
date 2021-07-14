@@ -18,14 +18,21 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.*;
+
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
 import javax.validation.Valid;
+import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 @EnableAsync
@@ -61,6 +68,9 @@ public class VotingController {
 
     @Autowired
     private final VoteResultService voteResultService;
+
+    @Autowired
+    private final JavaMailSender mailSender;
 
     @GetMapping("/search_subjects")
     public ResponseEntity<List<VoteSubjectSearchResponse>> SearchSubjects(@RequestHeader("Authorization") String auth) {
@@ -271,13 +281,52 @@ public class VotingController {
             startAt.setTime(vote.getStartAt());
             Calendar endAt = Calendar.getInstance();
             endAt.setTime(vote.getEndAt());
-            if(now.after(endAt.getTime())) {
+            long minutesToStart = ChronoUnit.MINUTES.between(now.toInstant(), startAt.toInstant());
+            long secondsToStart = (ChronoUnit.SECONDS.between(now.toInstant(), startAt.toInstant()))%60;
+
+            if((minutesToStart == 60) && (secondsToStart == 0)) {
+                sendMailToAllMembers(vote);
+            }
+            else if(now.after(endAt.getTime())) {
                 this.endVote(vote);
             }
             else if(now.after(startAt.getTime()) && now.before(endAt.getTime()) && !vote.isActive()) {
                 this.startVote(vote);
             }
         });
+    }
+
+    private void sendMailToAllMembers(Vote vote) {
+        membruSenatService.returnAll().forEach(membruSenat -> {
+            if(membruSenat.hasAuthorityToVote(vote)) {
+                try {
+                    sendReminderEmail(membruSenat, vote);
+                } catch (MessagingException | UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    private void sendReminderEmail(membruSenat member, Vote vote)
+            throws MessagingException, UnsupportedEncodingException {
+        String toAddress = member.getEmail();
+        String fromAddress = "AutoAccVerif@gmail.com";
+        String senderName = "UNITBV ";
+        String subject = "Unitbv senate vote reminder";
+        String content = "Dear [[member_name]],<br>"
+                + "This is a reminder that there is an hour left until vote for <b>[[vote_subject]]</b> starts.<br>"
+                + "Thank you,<br>"
+                + "UNITBV";
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message);
+        helper.setFrom(fromAddress, senderName);
+        helper.setTo(toAddress);
+        helper.setSubject(subject);
+        content = content.replace("[[member_name]]", member.getName());
+        content = content.replace("[[vote_subject]]", vote.getSubject());
+        helper.setText(content, true);
+        mailSender.send(message);
     }
 
     private void endVote(Vote vote) {

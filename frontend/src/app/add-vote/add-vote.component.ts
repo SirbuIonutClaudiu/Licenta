@@ -145,51 +145,52 @@ export class AddVoteComponent implements OnInit {
   }
 
   checkDateInput(): boolean {
-    if(this.dateFormated == null) {
-      this.setError("Date and time field cannot be empty !", 4);
+    if (this.dateFormated == null) {
+      this.setError('Date and time field cannot be empty !', 4);
       return false;
     }
     return true;
   }
 
   checkRolesInput(): boolean {
-    if(this.roles.length == 0) {
-      this.setError("Vote visibility field cannot be empty !", 4);
+    if (this.roles.length === 0) {
+      this.setError('Vote visibility field cannot be empty !', 4);
       return false;
     }
     return true;
   }
 
   checkDurationInput(): boolean {
-    if(this.duration == null) {
-      this.setError("Vote duration field cannot be empty !", 3);
+    if (this.duration == null) {
+      this.setError('Vote duration field cannot be empty !', 3);
       return false;
     }
     return true;
   }
 
   checkSubjectInput(): boolean {
-    if(this.subject.length == 0) {
-      this.setError("Subject field cannot be empty !", 3);
+    if (this.subject.length === 0) {
+      this.setError('Subject field cannot be empty !', 3);
       return false;
     }
-    else if(this.subject.length < 5) {
-      this.setError("Subject has to be at least 5 characters long !", 5);
+    else if (this.subject.length < 5) {
+      this.setError('Subject has to be at least 5 characters long !', 5);
       return false;
     }
     return true;
   }
 
   checkContentInput(): boolean {
-    if(this.content.length == 0) {
-      this.setError("Vote explanation field cannot be empty !", 4);
+    if (this.content.length === 0) {
+      this.setError('Vote explanation field cannot be empty !', 4);
       return false;
     }
     return true;
   }
 
   checkFormCorrectness(): boolean {
-    return (this.checkDateInput() && this.checkRolesInput() && this.checkDurationInput() && this.checkSubjectInput() && this.checkContentInput());
+    return (this.checkDateInput() && this.checkRolesInput() &&
+      this.checkDurationInput() && this.checkSubjectInput() && this.checkContentInput());
   }
 
   showError(): void {
@@ -201,7 +202,7 @@ export class AddVoteComponent implements OnInit {
   }
 
   submitForm(): void {
-    if(!this.checkFormCorrectness()) {
+    if (!this.checkFormCorrectness()) {
       this.showError();
     }
     else {
