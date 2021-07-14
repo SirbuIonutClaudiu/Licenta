@@ -69,10 +69,6 @@ public class membruSenat {
     @Column(name="activated_2fa")
     private boolean activated2FA = false;
 
-    @NotNull
-    @Column(name="admin_priviledge")
-    private boolean adminPriviledge;
-
     @Column(name = "verification_code", length = 64)
     private String verificationCode;
 

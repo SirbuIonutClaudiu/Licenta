@@ -187,10 +187,15 @@ label:active:after {
 .smsInput {
   color: #9400D3;
   background-color: #FFF8DC;
+  width: 20%;
+}
+
+.middleInputs {
+  border-right: 1px solid grey;
 }
 
 .incorrectSmsCode {
-  border: 2px solid red;
+  border-bottom: 2px solid red;
   border-radius: 4px;
 }
 

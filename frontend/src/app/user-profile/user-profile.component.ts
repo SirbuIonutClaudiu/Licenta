@@ -60,7 +60,6 @@ export class UserProfileComponent implements OnInit {
     verifiedApplication: false,
     verifiedEmail: false,
     activated2FA: false,
-    adminPriviledge: false,
     roles: []
   };
   availableRoles = new Map([
@@ -104,21 +103,22 @@ export class UserProfileComponent implements OnInit {
   addNumber(): void {
     const phoneUtil = require('google-libphonenumber').PhoneNumberUtil.getInstance();
     const PNF = require('google-libphonenumber').PhoneNumberFormat;
-    const number = phoneUtil.parseAndKeepRawInput(this.phoneNumber, 'US');
-    const region = phoneUtil.getRegionCodeForNumber(number);
+    const parsedNumber = phoneUtil.parseAndKeepRawInput(this.phoneNumber, 'US');
+    const region = phoneUtil.getRegionCodeForNumber(parsedNumber);
     if (region == null) {
       this.codeError = true;
       this.errorMessage = 'Phone number invalid. Please insert a country code !';
     }
-    else if (!phoneUtil.isValidNumberForRegion(phoneUtil.parse(number.getRawInput(), 'RO'), 'RO')) {
+    else if (!phoneUtil.isValidNumberForRegion(phoneUtil.parse(parsedNumber.getRawInput(), 'RO'), 'RO')) {
       this.codeError = true;
       this.errorMessage = 'Phone number invalid for region ' + region + '. Please try another !';
     }
     else {
-      this.phoneNumber = phoneUtil.format(number, PNF.E164);
+      this.phoneNumber = phoneUtil.format(parsedNumber, PNF.E164);
       this.userService.sendPhoneVerification(this.member.id, this.phoneNumber).subscribe(
         ans => {
           this.codeError = false;
+          this.isPhoneNumberEditable = false;
           this.isPhoneCodeEditable = true;
         },
         err => {
@@ -239,7 +239,10 @@ export class UserProfileComponent implements OnInit {
         this.isPhoneCodeEditable = false;
         this.codeError = false;
         this.isPhoneNumber = true;
-        this.member.phoneNumber = this.phoneNumber;
+        const phoneUtil = require('google-libphonenumber').PhoneNumberUtil.getInstance();
+        const PNF = require('google-libphonenumber').PhoneNumberFormat;
+        const PhoneNumber = phoneUtil.parseAndKeepRawInput(this.phoneNumber, 'US');
+        this.member.phoneNumber = phoneUtil.format(PhoneNumber, PNF.NATIONAL);
       },
       err => {
         this.codeError = true;
@@ -422,15 +425,14 @@ export class UserProfileComponent implements OnInit {
         this.getImage(this.member.email);
         this.member.website = (this.member.website == null) ? 'No website available' : this.member.website;
         this.website = this.member.website;
-        this.landline = this.member.landline;
+        this.landline = (this.member.landline == null) ? 'No landline available' : this.member.landline;
         this.twoFactor = this.member.activated2FA;
         this.isPhoneNumber = this.member.phoneNumber != null;
         if (this.isPhoneNumber) {
           const phoneUtil = require('google-libphonenumber').PhoneNumberUtil.getInstance();
           const PNF = require('google-libphonenumber').PhoneNumberFormat;
-          const number = phoneUtil.parseAndKeepRawInput(this.member.phoneNumber, 'US');
-          const region = phoneUtil.getRegionCodeForNumber(number);
-          this.member.phoneNumber = phoneUtil.format(number, PNF.NATIONAL);
+          const PhoneNumber = phoneUtil.parseAndKeepRawInput(this.member.phoneNumber, 'US');
+          this.member.phoneNumber = phoneUtil.format(PhoneNumber, PNF.NATIONAL);
         }
         this.editSiteClicked();
         this.editLandlineClicked();

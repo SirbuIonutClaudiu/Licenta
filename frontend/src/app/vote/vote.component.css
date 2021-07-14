@@ -192,6 +192,11 @@ article {
   font-size: min(200%, 5vmin);
 }
 
+.errorMsg {
+  margin-top: 10%;
+  width: 50%;
+}
+
 .voted {
   color: #228B22;
   size: 25px;

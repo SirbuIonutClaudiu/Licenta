@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {UserService} from '../_services/user.service';
 import {membruSenat} from '../_services/membruSenat';
-import {HttpClient, HttpErrorResponse} from '@angular/common/http';
+import {HttpErrorResponse} from '@angular/common/http';
 import {CookieService} from 'ngx-cookie-service';
 import {Router, Routes} from '@angular/router';
 import {UserProfileComponent} from '../user-profile/user-profile.component';

@@ -1,5 +1,9 @@
 package com.bezkoder.spring.security.postgresql;
 
+import com.bezkoder.spring.security.postgresql.models.ERole;
+import com.bezkoder.spring.security.postgresql.models.Role;
+import com.bezkoder.spring.security.postgresql.repository.RoleRepository;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -8,6 +12,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
 import java.util.Arrays;
+import java.util.Iterator;
 
 @SpringBootApplication
 public class SpringBootSecurityPostgresqlApplication {
@@ -30,5 +35,17 @@ public class SpringBootSecurityPostgresqlApplication {
 		UrlBasedCorsConfigurationSource urlBasedCorsConfigurationSource = new UrlBasedCorsConfigurationSource();
 		urlBasedCorsConfigurationSource.registerCorsConfiguration("/**", corsConfiguration);
 		return new CorsFilter(urlBasedCorsConfigurationSource);
+	}
+
+	@Bean
+	public CommandLineRunner loadData(RoleRepository roleRepository) {
+		return (args) -> {
+			Iterator<ERole> ERoles_iterator = Arrays.stream(ERole.values()).iterator();
+			int counter = 0;
+			while(ERoles_iterator.hasNext()) {
+				Role newRole = new Role(++counter, ERoles_iterator.next());
+				roleRepository.save(newRole);
+			}
+		};
 	}
 }

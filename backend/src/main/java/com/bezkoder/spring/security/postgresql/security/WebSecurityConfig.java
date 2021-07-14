@@ -62,7 +62,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers("/verify*").permitAll()
 				.antMatchers("/api/users/check2FA/**").permitAll()
 				.antMatchers("/api/users/upload/**").permitAll()
-				.antMatchers("/api/users/set_login_location/**").permitAll()
 				.antMatchers("/api/auth/confirm_reset/**").permitAll()
 			.anyRequest().authenticated();
 

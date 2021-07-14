@@ -12,6 +12,5 @@ export interface membruSenat {
   verifiedApplication: boolean;
   verifiedEmail: boolean;
   activated2FA: boolean;
-  adminPriviledge: boolean;
   roles: string[];
 }

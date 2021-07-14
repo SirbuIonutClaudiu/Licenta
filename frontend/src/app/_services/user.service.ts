@@ -85,7 +85,7 @@ export class UserService {
   }
 
   updateRoles(id: number, role: string): Observable<any> {
-    return this.http.post(API_URL + 'update_roles/' + id + '/' + role, this.httpOptions);
+    return this.http.post(API_URL + 'update_commission_role/' + id + '/' + role, this.httpOptions);
   }
 
   updateEmail(id: number, email: string): Observable<any> {

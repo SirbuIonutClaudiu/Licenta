@@ -10,7 +10,6 @@ import com.bezkoder.spring.security.postgresql.repository.ImageRepository;
 import com.bezkoder.spring.security.postgresql.repository.PasswordResetTokenRepository;
 import com.bezkoder.spring.security.postgresql.repository.RoleRepository;
 import com.bezkoder.spring.security.postgresql.repository.membruSenatRepository;
-import com.bezkoder.spring.security.postgresql.security.jwt.JwtUtils;
 import com.bezkoder.spring.security.postgresql.security.services.MembruSenatService;
 import com.twilio.rest.verify.v2.Service;
 import com.twilio.rest.verify.v2.service.Verification;
@@ -59,25 +58,20 @@ public class UserController {
     @Autowired
     RoleRepository roleRepository;
 
-    @Autowired
-    private final JwtUtils jwtUtils;
-
     private final String username = "AC315b0b103eacf332065bb30dca612446";
 
-    private final String password = "8aa15f426cc173a395ee96b646cbc05c";
+    private final String password = "7b7357480416356e94254b25a32ebc30";
 
     @GetMapping("/return_all")
     public List<UserResponse> returnAll() {
-        List<UserResponse> result = new ArrayList<UserResponse>();
-        membruSenatService.returnAll().forEach((member) -> {
-            result.add(memberToUserResponse(member));
-        });
+        List<UserResponse> result = new ArrayList<>();
+        membruSenatService.returnAll().forEach((member) -> result.add(memberToUserResponse(member)));
         return result;
     }
 
     @GetMapping("/still_pending")
     public List<UserResponse> stillPending() {
-        List<UserResponse> result = new ArrayList<UserResponse>();
+        List<UserResponse> result = new ArrayList<>();
         membruSenatService.returnAll().forEach((member) -> {
             if(!member.isVerifiedApplication()) {
                 result.add(memberToUserResponse(member));
@@ -125,7 +119,6 @@ public class UserController {
                     member.getVerificationSID(),
                     code)
                     .setTo(member.getPhoneNumber2BVerified()).create();
-            System.out.println(verificationCheck.getStatus().toLowerCase(Locale.ROOT));
             if(verificationCheck.getStatus().toLowerCase(Locale.ROOT).compareToIgnoreCase("approved") == 0) {
                 member.setVerificationSID(null);
                 member.setPhoneNumber(member.getPhoneNumber2BVerified());
@@ -149,7 +142,7 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PostMapping("/update_roles/{id}/{role}")
+    @PostMapping("/update_commission_role/{id}/{role}")
     public ResponseEntity<?> updateRoles(@PathVariable("id") Long id, @PathVariable("role") ERole role) {
         if(!membruSenatRepo.existsById(id)) {
             return ResponseEntity
@@ -157,20 +150,16 @@ public class UserController {
                     .body(new MessageResponse("Member does not exist !"));
         }
         membruSenat member = membruSenatService.findMemberById(id);
-        Set<Role> roles = new HashSet<>();
-        Set<Role> userRoles = member.getRoles();
-        if(userRoles.contains(new Role(1, ERole.ROLE_USER))) {
-            roles.add(new Role(1, ERole.ROLE_USER));
+        Role newRole = roleRepository.findByName(role)
+                .orElseThrow(() -> new RuntimeException("Role " + role.name() + " not found !"));
+        if(member.getRoles().size() == 2) {
+            member.getRoles().removeIf(currentRole -> (!currentRole.getName().equals(ERole.ROLE_ADMIN)) &&
+                    (!currentRole.getName().equals(ERole.ROLE_MODERATOR)) &&
+                    (!currentRole.getName().equals(ERole.ROLE_USER)) );
         }
-        else if(userRoles.contains(new Role(1, ERole.ROLE_ADMIN))) {
-            roles.add(new Role(1, ERole.ROLE_ADMIN));
+        if(!newRole.getName().equals(ERole.ROLE_DELETE)) {
+            member.getRoles().add(newRole);
         }
-        if(role != ERole.ROLE_DELETE) {
-            Role otherRole = roleRepository.findByName(role)
-                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-            roles.add(otherRole);
-        }
-        member.setRoles(roles);
         membruSenatRepo.save(member);
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -369,21 +358,18 @@ public class UserController {
     }
 
     @GetMapping(path = { "/get_images" })
-    public List<ImageModel> getAllImages() throws IOException {
-        List<ImageModel> retrievedImages = new ArrayList<ImageModel>();
-        imageRepository.findAll().forEach((image) -> {
-            retrievedImages.add(new ImageModel(image.getName(), image.getType(),
-                    decompressBytes(image.getPicByte())));
-        });
+    public List<ImageModel> getAllImages() {
+        List<ImageModel> retrievedImages = new ArrayList<>();
+        imageRepository.findAll().forEach((image) -> retrievedImages.add(new ImageModel(image.getName(), image.getType(),
+                decompressBytes(image.getPicByte()))));
         return retrievedImages;
     }
 
     @GetMapping(path = { "/get/{imageName}" })
-    public ImageModel getImage(@PathVariable("imageName") String imageName) throws IOException {
+    public ImageModel getImage(@PathVariable("imageName") String imageName) {
         final Optional<ImageModel> retrievedImage = imageRepository.findByName(imageName);
-        ImageModel img = new ImageModel(retrievedImage.get().getName(), retrievedImage.get().getType(),
+        return new ImageModel(retrievedImage.get().getName(), retrievedImage.get().getType(),
                 decompressBytes(retrievedImage.get().getPicByte()));
-        return img;
     }
 
     public String ERoleToString(ERole erole) {
@@ -417,7 +403,7 @@ public class UserController {
             ERole roleName = it.next().getName();
             roles.add(ERoleToString(roleName));
         }
-        Collections.sort(roles, Comparator.comparingInt(String::length));
+        roles.sort(Comparator.comparingInt(String::length));
         return new UserResponse( member.getId(),
                                  member.getEmail(),
                                  member.getName(),
@@ -431,7 +417,6 @@ public class UserController {
                                  member.isVerifiedApplication(),
                                  member.isVerifiedEmail(),
                                  member.isActivated2FA(),
-                                 member.isAdminPriviledge(),
                                  roles );
     }
 
@@ -446,7 +431,7 @@ public class UserController {
         }
         try {
             outputStream.close();
-        } catch (IOException e) {
+        } catch (IOException ignored) {
         }
         return outputStream.toByteArray();
     }
@@ -462,8 +447,7 @@ public class UserController {
                 outputStream.write(buffer, 0, count);
             }
             outputStream.close();
-        } catch (IOException ioe) {
-        } catch (DataFormatException e) {
+        } catch (IOException | DataFormatException ignored) {
         }
         return outputStream.toByteArray();
     }

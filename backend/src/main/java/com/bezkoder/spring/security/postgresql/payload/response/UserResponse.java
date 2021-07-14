@@ -20,6 +20,5 @@ public class UserResponse {
     private boolean verifiedApplication;
     private boolean verifiedEmail;
     private boolean activated2FA;
-    private boolean adminPriviledge;
     private List<String> roles;
 }

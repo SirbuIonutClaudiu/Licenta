@@ -152,7 +152,7 @@
               <div class="col-sm-2">
                 <h6 class="col-mb-0"><b>Mobile</b></h6>
               </div>
-              <div class="col-md-5" *ngIf="!isPhoneNumber || isPhoneNumberEditable">
+              <div class="col-md-5" *ngIf="(!isPhoneNumber || isPhoneNumberEditable) && !isPhoneCodeEditable">
                 <international-phone-number placeholder="Enter phone number"
                                             [maxlength]="15"
                                             [defaultCountry]="'ro'"
@@ -161,65 +161,66 @@
                                             [(ngModel)]="phoneNumber"
                                             (keydown.enter)="addNumber()">
                 </international-phone-number>
-                <div class="d-flex flex-row md-6" *ngIf="isPhoneCodeEditable">
-                  <input type="text"
-                         class="form-control smsInput"
-                         autofocus=""
-                         [(ngModel)]="digitOne"
-                         [ngClass]="{'incorrectSmsCode': codeError === true}"
-                         maxlength="1"
-                         (keyup)="onDigitInput($event)"
-                         name="digitOne">
-                  <input type="text"
-                         class="form-control smsInput"
-                         ng-model="digitTwo"
-                         [(ngModel)]="digitTwo"
-                         [ngClass]="{'incorrectSmsCode': codeError === true}"
-                         maxlength="1"
-                         (keyup)="onDigitInput($event)"
-                         name="digitTwo">
-                  <input type="text"
-                         class="form-control smsInput"
-                         ng-model="digitThree"
-                         [(ngModel)]="digitThree"
-                         [ngClass]="{'incorrectSmsCode': codeError === true}"
-                         maxlength="1"
-                         (keyup)="onDigitInput($event)"
-                         name="digitThree">
-                  <input type="text"
-                         class="form-control smsInput"
-                         ng-model="digitFour"
-                         [(ngModel)]="digitFour"
-                         [ngClass]="{'incorrectSmsCode': codeError === true}"
-                         maxlength="1"
-                         (keyup)="onDigitInput($event)"
-                         name="digitFour">
-                  <input type="text"
-                         class="form-control smsInput"
-                         ng-model="digitFive"
-                         [(ngModel)]="digitFive"
-                         [ngClass]="{'incorrectSmsCode': codeError === true}"
-                         maxlength="1"
-                         (keyup)="onDigitInput($event)"
-                         name="digitFive">
-                  <input type="text"
-                         class="form-control smsInput"
-                         ng-model="digitSix"
-                         [(ngModel)]="digitSix"
-                         [ngClass]="{'incorrectSmsCode': codeError === true}"
-                         maxlength="1"
-                         (keyup)="onDigitInput($event)"
-                         name="digitSix">
-                </div>
               </div>
-              <div class="col-md-6" *ngIf="isPhoneNumber && !isPhoneNumberEditable">
+              <div class="col d-flex flex-row md-6" *ngIf="isPhoneCodeEditable">
+                <input type="text"
+                       class="form-control smsInput middleInputs"
+                       autofocus=""
+                       [(ngModel)]="digitOne"
+                       [ngClass]="{'incorrectSmsCode': codeError === true}"
+                       maxlength="1"
+                       (keyup)="onDigitInput($event)"
+                       name="digitOne">
+                <input type="text"
+                       class="form-control smsInput middleInputs"
+                       ng-model="digitTwo"
+                       [(ngModel)]="digitTwo"
+                       [ngClass]="{'incorrectSmsCode': codeError === true}"
+                       maxlength="1"
+                       (keyup)="onDigitInput($event)"
+                       name="digitTwo">
+                <input type="text"
+                       class="form-control smsInput middleInputs"
+                       ng-model="digitThree"
+                       [(ngModel)]="digitThree"
+                       [ngClass]="{'incorrectSmsCode': codeError === true}"
+                       maxlength="1"
+                       (keyup)="onDigitInput($event)"
+                       name="digitThree">
+                <input type="text"
+                       class="form-control smsInput middleInputs"
+                       ng-model="digitFour"
+                       [(ngModel)]="digitFour"
+                       [ngClass]="{'incorrectSmsCode': codeError === true}"
+                       maxlength="1"
+                       (keyup)="onDigitInput($event)"
+                       name="digitFour">
+                <input type="text"
+                       class="form-control smsInput middleInputs"
+                       ng-model="digitFive"
+                       [(ngModel)]="digitFive"
+                       [ngClass]="{'incorrectSmsCode': codeError === true}"
+                       maxlength="1"
+                       (keyup)="onDigitInput($event)"
+                       name="digitFive">
+                <input type="text"
+                       class="form-control smsInput"
+                       ng-model="digitSix"
+                       [(ngModel)]="digitSix"
+                       [ngClass]="{'incorrectSmsCode': codeError === true}"
+                       maxlength="1"
+                       (keyup)="onDigitInput($event)"
+                       (keydown.enter)="confirmCode()"
+                       name="digitSix">
+              </div>
+              <div class="col-md-6" *ngIf="isPhoneNumber && !isPhoneNumberEditable && !isPhoneCodeEditable">
                 {{member.phoneNumber}}
               </div>
-              <div class="col-md-3 card-hover-show" *ngIf="isPhoneNumber && !isPhoneNumberEditable">
+              <div class="col-md-3 card-hover-show" *ngIf="isPhoneNumber && !isPhoneNumberEditable && !isPhoneCodeEditable">
                 <a class="btn btn-xs btn-bold btn-warning activateBtn rounded-pill" (click)="EditPhoneNumber()">
                   <i class="fa fa-pencil fa-lg"></i>&nbsp;&nbsp;Edit</a>
               </div>
-              <div class="col-md-5 card-hover-show" *ngIf="!isPhoneNumber || isPhoneNumberEditable">
+              <div class="col-md-5 card-hover-show" *ngIf="(!isPhoneNumber || isPhoneNumberEditable) && !isPhoneCodeEditable">
                 <a class="btn btn-xs btn-bold btn-primary activateBtn rounded-pill" (click)="addNumber()" style="margin-right: 5%;">
                   <i class="fa fa-mobile fa-lg"></i>&nbsp;&nbsp;Add number</a>
                 <a class="btn btn-xs btn-bold btn-danger activateBtn rounded-pill" (click)="discardPhoneChange()" *ngIf="isPhoneNumber">

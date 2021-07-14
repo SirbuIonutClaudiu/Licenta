@@ -27,7 +27,6 @@ import javax.validation.Valid;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 @EnableAsync
 @EnableScheduling
@@ -263,8 +262,8 @@ public class VotingController {
         return new ResponseEntity<>(voteResult.userVoted(member), HttpStatus.OK);
     }
 
-    //@Async
-    //@Scheduled(fixedRate = 1000)
+    @Async
+    @Scheduled(fixedRate = 1000)
     public void scheduleFixedRateTaskAsync() throws InterruptedException {
         voteService.returnIdles().forEach(vote -> {
             Date now = new Date();
