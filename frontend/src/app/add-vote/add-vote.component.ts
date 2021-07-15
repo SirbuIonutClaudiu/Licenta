@@ -3,6 +3,7 @@ import {UserService} from '../_services/user.service';
 import { IDropdownSettings } from 'ng-multiselect-dropdown';
 import { ToolbarService, LinkService, ImageService, HtmlEditorService } from '@syncfusion/ej2-angular-richtexteditor';
 import {VoteService} from '../_services/vote.service';
+import {TokenStorageService} from '../_services/token-storage.service';
 
 @Component({
   selector: 'app-add-vote',
@@ -77,16 +78,27 @@ export class AddVoteComponent implements OnInit {
   content = '';
   roles = [];
   geoRestriction = true;
+  emailReminder = false;
   date: any;
   dateFormated!: Date;
   formSubmitError = false;
   errorMessage = '';
   errorTime = 0;
+  HostHasModeratorRole = false;
+  HostHasAdministratorRole = false;
 
-  constructor(private userService: UserService, private voteService: VoteService) { }
+  constructor(private userService: UserService, private voteService: VoteService,
+              private tokenStorageService: TokenStorageService) { }
 
   ngOnInit(): void {
     this.addInputMaxLength();
+    this.checkHostRoles();
+  }
+
+  checkHostRoles(): void {
+    const roles = this.tokenStorageService.getUser().roles;
+    this.HostHasAdministratorRole = (roles[0] === 'ROLE_ADMIN') || (roles[1] === 'ROLE_ADMIN');
+    this.HostHasModeratorRole = (roles[0] === 'ROLE_MODERATOR') || (roles[1] === 'ROLE_MODERATOR');
   }
 
   change(): void {
@@ -206,7 +218,8 @@ export class AddVoteComponent implements OnInit {
       this.showError();
     }
     else {
-      this.voteService.newVote(this.subject, this.content, this.dateFormated, this.duration, this.geoRestriction, this.roles).subscribe(
+      this.voteService.newVote(this.subject, this.content, this.dateFormated, this.duration,
+        this.geoRestriction, this.emailReminder, this.roles).subscribe(
         ans => {
           window.location.reload();
         },

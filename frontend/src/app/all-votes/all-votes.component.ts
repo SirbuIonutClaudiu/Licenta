@@ -112,8 +112,8 @@ export class AllVotesComponent implements OnInit {
     const toDate1 = new Date(date1);
     const toDate2 = new Date(date2);
     const minutes = Math.abs((toDate2.getTime() - toDate1.getTime()) / 60000);
-    if (minutes) {
-      return (minutes.toString() + ' minutes');
+    if (minutes >= 1) {
+      return (minutes.toString() + ' minute' + ((minutes === 1) ? '' : 's'));
     }
     else {
       return '30 seconds';

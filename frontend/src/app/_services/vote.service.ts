@@ -17,13 +17,15 @@ const httpOptions = {
 export class VoteService {
   constructor(private http: HttpClient) { }
 
-  newVote(subject: string, content: string, startAt: Date, duration: number, geoRestricted: boolean, roles = []): Observable<any> {
+  newVote(subject: string, content: string, startAt: Date, duration: number,
+          geoRestricted: boolean, emailReminder: boolean,  roles = []): Observable<any> {
     return this.http.post(VOTE_API + 'new_vote', {
       subject,
       content,
       startAt,
       duration,
       geoRestricted,
+      emailReminder,
       roles
     }, httpOptions);
   }

@@ -1,23 +1,24 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
-<section class="section gray-bg" id="contactus">
-  <div class="container">
-    <div class="row">
-      <div class="col-lg-6">
+<div *ngIf="HostHasModeratorRole || HostHasAdministratorRole">
+  <section class="section gray-bg" id="contactus">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-6">
+        </div>
       </div>
-    </div>
-    <div class="row flex-row">
-      <div class="col-md-1"> </div>
-      <div class="col-md-10">
-        <div class="contact-form">
+      <div class="row flex-row">
+        <div class="col-md-1"> </div>
+        <div class="col-md-10">
+          <div class="contact-form">
             <div class="row">
               <div class="col-md-3 d-flex align-items-center justify-content-start">
-                  <mat-form-field>
-                    <input matInput [ngxMatDatetimePicker]="picker" style="color: #556B2F;"
-                           placeholder="Choose a date and time" [disabled]="true" [(ngModel)]="date" (ngModelChange)="change()">
-                    <mat-datepicker-toggle matSuffix [for]="$any(picker)"></mat-datepicker-toggle>
-                    <ngx-mat-datetime-picker #picker [showSpinners]=true [showSeconds]=true [disabled]="false">
-                    </ngx-mat-datetime-picker>
-                  </mat-form-field>
+                <mat-form-field>
+                  <input matInput [ngxMatDatetimePicker]="picker" style="color: #556B2F;"
+                         placeholder="Choose a date and time" [disabled]="true" [(ngModel)]="date" (ngModelChange)="change()">
+                  <mat-datepicker-toggle matSuffix [for]="$any(picker)"></mat-datepicker-toggle>
+                  <ngx-mat-datetime-picker #picker [showSpinners]=true [showSeconds]=true [disabled]="false">
+                  </ngx-mat-datetime-picker>
+                </mat-form-field>
               </div>
               <p id="date_formated" hidden>{{date | date :'medium'}}</p>
               <div class="col-md-5 d-flex align-items-center justify-content-center">
@@ -59,8 +60,8 @@
                   </ejs-richtexteditor>
                 </div>
               </div>
-              <div class="col-md-6 d-flex align-items-center justify-content-start">
-                <div id='container'>
+              <div class="col-md-4 d-flex align-items-center justify-content-start">
+                <div id='container1'>
                   <table class="ripple">
                     <tr>
                       <td class="lRipple">
@@ -73,27 +74,51 @@
                   </table>
                 </div>
               </div>
-              <div class="col-md-6 d-flex align-items-center justify-content-end">
+              <div class="col-md-3 d-flex align-items-center justify-content-end">
+                <div id='container2'>
+                  <table class="ripple">
+                    <tr>
+                      <td class="lRipple">
+                        <label for='switch1'>Email reminder&nbsp;&nbsp;</label>
+                      </td>
+                      <td>
+                        <ejs-switch id="switch2" [(ngModel)]="emailReminder"></ejs-switch>
+                      </td>
+                    </tr>
+                  </table>
+                </div>
+              </div>
+              <div class="col-md-5 d-flex align-items-start justify-content-end">
                 <div class="send">
                   <a id="send_message" class="px-btn theme" (click)="submitForm()"><span>Create vote</span> <i class="arrow"></i></a>
                 </div>
               </div>
             </div>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-</section>
-<div class="row">
-  <div class="col-3"></div>
-  <div class="col-7" *ngIf="formSubmitError">
-    <div class="alert alert-danger">
-      <button type="button" class="close" data-dismiss="alert" aria-hidden="true">
-        ×</button>
-      <span class="glyphicon glyphicon-hand-right"></span> <strong> Warning</strong>
-      <hr class="message-inner-separator">
+  </section>
+  <div class="row">
+    <div class="col-3"></div>
+    <div class="col-7" *ngIf="formSubmitError">
+      <div class="alert alert-danger">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">
+          ×</button>
+        <span class="glyphicon glyphicon-hand-right"></span> <strong> Warning</strong>
+        <hr class="message-inner-separator">
         {{errorMessage}}
+      </div>
     </div>
+    <div class="col-3"></div>
   </div>
-  <div class="col-3"></div>
+</div>
+<div class="d-flex justify-content-center" *ngIf="!(HostHasModeratorRole || HostHasAdministratorRole)">
+  <div class="alert alert-danger errorMsg">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">
+      ×</button>
+    <span class="glyphicon glyphicon-hand-right"></span> <strong> Error</strong>
+    <hr class="message-inner-separator">
+    You do <b>not have permission</b> to create new votes !
+  </div>
 </div>

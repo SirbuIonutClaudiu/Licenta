@@ -29,6 +29,9 @@ public class Vote {
     @Column(name = "geo_restricted")
     private boolean geoRestricted;
 
+    @Column(name = "email_reminder")
+    private boolean emailReminder;
+
     private boolean active;
 
     private boolean idle;
@@ -53,12 +56,13 @@ public class Vote {
         this.idle = false;
     }
 
-    public Vote(String subject, String content, Date startAt, Date endAt, boolean geoRestricted, List<Role> roles) {
+    public Vote(String subject, String content, Date startAt, Date endAt, boolean geoRestricted, boolean emailReminder, List<Role> roles) {
         this.subject = subject;
         this.content = content;
         this.startAt = startAt;
         this.endAt = endAt;
         this.geoRestricted = geoRestricted;
+        this.emailReminder = emailReminder;
         this.active = false;
         this.idle = true;
         this.roles = roles;

@@ -161,7 +161,7 @@ public class UserController {
         if(!adminMember.getRoles().contains(adminRole)) {
             return ResponseEntity
                     .badRequest()
-                    .body(new MessageResponse("Admin role is required to perform this action !"));
+                    .body(new MessageResponse("Administrator role is required to perform this action !"));
         }
         if(memberToBeModified.getRoles().contains(adminRole)) {
             return ResponseEntity

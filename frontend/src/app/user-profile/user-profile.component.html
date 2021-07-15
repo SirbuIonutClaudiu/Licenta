@@ -5,9 +5,9 @@
     <nav aria-label="breadcrumb" class="main-breadcrumb">
       <ol class="breadcrumb">
         <li class="breadcrumb-item active" aria-current="page" style="width: 10%;">User Profile</li>
-        <li aria-current="page" style="width: 76%;" *ngIf="!hasAdministratorRole || member.roles.includes('Administrator')"></li>
+        <li aria-current="page" style="width: 76%;" *ngIf="!HostHasAdministratorRole || member.roles.includes('Administrator')"></li>
         <li class="d-flex justify-content-end" aria-current="page" style="width: 76%;"
-            *ngIf="hasAdministratorRole && !member.roles.includes('Administrator')">
+            *ngIf="HostHasAdministratorRole && !member.roles.includes('Administrator')">
           <table class="ripple">
             <tr>
               <td class="lRipple"><label for='switch1'>Moderator priviledge &nbsp;&nbsp;</label></td>
@@ -17,13 +17,13 @@
             </tr>
           </table>
         </li>
-        <li class="d-flex justify-content-end" aria-current="page" style="width: 14%;">
+        <li class="d-flex justify-content-end" aria-current="page" style="width: 14%;"
+            *ngIf="((HostHasModeratorRole && !hasModeratorRole) || HostHasAdministratorRole) && !hasAdminRole">
           <button ejs-button cssClass="e-danger">Delete user</button>
         </li>
       </ol>
     </nav>
     <!-- /Breadcrumb -->
-
     <div class="row gutters-sm">
       <div class="col-md-4 mb-3">
         <div class="card">

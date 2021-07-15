@@ -46,7 +46,9 @@ export class UserProfileComponent implements OnInit {
   passwordChangeSuccess = false;
   showPassword = false;
   hasModeratorRole = false;
-  hasAdministratorRole = false;
+  hasAdminRole = false;
+  HostHasModeratorRole = false;
+  HostHasAdministratorRole = false;
   public token: string | null = ' ';
   public member: membruSenat = {
     id: 0,
@@ -98,12 +100,17 @@ export class UserProfileComponent implements OnInit {
   constructor(private tokenStorageService: TokenStorageService, private httpClient: HttpClient,
               private userService: UserService, private _Activatedroute: ActivatedRoute) {
     this.getMemberById(Number(this._Activatedroute.snapshot.paramMap.get('id')));
-    const roles = this.tokenStorageService.getUser().roles;
-    this.hasAdministratorRole = (roles[0] === 'ROLE_ADMIN') || (roles[1] === 'ROLE_ADMIN');
+    this.checkHostRoles();
   }
 
   ngOnInit(): void {
     this.checklist();
+  }
+
+  checkHostRoles(): void {
+    const roles = this.tokenStorageService.getUser().roles;
+    this.HostHasAdministratorRole = (roles[0] === 'ROLE_ADMIN') || (roles[1] === 'ROLE_ADMIN');
+    this.HostHasModeratorRole = (roles[0] === 'ROLE_MODERATOR') || (roles[1] === 'ROLE_MODERATOR');
   }
 
   addNumber(): void {
@@ -437,7 +444,10 @@ export class UserProfileComponent implements OnInit {
       (response: membruSenat) => {
         this.member = response;
         this.hasModeratorRole = this.member.roles.includes('Moderator');
-        this.updateRoles();
+        this.hasAdminRole = this.member.roles.includes('Administrator');
+        if (this.member.id === this.tokenStorageService.getUser().id) {
+          this.updateRoles();
+        }
         this.name = this.member.name;
         this.getImage(this.member.email);
         this.member.website = (this.member.website == null) ? 'No website available' : this.member.website;

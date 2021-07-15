@@ -144,3 +144,8 @@
   color: #FFFFFF;
   font-weight: normal;
 }
+
+.errorMsg {
+  margin-top: 10%;
+  width: 50%;
+}

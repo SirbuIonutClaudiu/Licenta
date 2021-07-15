@@ -78,9 +78,7 @@ public class VotingController {
         List<Role> roles = getRolesFromAuthentication(auth);
         List<VoteResponse> allVoteResponses = VoteResponseForUser(roles);
         assert allVoteResponses != null;
-        allVoteResponses.forEach(voteResponse -> {
-            result.add(new VoteSubjectSearchResponse(voteResponse.getId(), voteResponse.getSubject()));
-        });
+        allVoteResponses.forEach(voteResponse -> result.add(new VoteSubjectSearchResponse(voteResponse.getId(), voteResponse.getSubject())));
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
@@ -108,17 +106,12 @@ public class VotingController {
 
     private List<VoteResponse> VoteResponseForUser(List<Role> roles) {
         List<VoteResponse> result = new ArrayList<>();
-        voteRepository.findAll().forEach(vote -> {
-            result.add(VoteToVoteResponse(vote));
-        });
+        voteRepository.findAll().forEach(vote -> result.add(VoteToVoteResponse(vote)));
         if(roleRepository.findByName(ERole.ROLE_ADMIN).isPresent()) {
-            if(roles.contains(roleRepository.findByName(ERole.ROLE_ADMIN).get())) {
-                return result;
-            }
-            else {
+            if (!roles.contains(roleRepository.findByName(ERole.ROLE_ADMIN).get())) {
                 result.removeIf(currentVote -> (Collections.disjoint(currentVote.getRoles(), roles)));
-                return result;
             }
+            return result;
         }
         return null;
     }
@@ -170,8 +163,18 @@ public class VotingController {
     }
 
     @PostMapping("/new_vote")
-    public ResponseEntity<?> newVote(@Valid @RequestBody NewVoteRequest newVoteRequest) throws ParseException {
-        List<Role> roles = new ArrayList<Role>();
+    public ResponseEntity<?> newVote(@RequestHeader("Authorization") String auth,
+                                     @Valid @RequestBody NewVoteRequest newVoteRequest) throws ParseException {
+        Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
+                .orElseThrow(() -> new RuntimeException("Role Admin does not exist !"));
+        Role modRole = roleRepository.findByName(ERole.ROLE_MODERATOR)
+                .orElseThrow(() -> new RuntimeException("Role Moderator does not exist !"));
+        if(!(getRolesFromAuthentication(auth).contains(adminRole) || getRolesFromAuthentication(auth).contains(modRole))) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new MessageResponse("Administrator or Moderator role is required to perform this action !"));
+        }
+        List<Role> roles = new ArrayList<>();
         for(ERole role : newVoteRequest.getRoles()) {
             Role newRole = roleRepository.findByName(role)
                     .orElseThrow(() -> new RuntimeException("Role does not exist !"));
@@ -196,8 +199,8 @@ public class VotingController {
             case 5: endAt.add(Calendar.MINUTE, 4); break;
             case 6: endAt.add(Calendar.MINUTE, 5); break;
         }
-        Vote newVote = new Vote(newVoteRequest.getSubject(), newVoteRequest.getContent(),
-                startAt, endAt.getTime(), newVoteRequest.isGeoRestricted(), roles);
+        Vote newVote = new Vote(newVoteRequest.getSubject(), newVoteRequest.getContent(), startAt,
+                endAt.getTime(), newVoteRequest.isGeoRestricted(), newVoteRequest.isEmailReminder(), roles);
         voteService.customSave(newVote);
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -274,24 +277,33 @@ public class VotingController {
 
     @Async
     @Scheduled(fixedRate = 1000)
-    public void scheduleFixedRateTaskAsync() throws InterruptedException {
+    public void scheduleFixedRateTaskAsync() {
         voteService.returnIdles().forEach(vote -> {
             Date now = new Date();
             Calendar startAt = Calendar.getInstance();
             startAt.setTime(vote.getStartAt());
             Calendar endAt = Calendar.getInstance();
             endAt.setTime(vote.getEndAt());
-            long minutesToStart = ChronoUnit.MINUTES.between(now.toInstant(), startAt.toInstant());
-            long secondsToStart = (ChronoUnit.SECONDS.between(now.toInstant(), startAt.toInstant()))%60;
-
-            if((minutesToStart == 60) && (secondsToStart == 0)) {
-                sendMailToAllMembers(vote);
-            }
-            else if(now.after(endAt.getTime())) {
+            if(now.after(endAt.getTime())) {
                 this.endVote(vote);
             }
             else if(now.after(startAt.getTime()) && now.before(endAt.getTime()) && !vote.isActive()) {
                 this.startVote(vote);
+            }
+        });
+    }
+
+    @Scheduled(fixedRate = 60000)
+    public void scheduleFixedRateTaskSync() {
+        voteService.returnIdles().forEach(vote -> {
+            if(vote.isEmailReminder()) {
+                Date now = new Date();
+                Calendar startAt = Calendar.getInstance();
+                startAt.setTime(vote.getStartAt());
+                long minutesToStart = ChronoUnit.MINUTES.between(now.toInstant(), startAt.toInstant());
+                if(minutesToStart == 60) {
+                    sendMailToAllMembers(vote);
+                }
             }
         });
     }
