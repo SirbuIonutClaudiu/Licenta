@@ -148,7 +148,7 @@ input[type=checkbox]{
   visibility: hidden;
 }
 
-label {
+.custom_label {
   cursor: pointer;
   text-indent: -9999px;
   width: 60px;
@@ -159,7 +159,7 @@ label {
   position: relative;
 }
 
-label:after {
+.custom_label:after {
   content: '';
   position: absolute;
   top: 6%;

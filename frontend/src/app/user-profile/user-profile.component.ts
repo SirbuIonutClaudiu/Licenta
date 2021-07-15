@@ -45,6 +45,8 @@ export class UserProfileComponent implements OnInit {
   isNewPasswordInserted = false;
   passwordChangeSuccess = false;
   showPassword = false;
+  hasModeratorRole = false;
+  hasAdministratorRole = false;
   public token: string | null = ' ';
   public member: membruSenat = {
     id: 0,
@@ -78,7 +80,9 @@ export class UserProfileComponent implements OnInit {
     ['Comisia privind drepturile si obligatiile studentilor', 'ROLE_DREPTURI'],
     ['Comisia de buget–finante', 'ROLE_BUGET'],
     ['Comisia juridica', 'ROLE_JURIDIC'],
-    ['Utilizator', 'ROLE_USER']]);
+    ['Utilizator', 'ROLE_USER'],
+    ['Moderator', 'ROLE_MODERATOR'],
+    ['Administrator', 'ROLE_ADMIN']]);
   defaultOption = 'Attribute a user role';
   selectedRole = 'Attribute a user role';
   isRoleEditable = false;
@@ -94,6 +98,8 @@ export class UserProfileComponent implements OnInit {
   constructor(private tokenStorageService: TokenStorageService, private httpClient: HttpClient,
               private userService: UserService, private _Activatedroute: ActivatedRoute) {
     this.getMemberById(Number(this._Activatedroute.snapshot.paramMap.get('id')));
+    const roles = this.tokenStorageService.getUser().roles;
+    this.hasAdministratorRole = (roles[0] === 'ROLE_ADMIN') || (roles[1] === 'ROLE_ADMIN');
   }
 
   ngOnInit(): void {
@@ -320,7 +326,7 @@ export class UserProfileComponent implements OnInit {
     }
   }
 
-  goToWebsite() {
+  goToWebsite(): void {
     window.open(this.website, '_blank');
   }
 
@@ -416,10 +422,21 @@ export class UserProfileComponent implements OnInit {
     this.tokenStorageService.setRoles(newRoles);
   }
 
+  toggleModeratorRole(): void {
+    this.userService.toggleModeratorRole(this.member.id, this.hasModeratorRole).subscribe(
+      answ => {
+        window.location.reload();
+      },
+      err => {
+        this.hasModeratorRole = !this.hasModeratorRole;
+      });
+  }
+
   public getMemberById(id: number): void {
     this.userService.getMemberById(id).subscribe(
       (response: membruSenat) => {
         this.member = response;
+        this.hasModeratorRole = this.member.roles.includes('Moderator');
         this.updateRoles();
         this.name = this.member.name;
         this.getImage(this.member.email);

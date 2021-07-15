@@ -75,7 +75,7 @@ public class AuthController {
 	private List<String> roles;
 	private Long loginID = 0L;
 	private final String username = "AC315b0b103eacf332065bb30dca612446";
-	private final String password = "7b7357480416356e94254b25a32ebc30";
+	private final String password = "25153cfe99974d8a4a802d26abffec49";
 
 	@PostMapping("/signin")
 	public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {

@@ -8,7 +8,7 @@ const USER_KEY = 'auth-user';
 })
 export class TokenStorageService {
 
-  private email: string = ' ';
+  private email = ' ';
 
   constructor() { }
 

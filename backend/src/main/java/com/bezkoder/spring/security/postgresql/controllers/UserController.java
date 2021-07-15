@@ -10,6 +10,7 @@ import com.bezkoder.spring.security.postgresql.repository.ImageRepository;
 import com.bezkoder.spring.security.postgresql.repository.PasswordResetTokenRepository;
 import com.bezkoder.spring.security.postgresql.repository.RoleRepository;
 import com.bezkoder.spring.security.postgresql.repository.membruSenatRepository;
+import com.bezkoder.spring.security.postgresql.security.jwt.JwtUtils;
 import com.bezkoder.spring.security.postgresql.security.services.MembruSenatService;
 import com.twilio.rest.verify.v2.Service;
 import com.twilio.rest.verify.v2.service.Verification;
@@ -58,9 +59,12 @@ public class UserController {
     @Autowired
     RoleRepository roleRepository;
 
+    @Autowired
+    JwtUtils jwtUtils;
+
     private final String username = "AC315b0b103eacf332065bb30dca612446";
 
-    private final String password = "7b7357480416356e94254b25a32ebc30";
+    private final String password = "25153cfe99974d8a4a802d26abffec49";
 
     @GetMapping("/return_all")
     public List<UserResponse> returnAll() {
@@ -140,6 +144,52 @@ public class UserController {
                     .body("Code request expired.Try sending another one !");
         }
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping("/moderator_role/{id}/{assignation}")
+    public ResponseEntity<?> ModeratorRole(@RequestHeader("Authorization") String auth,
+                                           @PathVariable("id") Long id, @PathVariable("assignation") boolean assignation) {
+        membruSenat adminMember = getMemberFromAuthentication(auth);
+        membruSenat memberToBeModified = membruSenatRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Member to be modified does not exist !"));
+        Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
+                .orElseThrow(() -> new RuntimeException("Role Admin does not exist !"));
+        Role modRole = roleRepository.findByName(ERole.ROLE_MODERATOR)
+                .orElseThrow(() -> new RuntimeException("Role Moderator does not exist !"));
+        Role userRole = roleRepository.findByName(ERole.ROLE_USER)
+                .orElseThrow(() -> new RuntimeException("Role Moderator does not exist !"));
+        if(!adminMember.getRoles().contains(adminRole)) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new MessageResponse("Admin role is required to perform this action !"));
+        }
+        if(memberToBeModified.getRoles().contains(adminRole)) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new MessageResponse(
+                            assignation ? "Cannot assign Moderator role to an Administrator !" :
+                            "Cannot deassign Moderator role from an Administrator"));
+        }
+        if(memberToBeModified.getRoles().contains(modRole) && assignation) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new MessageResponse("User to be promoted is already a Moderator !"));
+        }
+        if(memberToBeModified.getRoles().contains(userRole) && !assignation) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new MessageResponse("Cannot deassign Moderator role from a User !"));
+        }
+        memberToBeModified.getRoles().remove(assignation ? userRole : modRole);
+        memberToBeModified.getRoles().add(assignation ? modRole : userRole);
+        membruSenatRepo.save(memberToBeModified);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    private membruSenat getMemberFromAuthentication(String auth) {
+        String token = auth.substring(7,auth.length());
+        String email = jwtUtils.getEmailFromJwtToken(token);
+        return membruSenatService.findMemberByEmail(email);
     }
 
     @PostMapping("/update_commission_role/{id}/{role}")
@@ -374,10 +424,12 @@ public class UserController {
 
     public String ERoleToString(ERole erole) {
         switch(erole) {
-            case ROLE_USER:
-                return "Utilizator";
             case ROLE_ADMIN:
                 return "Administrator";
+            case ROLE_MODERATOR:
+                return "Moderator";
+            case ROLE_USER:
+                return "Utilizator";
             case ROLE_DIDACTIC:
                 return "Comisia didactica";
             case ROLE_STIINTIFIC:

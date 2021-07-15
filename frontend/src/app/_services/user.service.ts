@@ -125,6 +125,10 @@ export class UserService {
     return this.http.post(API_URL + 'confirmPhone/' + id + '/' + code, this.httpOptions);
   }
 
+  toggleModeratorRole(id: number, assignation: boolean): Observable<any> {
+    return this.http.post(API_URL + 'moderator_role/' + id + '/' + assignation, this.httpOptions);
+  }
+
   sleep(seconds: number): Observable<any> {
     return this.http.get(API_URL + 'sleep/' + seconds, this.httpOptions);
   }
