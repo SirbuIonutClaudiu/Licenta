@@ -205,6 +205,11 @@ public class VotingController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @GetMapping("/host_time")
+    public ResponseEntity<Date> HostTime() {
+        return new ResponseEntity<>(new Date(), HttpStatus.OK);
+    }
+
     @PostMapping("/vote")
     public ResponseEntity<?> Vote(@RequestHeader("Authorization") String auth, @Valid @RequestBody VoteRequest voteRequest) {
         Vote vote = voteRepository.findById(voteRequest.getVote_id())

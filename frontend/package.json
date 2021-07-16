@@ -37,6 +37,7 @@
     "@syncfusion/ej2-angular-richtexteditor": "^19.1.65",
     "@types/google-libphonenumber": "^7.4.21",
     "angular-bootstrap-md": "^11.1.0",
+    "angular-cd-timer": "^1.1.0",
     "angular2-cookie": "^1.2.6",
     "apexcharts": "^3.27.1",
     "component": "^1.1.0",

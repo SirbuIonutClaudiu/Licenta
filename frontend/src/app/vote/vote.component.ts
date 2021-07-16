@@ -11,6 +11,7 @@ import {
   ApexChart,
   ApexTitleSubtitle
 } from 'ng-apexcharts';
+import {CdTimerComponent} from 'angular-cd-timer';
 
 export type ChartOptions = {
   series: ApexNonAxisChartSeries;
@@ -27,6 +28,8 @@ export type ChartOptions = {
 })
 export class VoteComponent implements OnInit {
   @ViewChild('chart') chart: ChartComponent;
+  @ViewChild('endTimer') endTimer!: CdTimerComponent;
+  @ViewChild('startTimer') startTimer!: CdTimerComponent;
   public chartOptions!: Partial<ChartOptions>;
 
   public VoteResult: VoteCountResponse = {
@@ -55,6 +58,7 @@ export class VoteComponent implements OnInit {
   ableToVote = false;
   alreadyVoted = false;
   geoLocationValid = false;
+  time = '';
 
   // tslint:disable-next-line:variable-name
   constructor(private voteService: VoteService, private _Activatedroute: ActivatedRoute, private router: Router) {  }
@@ -73,6 +77,44 @@ export class VoteComponent implements OnInit {
           this.setChartOptions();
         });
     }
+  }
+
+  initiateCounter(): void {
+    this.endTimer.format = 'intelli';
+    this.endTimer.stop();
+    this.startTimer.format = 'intelli';
+    this.startTimer.stop();
+    if (this.vote.idle) {
+      this.voteService.getHostTime().subscribe(
+        (ans: Date) => {
+          let counter = new Date(this.vote.active ? this.vote.endAt : this.vote.startAt).getTime() - new Date(ans).getTime();
+          counter = Math.floor(counter / 1000) - 1;
+          if (this.vote.active) {
+            this.endTimer.startTime = counter;
+            this.endTimer.countdown = true;
+            this.endTimer.start();
+          }
+          else {
+            this.startTimer.startTime = counter;
+            this.startTimer.countdown = true;
+            this.startTimer.start();
+          }
+        });
+    }
+  }
+
+  getTime(): void {
+    if (this.vote.active) {
+      // @ts-ignore
+      this.time = document.getElementById('endTimer').innerText;
+    } else {
+      // @ts-ignore
+      this.time = document.getElementById('startTimer').innerText;
+    }
+  }
+
+  refreshPage(): void {
+    window.location.reload();
   }
 
   setChartOptions(): void {
@@ -131,13 +173,14 @@ export class VoteComponent implements OnInit {
     this.voteService.getVoteById(id).subscribe(
       (response: Vote) => {
         this.vote = response;
+        this.userVoted(this.vote.id);
         if (!this.vote.idle) {
           this.getVoteResult(this.vote.id);
-          this.userVoted(this.vote.id);
         }
         if (this.vote.active) {
           this.checkGeolocation(this.vote.id);
         }
+        this.initiateCounter();
       });
   }
 

@@ -87,4 +87,8 @@ export class VoteService {
   getVotesSearchSubjects(): Observable<VoteSearchSubject[]> {
     return this.http.get<VoteSearchSubject[]>(VOTE_API + 'search_subjects', httpOptions);
   }
+
+  getHostTime(): Observable<Date> {
+    return this.http.get<Date>(VOTE_API + 'host_time', httpOptions);
+  }
 }
