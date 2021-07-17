@@ -251,3 +251,8 @@ input:focus {
   background-color: #9da0a4;
 }
 
+.errorMsg {
+  margin-top: 10%;
+  width: 50%;
+}
+

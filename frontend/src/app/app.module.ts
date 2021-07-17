@@ -37,6 +37,7 @@ import { CheckBoxModule } from '@syncfusion/ej2-angular-buttons';
 import { SpinnerDottedModule } from 'spinners-angular/spinner-dotted';
 import { ButtonModule } from '@syncfusion/ej2-angular-buttons';
 import { CdTimerModule } from 'angular-cd-timer';
+import { ModalModule } from 'ngx-bootstrap/modal';
 import { PieSeriesService, AccumulationLegendService, AccumulationTooltipService, AccumulationAnnotationService,
   AccumulationDataLabelService } from '@syncfusion/ej2-angular-charts';
 import {
@@ -87,6 +88,7 @@ import {
     SpinnerDottedModule,
     ButtonModule,
     CdTimerModule,
+    ModalModule.forRoot(),
     NgMultiSelectDropDownModule.forRoot()
   ],
   providers: [

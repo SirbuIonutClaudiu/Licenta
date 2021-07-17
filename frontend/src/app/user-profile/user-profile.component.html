@@ -1,12 +1,27 @@
 <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
-<div class="container">
+<ng-template #template>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left">User delete confirmation</h4>
+    <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    Are you sure you want to <b>delete user</b> {{member.name | titlecase}} ?
+  </div>
+  <div class="modal-body text-right">
+    <button type="button" class="btn btn-danger mr-2" (click)="confirmDelete()">Yes</button>
+    <button type="button" class="btn btn-primary mr-3" (click)="disconfirmDelete()">No</button>
+  </div>
+</ng-template>
+<div class="container" *ngIf="member.id">
   <div class="main-body">
     <!-- Breadcrumb -->
     <nav aria-label="breadcrumb" class="main-breadcrumb">
       <ol class="breadcrumb">
         <li class="breadcrumb-item active" aria-current="page" style="width: 10%;">User Profile</li>
-        <li aria-current="page" style="width: 76%;" *ngIf="!HostHasAdministratorRole || member.roles.includes('Administrator')"></li>
-        <li class="d-flex justify-content-end" aria-current="page" style="width: 76%;"
+        <li aria-current="page" style="width: 63%;" *ngIf="!HostHasAdministratorRole || member.roles.includes('Administrator')"></li>
+        <li class="d-flex justify-content-end" aria-current="page" style="width: 63%;"
             *ngIf="HostHasAdministratorRole && !member.roles.includes('Administrator')">
           <table class="ripple">
             <tr>
@@ -19,7 +34,11 @@
         </li>
         <li class="d-flex justify-content-end" aria-current="page" style="width: 14%;"
             *ngIf="((HostHasModeratorRole && !hasModeratorRole) || HostHasAdministratorRole) && !hasAdminRole">
-          <button ejs-button cssClass="e-danger">Delete user</button>
+          <button ejs-button cssClass="e-warning" (click)="openModalWithClass(template)">Disable user</button>
+        </li>
+        <li class="d-flex justify-content-end" aria-current="page" style="width: 13%;"
+            *ngIf="((HostHasModeratorRole && !hasModeratorRole) || HostHasAdministratorRole) && !hasAdminRole">
+          <button ejs-button cssClass="e-danger" (click)="openModalWithClass(template)">Delete user</button>
         </li>
       </ol>
     </nav>
@@ -456,5 +475,14 @@
         </div>
       </div>
     </div>
+  </div>
+</div>
+<div class="d-flex justify-content-center" *ngIf="!member.id">
+  <div class="alert alert-danger errorMsg">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">
+      ×</button>
+    <span class="glyphicon glyphicon-hand-right"></span> <strong> Error</strong>
+    <hr class="message-inner-separator">
+    User with given id does <b>not exist</b> !
   </div>
 </div>

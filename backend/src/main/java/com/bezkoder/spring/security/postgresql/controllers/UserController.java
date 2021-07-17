@@ -350,8 +350,39 @@ public class UserController {
         return member.isActivated2FA();
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> deleteMember(@PathVariable("id") Long id) {
+    @PostMapping("/delete_user/{id}")
+    public ResponseEntity<?> deleteMember(@RequestHeader("Authorization") String auth, @PathVariable("id") Long id) {
+        membruSenat adminMember = getMemberFromAuthentication(auth);
+        membruSenat memberToBeDeleted = membruSenatRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Member to be modified does not exist !"));
+        Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
+                .orElseThrow(() -> new RuntimeException("Role Admin does not exist !"));
+        Role modRole = roleRepository.findByName(ERole.ROLE_MODERATOR)
+                .orElseThrow(() -> new RuntimeException("Role Moderator does not exist !"));
+        Role userRole = roleRepository.findByName(ERole.ROLE_USER)
+                .orElseThrow(() -> new RuntimeException("Role Moderator does not exist !"));
+        if(!(adminMember.getRoles().contains(adminRole) ||adminMember.getRoles().contains(modRole))) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new MessageResponse("Administrator or Moderator role is required to perform this action !"));
+        }
+        if(memberToBeDeleted.getRoles().contains(adminRole)) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new MessageResponse("Cannot delete an Administrator account !"));
+        }
+        if(memberToBeDeleted.getRoles().contains(modRole) && !adminMember.getRoles().contains(adminRole)) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new MessageResponse("Moderator accounts can only be deleted by the Administrator !"));
+        }
+        ImageModel imageModel = imageRepository.findByName(memberToBeDeleted.getEmail())
+                .orElseThrow(() -> new RuntimeException("Image not found !"));
+        imageRepository.deleteById(imageModel.getId());
+        if(PRTrepository.existsByMemberId(memberToBeDeleted.getId())) {
+            PasswordResetToken passwordResetToken = PRTrepository.findByMemberId(memberToBeDeleted.getId());
+            PRTrepository.deleteById(passwordResetToken.getId());
+        }
         membruSenatService.deleteMemberById(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }

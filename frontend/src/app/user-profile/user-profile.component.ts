@@ -1,7 +1,8 @@
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {TokenStorageService} from '../_services/token-storage.service';
 import {UserService} from '../_services/user.service';
 import {membruSenat} from '../_services/membruSenat';
+import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 // @ts-ignore
 import {PhoneNumberFormat, PhoneNumberUtil, ShortNumberInfo} from 'google-libphonenumber';
 import {ActivatedRoute} from '@angular/router';
@@ -96,15 +97,38 @@ export class UserProfileComponent implements OnInit {
   isPhoneNumberEditable = false;
   isLandlineEditable = false;
   isImageEditable = false;
+  modalRef!: BsModalRef;
 
   constructor(private tokenStorageService: TokenStorageService, private httpClient: HttpClient,
-              private userService: UserService, private _Activatedroute: ActivatedRoute) {
+              private userService: UserService, private _Activatedroute: ActivatedRoute, private modalService: BsModalService) {
     this.getMemberById(Number(this._Activatedroute.snapshot.paramMap.get('id')));
     this.checkHostRoles();
   }
 
   ngOnInit(): void {
     this.checklist();
+  }
+
+  openModalWithClass(template: TemplateRef<any>): void {
+    this.modalRef = this.modalService.show(
+      template,
+      Object.assign({}, { class: 'modal-dialog-centered' })
+    );
+  }
+
+  confirmDelete(): void {
+    this.userService.deleteUser(this.member.id).subscribe(
+      ans => {
+        this.modalRef.hide();
+        window.location.reload();
+      },
+      err => {
+        alert(err.error.message);
+      });
+  }
+
+  disconfirmDelete(): void {
+    this.modalRef.hide();
   }
 
   checkHostRoles(): void {
