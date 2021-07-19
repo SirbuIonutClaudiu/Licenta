@@ -62,6 +62,8 @@ public class membruSenat {
     @Column(name = "phone_number_2bverified")
     private String phoneNumber2BVerified;
 
+    private boolean disabled = false;
+
     private boolean verifiedApplication = false;
 
     private boolean verifiedEmail = false;

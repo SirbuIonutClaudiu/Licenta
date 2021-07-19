@@ -63,6 +63,10 @@ export class UserService {
     return this.http.post(API_URL + 'delete_user/' + id, this.httpOptions);
   }
 
+  desableORreinstateUser(id: number, disable: boolean): Observable<any> {
+    return this.http.post(API_URL + 'disable_reinstate_user/' + id + '/' + disable, this.httpOptions);
+  }
+
   getImage(name: string): Observable<any> {
     return this.http.get(API_URL + 'get/' + name, this.httpOptions);
   }

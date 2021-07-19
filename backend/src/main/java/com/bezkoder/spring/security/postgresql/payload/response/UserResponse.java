@@ -17,6 +17,7 @@ public class UserResponse {
     private String website;
     private String landline;
     private String phoneNumber;
+    private boolean disabled;
     private boolean verifiedApplication;
     private boolean verifiedEmail;
     private boolean activated2FA;

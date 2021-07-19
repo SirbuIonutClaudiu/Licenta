@@ -1,3 +1,4 @@
+// tslint:disable-next-line:class-name
 export interface membruSenat {
   id: number;
   email: string;
@@ -9,6 +10,7 @@ export interface membruSenat {
   website: string;
   landline: string;
   phoneNumber: string;
+  disabled: boolean;
   verifiedApplication: boolean;
   verifiedEmail: boolean;
   activated2FA: boolean;

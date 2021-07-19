@@ -7,14 +7,15 @@
     </button>
   </div>
   <div class="modal-body">
-    Are you sure you want to <b>delete user</b> {{member.name | titlecase}} ?
+    Are you sure you want to <b>{{deleteDisable ? 'delete' : (member.disabled ? 'enable' : 'disable')}} user</b> {{member.name | titlecase}} ?
   </div>
   <div class="modal-body text-right">
-    <button type="button" class="btn btn-danger mr-2" (click)="confirmDelete()">Yes</button>
-    <button type="button" class="btn btn-primary mr-3" (click)="disconfirmDelete()">No</button>
+    <button type="button" class="btn btn-danger mr-2" (click)="confirmModal()">Yes</button>
+    <button type="button" class="btn btn-primary mr-3" (click)="disconfirmModal()">No</button>
   </div>
 </ng-template>
-<div class="container" *ngIf="member.id">
+<div class="container" *ngIf=
+  "member.id">
   <div class="main-body">
     <!-- Breadcrumb -->
     <nav aria-label="breadcrumb" class="main-breadcrumb">
@@ -34,11 +35,14 @@
         </li>
         <li class="d-flex justify-content-end" aria-current="page" style="width: 14%;"
             *ngIf="((HostHasModeratorRole && !hasModeratorRole) || HostHasAdministratorRole) && !hasAdminRole">
-          <button ejs-button cssClass="e-warning" (click)="openModalWithClass(template)">Disable user</button>
+          <button ejs-button cssClass="e-warning"
+                  (click)="openModalWithClass(template, false)">
+            {{member.disabled ? 'Enable' : 'Disable'}} user
+          </button>
         </li>
         <li class="d-flex justify-content-end" aria-current="page" style="width: 13%;"
             *ngIf="((HostHasModeratorRole && !hasModeratorRole) || HostHasAdministratorRole) && !hasAdminRole">
-          <button ejs-button cssClass="e-danger" (click)="openModalWithClass(template)">Delete user</button>
+          <button ejs-button cssClass="e-danger" (click)="openModalWithClass(template, true)">Delete user</button>
         </li>
       </ol>
     </nav>
@@ -48,6 +52,7 @@
         <div class="card">
           <div class="card-body">
             <div class="d-flex flex-column align-items-center text-center">
+              <div class="userDisabled" *ngIf="member.disabled">User disabled</div>
               <img class="avatar avatar-xl no-radius rounded border border-dark" [src]=retrievedImage width="150" height="200" alt="...">
               <i class="fa fa-camera btn btn-light imageOverlay" aria-hidden="true" title="Change avatar" (click)="image.click()"></i>
               <input type="file" id="img" name="img" accept="image/*" hidden #image (change)="enableImageChangable($event)">

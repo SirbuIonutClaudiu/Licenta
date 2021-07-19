@@ -359,8 +359,6 @@ public class UserController {
                 .orElseThrow(() -> new RuntimeException("Role Admin does not exist !"));
         Role modRole = roleRepository.findByName(ERole.ROLE_MODERATOR)
                 .orElseThrow(() -> new RuntimeException("Role Moderator does not exist !"));
-        Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-                .orElseThrow(() -> new RuntimeException("Role Moderator does not exist !"));
         if(!(adminMember.getRoles().contains(adminRole) ||adminMember.getRoles().contains(modRole))) {
             return ResponseEntity
                     .badRequest()
@@ -384,6 +382,37 @@ public class UserController {
             PRTrepository.deleteById(passwordResetToken.getId());
         }
         membruSenatService.deleteMemberById(id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping("/disable_reinstate_user/{id}/{disable}")
+    public ResponseEntity<?> disableMember(@RequestHeader("Authorization") String auth,
+                                           @PathVariable("id") Long id, @PathVariable("disable") boolean disable) {
+        membruSenat adminMember = getMemberFromAuthentication(auth);
+        membruSenat memberToBeDisabled = membruSenatRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Member to be modified does not exist !"));
+        Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
+                .orElseThrow(() -> new RuntimeException("Role Admin does not exist !"));
+        Role modRole = roleRepository.findByName(ERole.ROLE_MODERATOR)
+                .orElseThrow(() -> new RuntimeException("Role Moderator does not exist !"));
+        String action = disable ? "disable" : "enable";
+        if(!(adminMember.getRoles().contains(adminRole) ||adminMember.getRoles().contains(modRole))) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new MessageResponse("Administrator or Moderator role is required to perform this action !"));
+        }
+        if(memberToBeDisabled.getRoles().contains(adminRole)) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new MessageResponse("Cannot " + action + " an Administrator account !"));
+        }
+        if(memberToBeDisabled.getRoles().contains(modRole) && !adminMember.getRoles().contains(adminRole)) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new MessageResponse("Moderator accounts can only be " + action + "d by the Administrator !"));
+        }
+        memberToBeDisabled.setDisabled(disable);
+        membruSenatRepo.save(memberToBeDisabled);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -497,6 +526,7 @@ public class UserController {
                                  member.getWebsite(),
                                  member.getLandline(),
                                  member.getPhoneNumber(),
+                                 member.isDisabled(),
                                  member.isVerifiedApplication(),
                                  member.isVerifiedEmail(),
                                  member.isActivated2FA(),

@@ -98,6 +98,11 @@ public class AuthController {
 					.badRequest()
 					.body(new MessageResponse("Your register application has not been reviewed by a moderator yet!"));
 		}
+		if(member.isDisabled()) {
+			return ResponseEntity
+					.badRequest()
+					.body(new MessageResponse("Your account has been temporarily disabled by an Administrator or Moderator!"));
+		}
 		member.setLoginLocation(loginRequest.getLoginLocation());
 		membruSenatRepo.save(member);
 

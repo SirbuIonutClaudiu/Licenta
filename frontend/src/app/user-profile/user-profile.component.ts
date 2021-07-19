@@ -62,6 +62,7 @@ export class UserProfileComponent implements OnInit {
     website: ' ',
     landline: ' ',
     phoneNumber: ' ',
+    disabled: false,
     verifiedApplication: false,
     verifiedEmail: false,
     activated2FA: false,
@@ -97,6 +98,7 @@ export class UserProfileComponent implements OnInit {
   isPhoneNumberEditable = false;
   isLandlineEditable = false;
   isImageEditable = false;
+  deleteDisable = false;
   modalRef!: BsModalRef;
 
   constructor(private tokenStorageService: TokenStorageService, private httpClient: HttpClient,
@@ -109,25 +111,32 @@ export class UserProfileComponent implements OnInit {
     this.checklist();
   }
 
-  openModalWithClass(template: TemplateRef<any>): void {
+  openModalWithClass(template: TemplateRef<any>, disableORdelete: boolean): void {
     this.modalRef = this.modalService.show(
       template,
       Object.assign({}, { class: 'modal-dialog-centered' })
     );
+    this.deleteDisable = disableORdelete;
   }
 
-  confirmDelete(): void {
-    this.userService.deleteUser(this.member.id).subscribe(
-      ans => {
-        this.modalRef.hide();
-        window.location.reload();
-      },
-      err => {
-        alert(err.error.message);
-      });
+  confirmModal(): void {
+    if (this.deleteDisable) {
+      this.userService.deleteUser(this.member.id).subscribe(
+        ans => {
+          this.modalRef.hide();
+          window.location.reload();
+        });
+    }
+    else {
+      this.userService.desableORreinstateUser(this.member.id, !this.member.disabled).subscribe(
+        ans => {
+          this.modalRef.hide();
+          window.location.reload();
+        });
+    }
   }
 
-  disconfirmDelete(): void {
+  disconfirmModal(): void {
     this.modalRef.hide();
   }
 
