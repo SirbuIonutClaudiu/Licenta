@@ -30,7 +30,6 @@ import { ChartsModule, WavesModule } from 'angular-bootstrap-md';
 import { AccumulationChartModule } from '@syncfusion/ej2-angular-charts';
 import { VoteComponent } from './vote/vote.component';
 import { AllVotesComponent } from './all-votes/all-votes.component';
-import {NgApexchartsModule} from 'ng-apexcharts';
 import { AutoCompleteModule } from '@syncfusion/ej2-angular-dropdowns';
 import { DropDownListModule } from '@syncfusion/ej2-angular-dropdowns';
 import { CheckBoxModule } from '@syncfusion/ej2-angular-buttons';
@@ -77,7 +76,6 @@ import {
     NgxMatNativeDateModule,
     RichTextEditorModule,
     SwitchModule,
-    NgApexchartsModule,
     MatPaginatorModule,
     WavesModule,
     ChartsModule,

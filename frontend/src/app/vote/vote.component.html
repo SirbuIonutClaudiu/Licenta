@@ -93,17 +93,18 @@
               <h5 class="mt-1 ml-2" [innerHTML]="vote.content"></h5>
             </div>
             <div class="row" *ngIf="!vote.idle">
-              <div class="col-3"></div>
-              <div id="chart" class="col-3">
-                <apx-chart
-                  [series]="chartOptions.series"
-                  [title]="chartOptions.title"
-                  [chart]="chartOptions.chart"
-                  [labels]="chartOptions.labels"
-                  [responsive]="chartOptions.responsive"
-                ></apx-chart>
+              <div class="col-2"></div>
+              <div id="chart" class="col-7">
+                <ejs-accumulationchart id="chart-container" [legendSettings]='legendSettings' [enableAnimation]='enableAnimation' [enableSmartLabels]='enableSmartLabels'
+                                       [title]='title' [background]=backgroundColor [titleStyle]="titleStyle">
+                  <e-accumulation-series-collection>
+                    <e-accumulation-series [dataSource]='piedata' xName='x' yName='y' [dataLabel]='datalabel' [explode]='explode' [explodeOffset]='explodeOffset'
+                                           [startAngle]='startAngle' [endAngle]='endAngle' radius='70%'  innerRadius='35%' [palettes]="palette">
+                    </e-accumulation-series>
+                  </e-accumulation-series-collection>
+                </ejs-accumulationchart>
               </div>
-              <div class="col-6 d-flex flex-row-reverse align-items-end">
+              <div class="col-3 d-flex flex-row-reverse align-items-end">
                 <div class="p-2" *ngIf="!vote.active && alreadyVoted">
                   <p class="voted">
                     <img width="25" src="data:image/svg+xml;base64,PHN2ZyBpZD0iTGF5ZXJfMSIgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwIDAgNTEyLjA2MyA1MTIuMDYzIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMi4wNjMgNTEyLjA2MyIgd2lkdGg9IjUxMiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Zz48Zz48ZWxsaXBzZSBjeD0iMjU2LjAzMiIgY3k9IjI1Ni4wMzIiIGZpbGw9IiMwMGRmNzYiIHJ4PSIyNTUuOTQ5IiByeT0iMjU2LjAzMiIvPjwvZz48cGF0aCBkPSJtMjU2LjAzMiAwYy0uMTE2IDAtLjIzMS4wMDQtLjM0Ny4wMDR2NTEyLjA1NWMuMTE2IDAgLjIzMS4wMDQuMzQ3LjAwNCAxNDEuMzU3IDAgMjU1Ljk0OS0xMTQuNjI5IDI1NS45NDktMjU2LjAzMnMtMTE0LjU5Mi0yNTYuMDMxLTI1NS45NDktMjU2LjAzMXoiIGZpbGw9IiMwMGFiNWUiLz48cGF0aCBkPSJtMTExLjMyNiAyNjEuMTE4IDEwMy41MjQgMTAzLjUyNGM0LjUxNSA0LjUxNSAxMS44MzYgNC41MTUgMTYuMzUxIDBsMTY5Ljk1Ny0xNjkuOTU3YzQuNTE1LTQuNTE1IDQuNTE1LTExLjgzNiAwLTE2LjM1MWwtMzAuOTM1LTMwLjkzNWMtNC41MTUtNC41MTUtMTEuODM2LTQuNTE1LTE2LjM1MSAwbC0xMjMuNjE3IDEyMy42MTVjLTQuNTE1IDQuNTE1LTExLjgzNiA0LjUxNS0xNi4zNTEgMGwtNTUuMzk3LTU1LjM5N2MtNC40MjYtNC40MjYtMTEuNTcxLTQuNTI2LTE2LjExOS0uMjI2bC0zMC44MyAyOS4xNDljLTQuNzMyIDQuNDc1LTQuODM3IDExLjk3My0uMjMyIDE2LjU3OHoiIGZpbGw9IiNmZmY1ZjUiLz48cGF0aCBkPSJtMzcwLjIyMyAx

@@ -2,24 +2,9 @@ import {Component, OnInit, ViewChild} from '@angular/core';
 import {VoteService} from '../_services/vote.service';
 import {Vote} from '../_services/Vote';
 import {ActivatedRoute, Router} from '@angular/router';
-import { ChartComponent } from 'ng-apexcharts';
 import {VoteCountResponse} from '../_services/VoteCountResponse';
-
-import {
-  ApexNonAxisChartSeries,
-  ApexResponsive,
-  ApexChart,
-  ApexTitleSubtitle
-} from 'ng-apexcharts';
 import {CdTimerComponent} from 'angular-cd-timer';
-
-export type ChartOptions = {
-  series: ApexNonAxisChartSeries;
-  chart: ApexChart;
-  responsive: ApexResponsive[];
-  title: ApexTitleSubtitle;
-  labels: any;
-};
+import {LegendSettingsModel} from '@syncfusion/ej2-angular-charts';
 
 @Component({
   selector: 'app-vote',
@@ -27,18 +12,36 @@ export type ChartOptions = {
   styleUrls: ['./vote.component.css']
 })
 export class VoteComponent implements OnInit {
-  @ViewChild('chart') chart: ChartComponent;
   @ViewChild('endTimer') endTimer!: CdTimerComponent;
   @ViewChild('startTimer') startTimer!: CdTimerComponent;
-  public chartOptions!: Partial<ChartOptions>;
 
-  public VoteResult: VoteCountResponse = {
+  // tslint:disable-next-line:ban-types
+  piedata!: Object[];
+  // tslint:disable-next-line:ban-types
+  datalabel!: Object;
+  legendSettings!: LegendSettingsModel;
+  startAngle!: number;
+  endAngle!: number;
+  explode!: boolean;
+  explodeOffset!: string;
+  enableSmartLabels!: boolean;
+  enableAnimation!: boolean;
+  title = 'Vote results';
+  backgroundColor = '#F8F8FF';
+  palette = ['#8FBC8F', '#e56590', '#357cd2', '#404041'];
+  titleStyle = {
+    fontFamily: 'Arial',
+    fontWeight: 'bolder',
+    color: '#4B0082',
+    size: '25px',
+  };
+  VoteResult: VoteCountResponse = {
     for_count: 0,
     against_count: 0,
     blank_count: 0,
     absent_count: 0
   };
-  public vote: Vote = {
+  vote: Vote = {
     id: 0,
     subject: ' ',
     content: ' ',
@@ -74,9 +77,50 @@ export class VoteComponent implements OnInit {
       this.voteService.getvoteResult(id).subscribe(
         (response: VoteCountResponse) => {
           this.VoteResult = response;
-          this.setChartOptions();
+          this.VoteResult.for_count = 10;
+          this.VoteResult.against_count = 1;
+          this.VoteResult.blank_count = 3;
+          this.VoteResult.absent_count = 0;
+          this.initiateChart();
         });
     }
+  }
+
+  initiateChart(): void {
+    this.datalabel = {   visible: true,
+      name: 'text',
+      position: 'Inside',
+      font: {
+        color: 'white',
+        fontWeight: 'Bold',
+        size: '14px'
+      }
+    };
+    this.legendSettings = {
+      visible: true,
+      width: '100',
+      height: '150'
+    };
+    this.startAngle = 0;
+    this.endAngle = 360;
+    this.explode = true;
+    this.explodeOffset = '10%';
+    this.enableSmartLabels = true;
+    this.enableAnimation = true;
+    const totalVotes = this.VoteResult.for_count + this.VoteResult.against_count +
+      this.VoteResult.blank_count + this.VoteResult.absent_count;
+    const forPercentage = (this.VoteResult.for_count * 100) / totalVotes;
+    const againstPercentage = (this.VoteResult.against_count * 100) / totalVotes;
+    const blankPercentage = (this.VoteResult.blank_count * 100) / totalVotes;
+    const absentPercentage = (this.VoteResult.absent_count * 100) / totalVotes;
+    const forText = this.VoteResult.for_count ? forPercentage.toFixed(2).toString() + '%' : ' ';
+    const againstText = this.VoteResult.against_count ? againstPercentage.toFixed(2).toString() + '%' : ' ';
+    const blankText = this.VoteResult.blank_count ? blankPercentage.toFixed(2).toString() + '%' : ' ';
+    const absentText = this.VoteResult.absent_count ? absentPercentage.toFixed(2).toString() + '%' : ' ';
+    this.piedata = [{ x: 'for : ' + this.VoteResult.for_count, y: this.VoteResult.for_count, text: forText},
+      { x: 'against : ' + this.VoteResult.against_count, y: this.VoteResult.against_count, text: againstText},
+      { x: 'blank : ' + this.VoteResult.blank_count, y: this.VoteResult.blank_count, text: blankText},
+      { x: 'absent : ' + this.VoteResult.absent_count, y: this.VoteResult.absent_count, text: absentText}];
   }
 
   initiateCounter(): void {
@@ -115,41 +159,6 @@ export class VoteComponent implements OnInit {
 
   refreshPage(): void {
     window.location.reload();
-  }
-
-  setChartOptions(): void {
-    this.chartOptions = {
-      series: [this.VoteResult.for_count, this.VoteResult.against_count, this.VoteResult.blank_count, this.VoteResult.absent_count],
-      chart: {
-        width: 380,
-        type: 'pie'
-      },
-      title: {
-        text: 'Vote results',
-        align: 'center',
-        offsetX: -40,
-        offsetY: 0,
-        floating: false,
-        style: {
-          fontWeight:  'bold',
-          color:  '#663399'
-        },
-      },
-      labels: ['For', 'Against', 'Blank', 'Absent'],
-      responsive: [
-        {
-          breakpoint: 480,
-          options: {
-            chart: {
-              width: 200
-            },
-            legend: {
-              position: 'bottom'
-            }
-          }
-        }
-      ]
-    };
   }
 
   userVoted(voteId: number): void {

@@ -58,7 +58,7 @@ export class RegisterComponent implements OnInit {
     this.authService.register(last_name + ' ' + first_name, email, password,
       institutional_code, this.address, this.applicationDate).subscribe(
       data => {
-        this.httpClient.post('http://localhost:8081/api/users/upload', uploadImageData)
+        this.httpClient.post('http://unitbvotingbackend-env.eba-fzmvt98p.us-east-2.elasticbeanstalk.com/api/users/upload', uploadImageData)
           .subscribe(answer => {
                 this.isSuccessful = true;
                 this.isSignUpFailed = false;

@@ -5,7 +5,7 @@ import {Vote} from './Vote';
 import {VoteCountResponse} from './VoteCountResponse';
 import {VoteSearchSubject} from './VoteSearchSubject';
 
-const VOTE_API = 'http://localhost:8081/api/voting/';
+const VOTE_API = 'http://unitbvotingbackend-env.eba-fzmvt98p.us-east-2.elasticbeanstalk.com/api/voting/';
 
 const httpOptions = {
   headers: new HttpHeaders({ 'Content-Type': 'application/json' })
@@ -18,7 +18,7 @@ export class VoteService {
   constructor(private http: HttpClient) { }
 
   newVote(subject: string, content: string, startAt: Date, duration: number,
-          geoRestricted: boolean, emailReminder: boolean,  roles = []): Observable<any> {
+          geoRestricted: boolean, emailReminder: boolean,  roles: any[] = []): Observable<any> {
     return this.http.post(VOTE_API + 'new_vote', {
       subject,
       content,

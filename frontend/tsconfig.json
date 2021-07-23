@@ -23,8 +23,9 @@
     "types": [ "node" ]
   },
   "angularCompilerOptions": {
-    "strictInjectionParameters": true,
-    "strictInputAccessModifiers": true,
-    "strictTemplates": true
+    "strictInjectionParameters": false,
+    "strictInputAccessModifiers": false,
+    "strictTemplates": false,
+    "strictNullChecks": false,
   }
 }

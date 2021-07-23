@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import {membruSenat} from './membruSenat';
 import {TokenStorageService} from './token-storage.service';
 
-const API_URL = 'http://localhost:8081/api/users/';
+const API_URL = 'http://unitbvotingbackend-env.eba-fzmvt98p.us-east-2.elasticbeanstalk.com/api/users/';
 
 @Injectable({
   providedIn: 'root'

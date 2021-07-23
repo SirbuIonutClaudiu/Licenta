@@ -48,7 +48,7 @@ export class AllVotesComponent implements OnInit {
   geoRestrictedOption = false;
   status = 'all';
   roleRestrictions = false;
-  Eroles = [];
+  Eroles: any[];
   votes!: Vote[];
   votesResults!: VoteCountResponse[];
 // tslint:disable-next-line:ban-types
