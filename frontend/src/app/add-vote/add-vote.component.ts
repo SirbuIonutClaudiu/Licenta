@@ -76,7 +76,7 @@ export class AddVoteComponent implements OnInit {
   subject = '';
   subjectError = false;
   content = '';
-  roles: any[];
+  roles: any[] = [];
   geoRestriction = true;
   emailReminder = false;
   date: any;

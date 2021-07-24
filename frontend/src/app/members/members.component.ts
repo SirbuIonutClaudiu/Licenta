@@ -22,7 +22,9 @@ export class MembersComponent implements OnInit {
   retreivedResponses!: any[];
   retreivedImages = new Map<string, string>();
   pages = new Array();
+  spinnerColor = '#FF1493';
   option!: number;
+  loading = true;
   private routes: Routes = [
     {
       path: 'user_profile/:id',
@@ -43,11 +45,7 @@ export class MembersComponent implements OnInit {
     this.userService.getAllMembers().subscribe(
       (response: membruSenat[]) => {
         this.membriSenat = response;
-      },
-      (error: HttpErrorResponse) => {
-        alert(error.message);
-      }
-    );
+      });
   }
 
   setCookies(): void {
@@ -175,7 +173,7 @@ export class MembersComponent implements OnInit {
           this.base64Data = this.retreivedResponses[it].picByte;
           this.retrievedImage = 'data:image/jpeg;base64,' + this.base64Data;
           this.retreivedImages.set(this.retreivedResponses[it].name, this.retrievedImage);
-          console.log(this.retreivedResponses[it].name);
+          this.loading = false;
         }
       },
       error => {  } );

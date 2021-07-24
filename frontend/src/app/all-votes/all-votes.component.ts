@@ -39,6 +39,7 @@ export class AllVotesComponent implements OnInit {
     unSelectAllText: 'UnSelect All',
     itemsShowLimit: 2
   };
+  spinnerColor = '#FF1493';
   hasAdminPriviledge = false;
   page = 0;
   perPage = 6;
@@ -48,7 +49,8 @@ export class AllVotesComponent implements OnInit {
   geoRestrictedOption = false;
   status = 'all';
   roleRestrictions = false;
-  Eroles: any[];
+  Eroles: any[] = [];
+  loading = true;
   votes!: Vote[];
   votesResults!: VoteCountResponse[];
 // tslint:disable-next-line:ban-types
@@ -241,6 +243,7 @@ export class AllVotesComponent implements OnInit {
       (answer: VoteCountResponse[]) => {
         this.votesResults = answer;
         this.populatePieCharts();
+        this.loading = false;
       });
   }
 

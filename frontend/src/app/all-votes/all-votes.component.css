@@ -6,6 +6,11 @@
   background-color: #008cff;
 }
 
+.loadingDiv {
+  margin-top: 10%;
+  margin-left: 50%;
+}
+
 .voteElement {
   margin-top: 5%;
   margin-left: 7%;

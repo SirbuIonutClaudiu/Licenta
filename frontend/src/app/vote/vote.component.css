@@ -159,6 +159,11 @@ label.radio input:checked+span {
   font-weight: bolder;
 }
 
+.loadingDiv {
+  margin-top: 40%;
+  margin-left: 50%;
+}
+
 .endAt {
   background-color: #F8F8FF;
   color: red;

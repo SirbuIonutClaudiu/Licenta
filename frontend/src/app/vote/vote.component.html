@@ -4,7 +4,10 @@
 <div id="startTimer" hidden>
   <cd-timer (onComplete)="refreshPage()" (onTick)="getTime()" #startTimer></cd-timer>
 </div>
-<div *ngIf="vote.id">
+<div class="loadingDiv" *ngIf="voteLoading">
+  <sa-spinner-circular-split [color]="spinnerColor"></sa-spinner-circular-split>
+</div>
+<div *ngIf="vote.id && !voteLoading">
   <div class="container mt-5">
     <div class="container">
       <div class="row">
@@ -226,7 +229,7 @@
     </div>
   </div>
 </div>
-<div class="d-flex justify-content-center" *ngIf="!vote.id">
+<div class="d-flex justify-content-center" *ngIf="!vote.id && !voteLoading">
   <div class="alert alert-danger errorMsg">
     <button type="button" class="close" data-dismiss="alert" aria-hidden="true">
       ×</button>

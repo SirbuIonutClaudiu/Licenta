@@ -20,7 +20,8 @@
           <img class="avatar avatar-xl no-radius pointer"
                [src]="retreivedImages.get(member.email)"
                (click)="navToProfile(member.id)"
-               alt="..." >
+               alt="..." *ngIf="!loading">
+          <sa-spinner-circular [color]="spinnerColor" *ngIf="loading"></sa-spinner-circular>
         </div>
         <div class="media-body">
           <div class="mb-2">

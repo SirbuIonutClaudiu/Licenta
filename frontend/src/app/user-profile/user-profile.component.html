@@ -14,8 +14,10 @@
     <button type="button" class="btn btn-primary mr-3" (click)="disconfirmModal()">No</button>
   </div>
 </ng-template>
-<div class="container" *ngIf=
-  "member.id">
+<div class="loadingDiv" *ngIf="loading">
+  <sa-spinner-circular-split [color]="spinnerColor"></sa-spinner-circular-split>
+</div>
+<div class="container" *ngIf="member.id && !loading">
   <div class="main-body">
     <!-- Breadcrumb -->
     <nav aria-label="breadcrumb" class="main-breadcrumb">
@@ -73,7 +75,7 @@
                   <i class="fa fa-cogs" aria-hidden="true" *ngIf="!role.localeCompare('Administrator')"></i>
                   {{role}}
                 </p>
-                <div class="select">
+                <div class="select" *ngIf="(HostHasModeratorRole || HostHasAdministratorRole) && !ownProfile">
                   <select name="slct" id="slct" [(ngModel)]="selectedRole" (ngModelChange)="optionSelected()">
                     <option selected disabled>{{defaultOption}}</option>
                     <option *ngFor="let number of [1,2,3,4,5,6]">{{availableRoles.get(number)}}</option>
@@ -121,7 +123,7 @@
                      [(ngModel)]="landline"
                      *ngIf="isLandlineEditable">
             </li>
-            <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
+            <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap" *ngIf="ownProfile">
               <h6 class="mb-0">
                 <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 21 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="bi bi-shield-lock-fillr mr-2 icon-inline text-info">
                   <path fill-rule="evenodd" d="M8 0c-.69 0-1.843.265-2.928.56-1.11.3-2.229.655-2.887.87a1.54 1.54 0 0 0-1.044 1.262c-.596 4.477.787 7.795 2.465 9.99a11.777 11.777 0 0 0 2.517 2.453c.386.273.744.482 1.048.625.28.132.581.24.829.24s.548-.108.829-.24a7.159 7.159 0 0 0 1.048-.625 11.775 11.775 0 0 0 2.517-2.453c1.678-2.195 3.061-5.513 2.465-9.99a1.541 1.541 0 0 0-1.044-1.263 62.467 62.467 0 0 0-2.887-.87C9.843.266 8.69 0 8 0zm0 5a1.5 1.5 0 0 1 .5 2.915l.385 1.99a.5.5 0 0 1-.491.595h-.788a.5.5 0 0 1-.49-.595l.384-1.99A1.5 1.5 0 0 1 8 5z"></path>
@@ -482,7 +484,7 @@
     </div>
   </div>
 </div>
-<div class="d-flex justify-content-center" *ngIf="!member.id">
+<div class="d-flex justify-content-center" *ngIf="!member.id && !loading">
   <div class="alert alert-danger errorMsg">
     <button type="button" class="close" data-dismiss="alert" aria-hidden="true">
       ×</button>

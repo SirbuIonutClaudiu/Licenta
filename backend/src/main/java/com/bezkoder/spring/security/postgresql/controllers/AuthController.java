@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import com.bezkoder.spring.security.postgresql.awsecrets.TwilioSecrets;
 import com.bezkoder.spring.security.postgresql.models.PasswordResetToken;
 import com.bezkoder.spring.security.postgresql.models.membruSenat;
 import com.bezkoder.spring.security.postgresql.payload.request.*;
@@ -74,8 +75,6 @@ public class AuthController {
 	private String jwt;
 	private List<String> roles;
 	private Long loginID = 0L;
-	private final String username = "AC315b0b103eacf332065bb30dca612446";
-	private final String password = "25153cfe99974d8a4a802d26abffec49";
 
 	@PostMapping("/signin")
 	public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
@@ -166,11 +165,11 @@ public class AuthController {
 	public RedirectView verifyUser(@Param("code") String code) {
 		if (service.verify(code)) {
 			RedirectView redirectView = new RedirectView();
-			redirectView.setUrl("http://localhost:4200/email_successfull/successfull");
+			redirectView.setUrl("http://elasticbeanstalk-us-east-2-602307895584.s3-website.us-east-2.amazonaws.com/email_successfull/successfull");
 			return redirectView;
 		} else {
 			RedirectView redirectView = new RedirectView();
-			redirectView.setUrl("http://localhost:4200/email_successfull/unsuccessfull");
+			redirectView.setUrl("http://elasticbeanstalk-us-east-2-602307895584.s3-website.us-east-2.amazonaws.com/unsuccessfull");
 			return redirectView;
 		}
 	}
@@ -181,7 +180,8 @@ public class AuthController {
 			return false;
 		}
 		membruSenat member = membruSenatService.findMemberById(this.loginID);
-		Twilio.init(this.username, this.password);
+		Twilio.init(new TwilioSecrets("TwilioAccountSID").getSecret(),
+				new TwilioSecrets("TwilioAuthToken").getSecret());
 		if(member.getVerificationSID() != null) {
 			com.twilio.rest.verify.v2.Service.deleter(member.getVerificationSID()).delete();
 		}
@@ -206,7 +206,8 @@ public class AuthController {
 					.badRequest()
 					.body(new MessageResponse("Try sending another verification request !"));
 		}
-		Twilio.init(this.username, this.password);
+		Twilio.init(new TwilioSecrets("TwilioAccountSID").getSecret(),
+				new TwilioSecrets("TwilioAuthToken").getSecret());
 		try {
 			VerificationCheck verificationCheck = VerificationCheck.creator(
 					member.getVerificationSID(),

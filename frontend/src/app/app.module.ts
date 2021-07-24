@@ -25,7 +25,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RichTextEditorModule } from '@syncfusion/ej2-angular-richtexteditor';
 import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
 import { SwitchModule } from '@syncfusion/ej2-angular-buttons';
-import {MatPaginatorModule} from '@angular/material/paginator';
+import { MatPaginatorModule } from '@angular/material/paginator';
 import { ChartsModule, WavesModule } from 'angular-bootstrap-md';
 import { AccumulationChartModule } from '@syncfusion/ej2-angular-charts';
 import { VoteComponent } from './vote/vote.component';
@@ -34,6 +34,8 @@ import { AutoCompleteModule } from '@syncfusion/ej2-angular-dropdowns';
 import { DropDownListModule } from '@syncfusion/ej2-angular-dropdowns';
 import { CheckBoxModule } from '@syncfusion/ej2-angular-buttons';
 import { SpinnerDottedModule } from 'spinners-angular/spinner-dotted';
+import { SpinnerCircularSplitModule } from 'spinners-angular/spinner-circular-split';
+import { SpinnerCircularModule } from 'spinners-angular/spinner-circular';
 import { ButtonModule } from '@syncfusion/ej2-angular-buttons';
 import { CdTimerModule } from 'angular-cd-timer';
 import { ModalModule } from 'ngx-bootstrap/modal';
@@ -86,6 +88,8 @@ import {
     SpinnerDottedModule,
     ButtonModule,
     CdTimerModule,
+    SpinnerCircularModule,
+    SpinnerCircularSplitModule,
     ModalModule.forRoot(),
     NgMultiSelectDropDownModule.forRoot()
   ],

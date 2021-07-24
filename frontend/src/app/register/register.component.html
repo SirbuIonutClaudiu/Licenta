@@ -1,3 +1,4 @@
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
 <div class="col-md-12">
   <div class="card card-container">
     <img
@@ -128,28 +129,16 @@
          <label for="googleAddress">Address of residence</label>
          <input id="googleAddress" type="text" class="form-control" required>
       </div>
-
-      <div class="form-group">
-        <button class="btn btn-primary btn-block">Sign Up</button>
-      </div>
-
-      <div class="alert alert-warning" *ngIf="f.submitted && isSignUpFailed">
-        Signup failed!<br />{{ errorMessage }}
-      </div>
-
-      <div class="card pageloader gray-bg" *ngIf="isLoading">
-        <div class="loader">
-          <span>You are being registred.Please wait...</span>
-          <div class="sp-hydrogen"></div>
-        </div>
-      </div>
-
-      <div class="container bootstrap snippets bootdeys" *ngIf="isLoading">
-        <div class="jumbotron">
-          <h1 id="loading-text">Loading...</h1>
-        </div>
-      </div>
     </form>
+
+    <button class="btn btn-primary btn-block" *ngIf="!isLoading && !isSuccessful" (click)="onSubmit()">Sign Up</button>
+    <button class="btn btn-primary btn-block" *ngIf="isLoading">
+      <i class="fa fa-spinner fa-spin"></i>&nbsp;&nbsp;Loading...
+    </button>
+
+    <div class="alert alert-warning" *ngIf="isSignUpFailed">
+      Signup failed!<br />{{ errorMessage }}
+    </div>
 
     <div class="alert alert-success" *ngIf="isSuccessful">
       Your registration is successful!<br>

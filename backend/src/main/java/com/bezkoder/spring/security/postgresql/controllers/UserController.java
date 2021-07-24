@@ -1,5 +1,6 @@
 package com.bezkoder.spring.security.postgresql.controllers;
 
+import com.bezkoder.spring.security.postgresql.awsecrets.TwilioSecrets;
 import com.bezkoder.spring.security.postgresql.models.*;
 import com.bezkoder.spring.security.postgresql.payload.request.NewPasswordRequest;
 import com.bezkoder.spring.security.postgresql.payload.request.PasswordRequest;
@@ -62,10 +63,6 @@ public class UserController {
     @Autowired
     JwtUtils jwtUtils;
 
-    private final String username = "AC315b0b103eacf332065bb30dca612446";
-
-    private final String password = "25153cfe99974d8a4a802d26abffec49";
-
     @GetMapping("/return_all")
     public List<UserResponse> returnAll() {
         List<UserResponse> result = new ArrayList<>();
@@ -92,7 +89,8 @@ public class UserController {
                     .body(new MessageResponse("Member does not exist !"));
         }
         membruSenat member = membruSenatService.findMemberById(id);
-        Twilio.init(this.username, this.password);
+        Twilio.init(new TwilioSecrets("TwilioAccountSID").getSecret(),
+                new TwilioSecrets("TwilioAuthToken").getSecret());
         if(member.getVerificationSID() != null) {
             Service.deleter(member.getVerificationSID()).delete();
         }
@@ -117,7 +115,8 @@ public class UserController {
                     .badRequest()
                     .body(new MessageResponse("Try sending another verification request !"));
         }
-        Twilio.init(this.username, this.password);
+        Twilio.init(new TwilioSecrets("TwilioAccountSID").getSecret(),
+                new TwilioSecrets("TwilioAuthToken").getSecret());
         try {
             VerificationCheck verificationCheck = VerificationCheck.creator(
                     member.getVerificationSID(),
@@ -187,30 +186,42 @@ public class UserController {
     }
 
     private membruSenat getMemberFromAuthentication(String auth) {
-        String token = auth.substring(7,auth.length());
+        String token = auth.substring(7);
         String email = jwtUtils.getEmailFromJwtToken(token);
         return membruSenatService.findMemberByEmail(email);
     }
 
     @PostMapping("/update_commission_role/{id}/{role}")
-    public ResponseEntity<?> updateRoles(@PathVariable("id") Long id, @PathVariable("role") ERole role) {
-        if(!membruSenatRepo.existsById(id)) {
+    public ResponseEntity<?> updateRoles(@RequestHeader("Authorization") String auth,
+                                         @PathVariable("id") Long id, @PathVariable("role") ERole role) {
+        membruSenat adminMember = getMemberFromAuthentication(auth);
+        membruSenat memberToBeModified = membruSenatRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Member to be modified does not exist !"));
+        Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
+                .orElseThrow(() -> new RuntimeException("Role Admin does not exist !"));
+        Role modRole = roleRepository.findByName(ERole.ROLE_MODERATOR)
+                .orElseThrow(() -> new RuntimeException("Role Moderator does not exist !"));
+        if(!adminMember.getRoles().contains(adminRole) && !adminMember.getRoles().contains(modRole)) {
             return ResponseEntity
                     .badRequest()
-                    .body(new MessageResponse("Member does not exist !"));
+                    .body(new MessageResponse("Administrator or Moderator role is required to perform this action !"));
         }
-        membruSenat member = membruSenatService.findMemberById(id);
+        if(adminMember.getId().equals(memberToBeModified.getId())) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new MessageResponse("Cannot set role on own account !"));
+        }
         Role newRole = roleRepository.findByName(role)
                 .orElseThrow(() -> new RuntimeException("Role " + role.name() + " not found !"));
-        if(member.getRoles().size() == 2) {
-            member.getRoles().removeIf(currentRole -> (!currentRole.getName().equals(ERole.ROLE_ADMIN)) &&
+        if(memberToBeModified.getRoles().size() == 2) {
+            memberToBeModified.getRoles().removeIf(currentRole -> (!currentRole.getName().equals(ERole.ROLE_ADMIN)) &&
                     (!currentRole.getName().equals(ERole.ROLE_MODERATOR)) &&
                     (!currentRole.getName().equals(ERole.ROLE_USER)) );
         }
         if(!newRole.getName().equals(ERole.ROLE_DELETE)) {
-            member.getRoles().add(newRole);
+            memberToBeModified.getRoles().add(newRole);
         }
-        membruSenatRepo.save(member);
+        membruSenatRepo.save(memberToBeModified);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -318,16 +329,18 @@ public class UserController {
     }
 
     @PostMapping("/toggle_2FA/{id}")
-    public ResponseEntity<?> toggle2FA(@PathVariable("id") Long id) {
-        if(!membruSenatRepo.existsById(id)) {
+    public ResponseEntity<?> toggle2FA(@RequestHeader("Authorization") String auth, @PathVariable("id") Long id) {
+        membruSenat adminMember = getMemberFromAuthentication(auth);
+        membruSenat memberToBeModified = membruSenatRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Member to be modified does not exist !"));
+        if(!adminMember.getId().equals(memberToBeModified.getId())) {
             return ResponseEntity
                     .badRequest()
-                    .body(new MessageResponse("Member does not exist !"));
+                    .body(new MessageResponse("Can only activate 2FA on own account !"));
         }
-        membruSenat member = membruSenatService.findMemberById(id);
-        boolean twoFactor = member.isActivated2FA();
-        member.setActivated2FA(!twoFactor);
-        membruSenatRepo.save(member);
+        boolean twoFactor = memberToBeModified.isActivated2FA();
+        memberToBeModified.setActivated2FA(!twoFactor);
+        membruSenatRepo.save(memberToBeModified);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

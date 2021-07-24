@@ -20,6 +20,8 @@ export class VoteComponent implements OnInit {
   // tslint:disable-next-line:ban-types
   datalabel!: Object;
   legendSettings!: LegendSettingsModel;
+  voteLoading = true;
+  timerLoading = true;
   startAngle!: number;
   endAngle!: number;
   explode!: boolean;
@@ -29,6 +31,7 @@ export class VoteComponent implements OnInit {
   title = 'Vote results';
   backgroundColor = '#F8F8FF';
   palette = ['#8FBC8F', '#e56590', '#357cd2', '#404041'];
+  spinnerColor = '#FF1493';
   titleStyle = {
     fontFamily: 'Arial',
     fontWeight: 'bolder',
@@ -77,10 +80,6 @@ export class VoteComponent implements OnInit {
       this.voteService.getvoteResult(id).subscribe(
         (response: VoteCountResponse) => {
           this.VoteResult = response;
-          this.VoteResult.for_count = 10;
-          this.VoteResult.against_count = 1;
-          this.VoteResult.blank_count = 3;
-          this.VoteResult.absent_count = 0;
           this.initiateChart();
         });
     }
@@ -121,6 +120,7 @@ export class VoteComponent implements OnInit {
       { x: 'against : ' + this.VoteResult.against_count, y: this.VoteResult.against_count, text: againstText},
       { x: 'blank : ' + this.VoteResult.blank_count, y: this.VoteResult.blank_count, text: blankText},
       { x: 'absent : ' + this.VoteResult.absent_count, y: this.VoteResult.absent_count, text: absentText}];
+    this.voteLoading = false;
   }
 
   initiateCounter(): void {
@@ -190,6 +190,9 @@ export class VoteComponent implements OnInit {
           this.checkGeolocation(this.vote.id);
         }
         this.initiateCounter();
+      },
+      err => {
+        this.voteLoading = false;
       });
   }
 

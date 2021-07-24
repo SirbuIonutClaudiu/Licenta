@@ -1,8 +1,8 @@
-import {Component, ElementRef, OnInit, TemplateRef, ViewChild} from '@angular/core';
+import {Component, OnInit, TemplateRef} from '@angular/core';
 import {TokenStorageService} from '../_services/token-storage.service';
 import {UserService} from '../_services/user.service';
 import {membruSenat} from '../_services/membruSenat';
-import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
+import {BsModalRef, BsModalService} from 'ngx-bootstrap/modal';
 // @ts-ignore
 import {PhoneNumberFormat, PhoneNumberUtil, ShortNumberInfo} from 'google-libphonenumber';
 import {ActivatedRoute} from '@angular/router';
@@ -15,6 +15,7 @@ import {HttpClient} from '@angular/common/http';
 })
 export class UserProfileComponent implements OnInit {
   selectedFile!: File;
+  loading = true;
   retrievedImage: any;
   auxImage: any;
   oldPassword = '';
@@ -50,8 +51,9 @@ export class UserProfileComponent implements OnInit {
   hasAdminRole = false;
   HostHasModeratorRole = false;
   HostHasAdministratorRole = false;
-  public token: string | null = ' ';
-  public member: membruSenat = {
+  spinnerColor = '#FF1493';
+  token: string | null = ' ';
+  member: membruSenat = {
     id: 0,
     email: ' ',
     name: ' ',
@@ -99,6 +101,7 @@ export class UserProfileComponent implements OnInit {
   isLandlineEditable = false;
   isImageEditable = false;
   deleteDisable = false;
+  ownProfile = false;
   modalRef!: BsModalRef;
 
   constructor(private tokenStorageService: TokenStorageService, private httpClient: HttpClient,
@@ -109,6 +112,12 @@ export class UserProfileComponent implements OnInit {
 
   ngOnInit(): void {
     this.checklist();
+  }
+
+  checkOwnProfile(): void {
+    const loggedId = this.tokenStorageService.getUser().id;
+    const userId = this.member.id;
+    this.ownProfile = (loggedId === userId);
   }
 
   openModalWithClass(template: TemplateRef<any>, disableORdelete: boolean): void {
@@ -168,6 +177,7 @@ export class UserProfileComponent implements OnInit {
           this.isPhoneCodeEditable = true;
         },
         err => {
+          this.codeError = true;
           this.errorMessage = err.error.message;
         });
     }
@@ -320,11 +330,10 @@ export class UserProfileComponent implements OnInit {
   getImage(name: string): void{
     this.userService.getImage(name).subscribe(
       res => {
-        const retreivedResponse = res;
-        const base64Data = retreivedResponse.picByte;
+        const base64Data = res.picByte;
         this.retrievedImage = 'data:image/jpeg;base64,' + base64Data;
-      },
-      error => {  } );
+        this.loading = false;
+      });
   }
 
   onDigitInput(event: any): void {
@@ -481,6 +490,7 @@ export class UserProfileComponent implements OnInit {
         if (this.member.id === this.tokenStorageService.getUser().id) {
           this.updateRoles();
         }
+        this.checkOwnProfile();
         this.name = this.member.name;
         this.getImage(this.member.email);
         this.member.website = (this.member.website == null) ? 'No website available' : this.member.website;
@@ -496,7 +506,10 @@ export class UserProfileComponent implements OnInit {
         }
         this.editSiteClicked();
         this.editLandlineClicked();
-      } );
+      },
+      err => {
+        this.loading = false;
+      });
   }
 
   EditName(): void {
