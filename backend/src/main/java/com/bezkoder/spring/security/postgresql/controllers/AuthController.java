@@ -266,11 +266,11 @@ public class AuthController {
 	public RedirectView ConfirmReset(@Param("code") String code) {
 		if (service.verifyResetCode(code)) {
 			RedirectView redirectView = new RedirectView();
-			redirectView.setUrl("http://localhost:4200/change_password/" + code);
+			redirectView.setUrl("http://elasticbeanstalk-us-east-2-602307895584.s3-website.us-east-2.amazonaws.com/change_password/" + code);
 			return redirectView;
 		} else {
 			RedirectView redirectView = new RedirectView();
-			redirectView.setUrl("http://localhost:4200/change_password/" + code);
+			redirectView.setUrl("http://elasticbeanstalk-us-east-2-602307895584.s3-website.us-east-2.amazonaws.com/change_password/" + code);
 			return redirectView;
 		}
 	}

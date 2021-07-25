@@ -235,8 +235,13 @@ input:focus {
 
 .imageOverlay {
   position: relative;
-  transform: translate(-115%,-110%);
+  transform: translate(-145%,-115%);
   opacity: 60%;
+}
+
+.imageConfirmation {
+  padding: 0;
+  width: 110px !important;
 }
 
 .imageOverlay:hover {

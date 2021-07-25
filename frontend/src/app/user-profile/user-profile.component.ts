@@ -385,9 +385,11 @@ export class UserProfileComponent implements OnInit {
       const websiteInput = document.getElementById('websiteInput');
       const target = evt.target; // clicked element
       if ((target === website) || (target === websiteInput)) {
-        this.isWebsiteEditable = true;
+        if (this.ownProfile) {
+          this.isWebsiteEditable = true;
+        }
       }
-      else {
+      else if (this.ownProfile) {
         this.isWebsiteEditable = false;
         if (this.website !== 'No website available') {
           this.userService.updateWebsite(this.member.id, this.website).subscribe(
@@ -414,7 +416,9 @@ export class UserProfileComponent implements OnInit {
       const landlineInput = document.getElementById('landlineInput');
       const target = evt.target; // clicked element
       if ((target === landline) || (target === landlineInput)) {
-        this.isLandlineEditable = true;
+        if (this.ownProfile) {
+          this.isLandlineEditable = true;
+        }
       }
       else {
         this.isLandlineEditable = false;
@@ -596,7 +600,7 @@ export class UserProfileComponent implements OnInit {
     const uploadImageData = new FormData();
     uploadImageData.append('imageFile', this.selectedFile, this.selectedFile.name);
     uploadImageData.append('memberEmail', this.member.email);
-    this.httpClient.post('http://localhost:8081/api/users/upload', uploadImageData)
+    this.httpClient.post('http://unitbvotingbackend-env.eba-fzmvt98p.us-east-2.elasticbeanstalk.com/api/users/upload', uploadImageData)
       .subscribe(ans => {
         this.isImageEditable = false;
       },

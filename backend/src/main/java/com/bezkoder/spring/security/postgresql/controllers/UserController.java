@@ -211,6 +211,11 @@ public class UserController {
                     .badRequest()
                     .body(new MessageResponse("Cannot set role on own account !"));
         }
+        if(adminMember.getRoles().contains(adminRole)) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new MessageResponse("Administrator cannot be part of a commission !"));
+        }
         Role newRole = roleRepository.findByName(role)
                 .orElseThrow(() -> new RuntimeException("Role " + role.name() + " not found !"));
         if(memberToBeModified.getRoles().size() == 2) {
@@ -252,15 +257,18 @@ public class UserController {
     }
 
     @PostMapping("/update_landline/{id}/{landline}")
-    public ResponseEntity<?> updateLandline(@PathVariable("id") Long id, @PathVariable("landline") String landline) {
-        if(!membruSenatRepo.existsById(id)) {
+    public ResponseEntity<?> updateLandline(@RequestHeader("Authorization") String auth,
+                                            @PathVariable("id") Long id, @PathVariable("landline") String landline) {
+        membruSenat adminMember = getMemberFromAuthentication(auth);
+        membruSenat memberToBeModified = membruSenatRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Member to be modified does not exist !"));
+        if(!adminMember.getId().equals(memberToBeModified.getId())) {
             return ResponseEntity
                     .badRequest()
-                    .body(new MessageResponse("Member does not exist !"));
+                    .body(new MessageResponse("Only the owner of the account can change the landline !"));
         }
-        membruSenat member = membruSenatService.findMemberById(id);
-        member.setLandline(landline);
-        membruSenatRepo.save(member);
+        memberToBeModified.setLandline(landline);
+        membruSenatRepo.save(memberToBeModified);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -308,11 +316,15 @@ public class UserController {
     }
 
     @PostMapping("/change_website")
-    public ResponseEntity<?> acceptApplication(@Valid @RequestBody WebsiteRequest websiteRequest) throws IOException {
-        if(!membruSenatRepo.existsById(websiteRequest.getId())) {
+    public ResponseEntity<?> acceptApplication(@RequestHeader("Authorization") String auth,
+                                               @Valid @RequestBody WebsiteRequest websiteRequest) throws IOException {
+        membruSenat adminMember = getMemberFromAuthentication(auth);
+        membruSenat memberToBeModified = membruSenatRepo.findById(websiteRequest.getId())
+                .orElseThrow(() -> new RuntimeException("Member to be modified does not exist !"));
+        if(!adminMember.getId().equals(memberToBeModified.getId())) {
             return ResponseEntity
                     .badRequest()
-                    .body(new MessageResponse("Member does not exist !"));
+                    .body(new MessageResponse("Only the owner of the account can change the website !"));
         }
         URL url = new URL(websiteRequest.getWebsite());
         HttpURLConnection huc = (HttpURLConnection) url.openConnection();
@@ -322,9 +334,8 @@ public class UserController {
                     .badRequest()
                     .body(new MessageResponse("Site URL is unavailable.Try another !"));
         }
-        membruSenat member = membruSenatService.findMemberById(websiteRequest.getId());
-        member.setWebsite(websiteRequest.getWebsite());
-        membruSenatRepo.save(member);
+        memberToBeModified.setWebsite(websiteRequest.getWebsite());
+        membruSenatRepo.save(memberToBeModified);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -430,15 +441,18 @@ public class UserController {
     }
 
     @PostMapping("/check_password")
-    public ResponseEntity<?> checkPassword(@Valid @RequestBody PasswordRequest passwordRequest) {
-        if(!membruSenatRepo.existsById(passwordRequest.getId())) {
+    public ResponseEntity<?> checkPassword(@RequestHeader("Authorization") String auth,
+                                           @Valid @RequestBody PasswordRequest passwordRequest) {
+        membruSenat adminMember = getMemberFromAuthentication(auth);
+        membruSenat memberToBeModified = membruSenatRepo.findById(passwordRequest.getId())
+                .orElseThrow(() -> new RuntimeException("Member to be modified does not exist !"));
+        if(!adminMember.getId().equals(memberToBeModified.getId())) {
             return ResponseEntity
                     .badRequest()
-                    .body(new MessageResponse("Member does not exist !"));
+                    .body(new MessageResponse("Only the owner of the account can check the password validity !"));
         }
-        membruSenat member = membruSenatService.findMemberById(passwordRequest.getId());
         BCryptPasswordEncoder bEn = new BCryptPasswordEncoder();
-        if(bEn.matches(passwordRequest.getPassword(), member.getPassword())) {
+        if(bEn.matches(passwordRequest.getPassword(), memberToBeModified.getPassword())) {
             return new ResponseEntity<>(HttpStatus.OK);
         }
         else {
@@ -449,15 +463,18 @@ public class UserController {
     }
 
     @PostMapping("/change_password")
-    public ResponseEntity<?> changePassword(@Valid @RequestBody NewPasswordRequest newPasswordRequest) {
-        if(!membruSenatRepo.existsById(newPasswordRequest.getId())) {
+    public ResponseEntity<?> changePassword(@RequestHeader("Authorization") String auth,
+                                            @Valid @RequestBody NewPasswordRequest newPasswordRequest) {
+        membruSenat adminMember = getMemberFromAuthentication(auth);
+        membruSenat memberToBeModified = membruSenatRepo.findById(newPasswordRequest.getId())
+                .orElseThrow(() -> new RuntimeException("Member to be modified does not exist !"));
+        if(!adminMember.getId().equals(memberToBeModified.getId())) {
             return ResponseEntity
                     .badRequest()
-                    .body(new MessageResponse("Member does not exist !"));
+                    .body(new MessageResponse("Only the owner of the account can change the password!"));
         }
-        membruSenat member = membruSenatService.findMemberById(newPasswordRequest.getId());
-        member.setPassword(encoder.encode(newPasswordRequest.getNewPassword()));
-        membruSenatRepo.save(member);
+        memberToBeModified.setPassword(encoder.encode(newPasswordRequest.getNewPassword()));
+        membruSenatRepo.save(memberToBeModified);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

@@ -1,4 +1,19 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
+<ng-template #template>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left">Create vote confirmation</h4>
+    <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    Are you sure you want to <b>create vote</b> with subject<br><b>{{subject}}</b> ?
+  </div>
+  <div class="modal-body text-right">
+    <button type="button" class="btn btn-success mr-2" (click)="submitForm()">Yes</button>
+    <button type="button" class="btn btn-danger mr-3" (click)="disconfirmModal()">No</button>
+  </div>
+</ng-template>
 <div *ngIf="HostHasModeratorRole || HostHasAdministratorRole">
   <section class="section gray-bg" id="contactus">
     <div class="container">
@@ -90,7 +105,7 @@
               </div>
               <div class="col-md-5 d-flex align-items-start justify-content-end">
                 <div class="send">
-                  <a id="send_message" class="px-btn theme" (click)="submitForm()"><span>Create vote</span> <i class="arrow"></i></a>
+                  <a id="send_message" class="px-btn theme" (click)="openModalWithClass(template)"><span>Create vote</span> <i class="arrow"></i></a>
                 </div>
               </div>
             </div>

@@ -21,7 +21,6 @@ export class VoteComponent implements OnInit {
   datalabel!: Object;
   legendSettings!: LegendSettingsModel;
   voteLoading = true;
-  timerLoading = true;
   startAngle!: number;
   endAngle!: number;
   explode!: boolean;
@@ -172,9 +171,11 @@ export class VoteComponent implements OnInit {
     this.voteService.voteGeolocationValid(id).subscribe(
       (ans: boolean) => {
         this.geoLocationValid = ans;
+        this.voteLoading = false;
       },
       err => {
         this.geoLocationValid = false;
+        this.voteLoading = false;
       });
   }
 
@@ -190,6 +191,9 @@ export class VoteComponent implements OnInit {
           this.checkGeolocation(this.vote.id);
         }
         this.initiateCounter();
+        if (this.vote.idle && !this.vote.active) {
+          this.voteLoading = false;
+        }
       },
       err => {
         this.voteLoading = false;

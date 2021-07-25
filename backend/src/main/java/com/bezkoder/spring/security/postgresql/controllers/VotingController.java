@@ -183,12 +183,21 @@ public class VotingController {
         int dateLength = newVoteRequest.getStartAt().length();
         SimpleDateFormat formatter = new SimpleDateFormat("MMM dd, yyyy, HH:mm:ss");
         Date startAt = formatter.parse(newVoteRequest.getStartAt());
+        boolean isPM = newVoteRequest.getStartAt().substring(dateLength-2, dateLength).equals("PM");
         Calendar startAt_aux = Calendar.getInstance();
         startAt_aux.setTime(startAt);
-        if(newVoteRequest.getStartAt().substring(dateLength-2, dateLength).equals("PM")) {
+        if(startAt_aux.get(Calendar.HOUR_OF_DAY) == 12 && !isPM) {
+            startAt_aux.add(Calendar.HOUR, -12);
+            startAt = startAt_aux.getTime();
+        }
+        startAt_aux.setTime(startAt);
+        if(isPM) {
             startAt_aux.add(Calendar.HOUR, 12);
             startAt = startAt_aux.getTime();
         }
+        startAt_aux.setTime(startAt);
+        startAt_aux.add(Calendar.HOUR, -3);
+        startAt = startAt_aux.getTime();
         Calendar endAt = Calendar.getInstance();
         endAt.setTime(startAt);
         switch(newVoteRequest.getDuration()) {

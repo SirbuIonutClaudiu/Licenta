@@ -1,7 +1,8 @@
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {UserService} from '../_services/user.service';
 import { IDropdownSettings } from 'ng-multiselect-dropdown';
 import { ToolbarService, LinkService, ImageService, HtmlEditorService } from '@syncfusion/ej2-angular-richtexteditor';
+import {BsModalRef, BsModalService} from 'ngx-bootstrap/modal';
 import {VoteService} from '../_services/vote.service';
 import {TokenStorageService} from '../_services/token-storage.service';
 
@@ -86,13 +87,30 @@ export class AddVoteComponent implements OnInit {
   errorTime = 0;
   HostHasModeratorRole = false;
   HostHasAdministratorRole = false;
+  modalRef!: BsModalRef;
 
   constructor(private userService: UserService, private voteService: VoteService,
-              private tokenStorageService: TokenStorageService) { }
+              private tokenStorageService: TokenStorageService, private modalService: BsModalService) { }
 
   ngOnInit(): void {
     this.addInputMaxLength();
     this.checkHostRoles();
+  }
+
+  openModalWithClass(template: TemplateRef<any>): void {
+    if (!this.checkFormCorrectness()) {
+      this.showError();
+    }
+    else {
+      this.modalRef = this.modalService.show(
+        template,
+        Object.assign({}, { class: 'modal-dialog-centered' })
+      );
+    }
+  }
+
+  disconfirmModal(): void {
+    this.modalRef.hide();
   }
 
   checkHostRoles(): void {
@@ -214,19 +232,14 @@ export class AddVoteComponent implements OnInit {
   }
 
   submitForm(): void {
-    if (!this.checkFormCorrectness()) {
-      this.showError();
-    }
-    else {
-      this.voteService.newVote(this.subject, this.content, this.dateFormated, this.duration,
-        this.geoRestriction, this.emailReminder, this.roles).subscribe(
+    this.voteService.newVote(this.subject, this.content, this.dateFormated, this.duration,
+      this.geoRestriction, this.emailReminder, this.roles).subscribe(
         ans => {
           window.location.reload();
-        },
+          },
         err => {
           this.setError(err.error.message, 5);
           this.showError();
         });
-    }
   }
 }

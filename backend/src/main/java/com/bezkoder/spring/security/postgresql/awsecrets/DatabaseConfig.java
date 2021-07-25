@@ -6,7 +6,6 @@ import com.amazonaws.services.secretsmanager.AWSSecretsManager;
 import com.amazonaws.services.secretsmanager.AWSSecretsManagerClientBuilder;
 import com.amazonaws.services.secretsmanager.model.*;
 import com.google.gson.Gson;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,8 +31,8 @@ public class DatabaseConfig {
     private AwsSecrets getSecret() {
         String secretName = "UnitbVotindAppDBcredentials";
         String region = "us-east-2";
-        String accessKey = "AKIAYYPCZEEQOCTVG5XK";
-        String secretkey = "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";
+        String accessKey = "-";
+        String secretkey = "-";
 
         AWSSecretsManager client = AWSSecretsManagerClientBuilder.standard()
                 .withRegion(region)

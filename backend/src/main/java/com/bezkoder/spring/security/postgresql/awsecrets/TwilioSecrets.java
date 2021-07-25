@@ -6,9 +6,7 @@ import com.amazonaws.services.secretsmanager.AWSSecretsManager;
 import com.amazonaws.services.secretsmanager.AWSSecretsManagerClientBuilder;
 import com.amazonaws.services.secretsmanager.model.GetSecretValueRequest;
 import com.amazonaws.services.secretsmanager.model.GetSecretValueResult;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
-import org.springframework.beans.factory.annotation.Value;
 
 @Data
 public class TwilioSecrets {
@@ -25,8 +23,8 @@ public class TwilioSecrets {
     }
 
     public String getSecret() {
-        String accessKey = "AKIAYYPCZEEQOCTVG5XK";
-        String secretkey = "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";
+        String accessKey = "-";
+        String secretkey = "-";
 
         AWSSecretsManager client = AWSSecretsManagerClientBuilder.standard()
                 .withRegion(this.region)

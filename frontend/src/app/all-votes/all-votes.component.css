@@ -28,8 +28,12 @@
 .titleStyle {
   font-family: 'Arial', serif;
   font-weight: bolder;
-  color: white;
+  color: red;
   font-size: 25px;
+}
+
+.visibility {
+  text-shadow: 0 0 5px black;
 }
 
 .spinner {

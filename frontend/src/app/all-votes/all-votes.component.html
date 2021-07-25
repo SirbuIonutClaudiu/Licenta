@@ -62,7 +62,7 @@
          [ngClass]="{'border border-danger': vote.active}"
          style="background-color: {{backgrounds[i]}};">
       <div class="col d-flex justify-content-center titleStyle"
-           [class.redColor]="vote.active" *ngIf="vote.idle">
+           [class.redColor]="vote.active" [class.visibility]="!vote.idle" *ngIf="vote.idle">
         {{vote.subject}}
       </div>
       <div class="w-100 d-none d-md-block"></div>
@@ -76,7 +76,7 @@
           <div class="bounce3"></div>
         </div>
       </div>
-      <div class="col" *ngIf="!vote.idle">
+      <div class="col visibility" *ngIf="!vote.idle">
         <ejs-accumulationchart height="300px" [legendSettings]='legendSettings' [background]="backgrounds[i]"
                                [title]="vote.subject" [titleStyle]="titleStyle">
           <e-accumulation-series-collection>
@@ -155,7 +155,7 @@
 
 <div class="d-flex flex-row-reverse">
   <div class="d-flex justify-content-end pager">
-    <mat-paginator [length]=voteSubjects.length
+    <mat-paginator [length]=voteSubjects.length-1
                    showFirstLastButtons="true"
                    [pageSize]=perPage
                    [pageSizeOptions]="[6, 9, 12, 15, 30]"

@@ -217,11 +217,15 @@ export class AllVotesComponent implements OnInit {
   }
 
   chartData(nr: number): any {
+    const forText = this.votesResults[nr].for_count ? 'for: ' + this.votesResults[nr].for_count.toString() : ' ';
+    const againstText = this.votesResults[nr].against_count ? 'against: ' + this.votesResults[nr].against_count.toString() : ' ';
+    const blankText = this.votesResults[nr].blank_count ? 'blank: ' + this.votesResults[nr].blank_count.toString() : ' ';
+    const absentText = this.votesResults[nr].absent_count ? 'absent: ' + this.votesResults[nr].absent_count.toString() : ' ';
     return [
-      {x: 'for', y: this.votesResults[nr].for_count, text: 'for: ' + this.votesResults[nr].for_count.toString()},
-      {x: 'against', y: this.votesResults[nr].against_count, text: 'against: ' + this.votesResults[nr].against_count.toString()},
-      {x: 'blank', y: this.votesResults[nr].blank_count, text: 'blank: ' + this.votesResults[nr].blank_count.toString()},
-      {x: 'absent', y: this.votesResults[nr].absent_count, text: 'absent: ' + this.votesResults[nr].absent_count.toString()}];
+      {x: 'for', y: this.votesResults[nr].for_count, text: forText},
+      {x: 'against', y: this.votesResults[nr].against_count, text: againstText},
+      {x: 'blank', y: this.votesResults[nr].blank_count, text: blankText},
+      {x: 'absent', y: this.votesResults[nr].absent_count, text: absentText}];
   }
 
   getAllVotes(): void {

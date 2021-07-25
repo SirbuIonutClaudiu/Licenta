@@ -184,7 +184,7 @@
                 </button>
               </label>
             </div>
-            <div *ngIf="vote.active && !geoLocationValid">
+            <div *ngIf="vote.active && !geoLocationValid && !voteLoading">
               <div class="alert alert-danger">
                 <button type="button" class="close" data-dismiss="alert" aria-hidden="true">
                   ×</button>
