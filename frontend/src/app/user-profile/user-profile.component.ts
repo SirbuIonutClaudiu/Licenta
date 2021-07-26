@@ -53,6 +53,7 @@ export class UserProfileComponent implements OnInit {
   HostHasAdministratorRole = false;
   spinnerColor = '#FF1493';
   token: string | null = ' ';
+  profileEditable = false;
   member: membruSenat = {
     id: 0,
     email: ' ',

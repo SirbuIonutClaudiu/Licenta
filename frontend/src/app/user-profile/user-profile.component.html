@@ -21,7 +21,7 @@
   <div class="main-body">
     <!-- Breadcrumb -->
     <nav aria-label="breadcrumb" class="main-breadcrumb">
-      <ol class="breadcrumb">
+      <ol class="breadcrumb" [class.profileEditing]="!profileEditable && ownProfile">
         <li class="breadcrumb-item active" aria-current="page" style="width: 10%;">User Profile</li>
         <li aria-current="page" style="width: 63%;" *ngIf="!HostHasAdministratorRole || member.roles.includes('Administrator')"></li>
         <li class="d-flex justify-content-end" aria-current="page" style="width: 63%;"
@@ -143,28 +143,38 @@
               <label for="2FA_switch" class="custom_label">Toggle</label>
               <span class="error" *ngIf="twoFactorError">Introduce a phone number first !</span>
             </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap" *ngIf="ownProfile">
+              <h6 class="mb-0">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 21 18" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="bi bi-pencil-square mr-2 icon-inline text-warning">
+                  <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                  <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
+                </svg>Profile Information Editable
+              </h6>
+              <input type="checkbox" id="editable_switch" [(ngModel)]="profileEditable"/>
+              <label for="editable_switch" class="custom_label">Toggle</label>
+            </li>
           </ul>
         </div>
       </div>
-      <div class="col-md-8">
+      <div [ngClass]="profileEditable ? 'col-md-8' : 'col-md-6'">
         <div class="card mb-3">
           <div class="card-body">
 
             <div class="row">
-              <div class="col-sm-2">
+              <div [ngClass]="profileEditable ? 'col-sm-2' : 'col-md-3'">
                 <h6 class="col-mb-0"><b>Full Name</b></h6>
               </div>
               <div class="col-md-6" *ngIf="!isNameEditable">
                 {{member.name}}
               </div>
-              <div class="col-md-6" *ngIf="isNameEditable">
+              <div class="col-md-3" *ngIf="isNameEditable">
                 <input class="customInput"
                        placeholder={{name}}
                        [(ngModel)]="this.name"
                        (keydown.enter)="SaveNewName()"
                        *ngIf="isNameEditable">
               </div>
-              <div class="col-md-3 card-hover-show" *ngIf="!isNameEditable">
+              <div class="col-md-3 card-hover-show" *ngIf="!isNameEditable && profileEditable">
               <a class="btn btn-xs btn-bold btn-warning activateBtn rounded-pill" (click)="EditName()">
                 <i class="fa fa-pencil fa-lg"></i>&nbsp;&nbsp;Edit</a>
               </div>
@@ -178,7 +188,7 @@
             <hr>
 
             <div class="row">
-              <div class="col-sm-2">
+              <div [ngClass]="profileEditable ? 'col-sm-2' : 'col-md-3'">
                 <h6 class="col-mb-0"><b>Email</b></h6>
               </div>
               <div class="col-md-6" *ngIf="!isEmailEditable">
@@ -190,7 +200,7 @@
                        (keydown.enter)="SaveNewEmail()"
                        *ngIf="isEmailEditable">
               </div>
-              <div class="col-md-3 card-hover-show" *ngIf="!isEmailEditable">
+              <div class="col-md-3 card-hover-show" *ngIf="!isEmailEditable && profileEditable">
                 <a class="btn btn-xs btn-bold btn-warning activateBtn rounded-pill" (click)="EditEmail()">
                   <i class="fa fa-pencil fa-lg"></i>&nbsp;&nbsp;Edit</a>
               </div>
@@ -204,7 +214,7 @@
             <hr>
 
             <div class="row">
-              <div class="col-sm-2">
+              <div [ngClass]="profileEditable ? 'col-sm-2' : 'col-md-3'">
                 <h6 class="col-mb-0"><b>Mobile</b></h6>
               </div>
               <div class="col-md-5" *ngIf="(!isPhoneNumber || isPhoneNumberEditable) && !isPhoneCodeEditable">
@@ -271,7 +281,7 @@
               <div class="col-md-6" *ngIf="isPhoneNumber && !isPhoneNumberEditable && !isPhoneCodeEditable">
                 {{member.phoneNumber}}
               </div>
-              <div class="col-md-3 card-hover-show" *ngIf="isPhoneNumber && !isPhoneNumberEditable && !isPhoneCodeEditable">
+              <div class="col-md-3 card-hover-show" *ngIf="isPhoneNumber && !isPhoneNumberEditable && !isPhoneCodeEditable && profileEditable">
                 <a class="btn btn-xs btn-bold btn-warning activateBtn rounded-pill" (click)="EditPhoneNumber()">
                   <i class="fa fa-pencil fa-lg"></i>&nbsp;&nbsp;Edit</a>
               </div>
@@ -294,7 +304,7 @@
             <hr>
 
             <div class="row">
-              <div class="col-sm-2">
+              <div [ngClass]="profileEditable ? 'col-sm-2' : 'col-md-3'">
                 <h6 class="col-mb-0"><b>Address</b></h6>
               </div>
               <div class="col-md-6" *ngIf="!isAddressEditable">
@@ -306,7 +316,7 @@
                        class="form-control"
                        (keydown.enter)="SaveAddress()">
               </div>
-              <div class="col-md-3 card-hover-show" *ngIf="!isAddressEditable">
+              <div class="col-md-3 card-hover-show" *ngIf="!isAddressEditable && profileEditable">
                 <a id="edit" class="btn btn-xs btn-bold btn-warning activateBtn rounded-pill" (click)="EditAddress()">
                   <i class="fa fa-pencil fa-lg"></i>&nbsp;&nbsp;Edit</a>
               </div>
@@ -317,9 +327,9 @@
                   <i class="fa fa-times-circle fa-lg"></i> Cancel</a>
               </div>
             </div>
-            <hr *ngIf="ownProfile">
+            <hr *ngIf="ownProfile && profileEditable">
 
-            <div class="row" *ngIf="ownProfile">
+            <div class="row" *ngIf="ownProfile && profileEditable">
               <div class="col-sm-2">
                 <h6 class="col-mb-0"><b>Password</b></h6>
               </div>

@@ -239,6 +239,10 @@ input:focus {
   opacity: 60%;
 }
 
+.profileEditing {
+  width: 83%;
+}
+
 .imageConfirmation {
   padding: 0;
   width: 110px !important;

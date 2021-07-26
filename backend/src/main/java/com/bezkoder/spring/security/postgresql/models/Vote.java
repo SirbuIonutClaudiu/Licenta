@@ -20,6 +20,7 @@ public class Vote {
 
     private String subject;
 
+    @Column(columnDefinition="TEXT")
     private String content;
 
     private Date startAt;

@@ -183,11 +183,13 @@ export class AllVotesComponent implements OnInit {
 
   enableGeoRestrictionChange(): void {
     this.enableGeorestriction = !this.enableGeorestriction;
+    this.loading = true;
     this.getAllVotes();
   }
 
   geoRestrictionOptionChange(): void {
     this.geoRestrictedOption = !this.geoRestrictedOption;
+    this.loading = true;
     this.getAllVotes();
   }
 
@@ -200,6 +202,7 @@ export class AllVotesComponent implements OnInit {
       (event.value === this.sortByElements[2]) ? 'start' : 'end');
     this.sortDirection = (event.value === this.sortByElements[0] ||
     (event.value === this.sortByElements[1]) ? 'asc' : 'desc');
+    this.loading = true;
     this.getAllVotes();
   }
 
@@ -207,12 +210,14 @@ export class AllVotesComponent implements OnInit {
     this.status = (event.value === this.showVotes[0]) ? 'all' :
       ((event.value === this.showVotes[1]) ? 'active' :
         ((event.value === this.showVotes[2] ? 'idle' : 'ended')));
+    this.loading = true;
     this.getAllVotes();
   }
 
   onPaginateChange(event: any): void {
     this.page = event.pageIndex;
     this.perPage = event.pageSize;
+    this.loading = true;
     this.getAllVotes();
   }
 
