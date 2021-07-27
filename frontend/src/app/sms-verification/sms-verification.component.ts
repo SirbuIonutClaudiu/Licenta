@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import {TokenStorageService} from '../_services/token-storage.service';
 import {AuthService} from '../_services/auth.service';
 import {Router} from '@angular/router';
+import {DataSharingService} from '../_services/DataSharingService';
 
 @Component({
   selector: 'app-sms-verification',
@@ -24,7 +25,7 @@ export class SmsVerificationComponent implements OnInit {
   digitSix: null;
 
   constructor(private tokenStorageService: TokenStorageService, private authService: AuthService,
-              private router: Router) { }
+              private router: Router, private dataSharingService: DataSharingService) { }
 
   ngOnInit(): void {
     this.email = this.tokenStorageService.savedEmail();
@@ -60,6 +61,7 @@ export class SmsVerificationComponent implements OnInit {
                 this.tokenStorageService.saveUser(data);
                 this.isLoginFailed = false;
                 this.isLoggedIn = true;
+                this.dataSharingService.loggedIn.next(true);
                 this.router.navigate(['user_profile/' + this.tokenStorageService.getId()]);
       },
       err => {

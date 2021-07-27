@@ -4,6 +4,7 @@ import { TokenStorageService } from '../_services/token-storage.service';
 import { UserService } from '../_services/user.service';
 import { Router } from '@angular/router';
 import { VisitorsService} from '../_services/visitors.service';
+import {DataSharingService} from '../_services/DataSharingService';
 
 @Component({
   selector: 'app-login',
@@ -26,7 +27,7 @@ export class LoginComponent implements OnInit {
   locationResponse: any;
   loginLocation = '';
 
-  constructor(private authService: AuthService, private tokenStorage: TokenStorageService,
+  constructor(private authService: AuthService, private tokenStorage: TokenStorageService, private dataSharingService: DataSharingService,
               private userService: UserService, private router: Router, private visitorsService: VisitorsService) { }
 
   ngOnInit(): void {
@@ -64,6 +65,7 @@ export class LoginComponent implements OnInit {
             this.isLoginFailed = false;
             this.isLoggedIn = true;
             this.roles = this.tokenStorage.getUser().roles;
+            this.dataSharingService.loggedIn.next(true);
             this.router.navigate(['user_profile/' + this.user.id]);
           }
         });

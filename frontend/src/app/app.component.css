@@ -1,0 +1,7 @@
+li {
+  font-size: 110%;
+}
+
+li:hover {
+  background-color: #6495ED;
+}
