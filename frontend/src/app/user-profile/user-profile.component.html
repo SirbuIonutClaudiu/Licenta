@@ -121,14 +121,14 @@
                 </svg>Landline
               </h6>
               <span class="text-secondary" id="landline"
-                    [class.editable]="ownProfile" *ngIf="!isLandlineEditable">
+                    [class.editable]="ownProfile" *ngIf="!isLandlineEditable && !landlineError">
                 {{landline}}
               </span>
-              <span class="error" *ngIf="websiteError">{{landline}}</span>
+              <span class="error" *ngIf="landlineError">{{landline}}</span>
               <input id="landlineInput"
                      name="landlineInput"
                      prefix="+40"
-                     mask=" 000 000000"
+                     mask=" 0000 000 000"
                      placeholder="{{landline}}"
                      [(ngModel)]="landline"
                      *ngIf="isLandlineEditable">

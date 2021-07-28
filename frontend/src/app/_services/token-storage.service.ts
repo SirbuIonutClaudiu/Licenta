@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import {DataSharingService} from './DataSharingService';
 
 const TOKEN_KEY = 'auth-token';
 const USER_KEY = 'auth-user';
@@ -10,10 +11,11 @@ export class TokenStorageService {
 
   private email = ' ';
 
-  constructor() { }
+  constructor(private dataSharingService: DataSharingService) { }
 
   signOut(): void {
     window.sessionStorage.clear();
+    this.dataSharingService.loggedIn.next(false);
   }
 
   public saveToken(token: string): void {

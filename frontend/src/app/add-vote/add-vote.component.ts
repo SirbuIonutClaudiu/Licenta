@@ -1,7 +1,7 @@
 import {Component, ElementRef, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {UserService} from '../_services/user.service';
 import { IDropdownSettings } from 'ng-multiselect-dropdown';
-import { ToolbarService, LinkService, ImageService, HtmlEditorService } from '@syncfusion/ej2-angular-richtexteditor';
+import {ToolbarService, LinkService, ImageService, HtmlEditorService} from '@syncfusion/ej2-angular-richtexteditor';
 import {BsModalRef, BsModalService} from 'ngx-bootstrap/modal';
 import {VoteService} from '../_services/vote.service';
 import {TokenStorageService} from '../_services/token-storage.service';

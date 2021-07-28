@@ -37,7 +37,9 @@ export class UserProfileComponent implements OnInit {
   digitSix: null;
   codeError = false;
   websiteError = false;
-  passwordError = 'sdadadaa';
+  passwordError = '';
+  initialWebsite = '';
+  initialLandline = '';
   isPasswordError = false;
   imageError = false;
   twoFactorError = false;
@@ -71,6 +73,7 @@ export class UserProfileComponent implements OnInit {
     activated2FA: false,
     roles: []
   };
+  landlineError = false;
   availableRoles = new Map([
     [1, 'Sterge rolul precedent'],
     [2, 'Comisia didactica'],
@@ -392,10 +395,11 @@ export class UserProfileComponent implements OnInit {
       }
       else if (this.ownProfile) {
         this.isWebsiteEditable = false;
-        if (this.website !== 'No website available') {
+        if (this.website !== this.initialWebsite) {
           this.userService.updateWebsite(this.member.id, this.website).subscribe(
             ans => {
               this.member.website = this.website;
+              this.initialWebsite = this.website;
             },
             err => {
               this.websiteError = true;
@@ -423,13 +427,27 @@ export class UserProfileComponent implements OnInit {
       }
       else {
         this.isLandlineEditable = false;
-        this.landline = ((this.landline.substring(0, 3) !== '+40') ? '+40 ' : '') + this.landline;
-        this.landline = this.landline.substring(0, 6) + ' ' + this.landline.substring(6);
-        this.userService.updateLandline(this.member.id, this.landline).subscribe(
-          answ => {
-            this.member.landline = this.landline;
-            this.isLandlineEditable = false;
-          });
+        if (this.landline !== this.initialLandline) {
+          if (this.landline.length !== 10) {
+            this.landlineError = true;
+            this.landline = 'Landline numbers have 10 digits';
+            this.userService.sleep(3).subscribe(
+              answ => {
+                this.landline = 'No landline available';
+                this.landlineError = false;
+              });
+          }
+          else {
+            this.landline = ((this.landline.substring(0, 3) !== '+40') ? '+40 ' : '') + this.landline;
+            this.landline = this.landline.substring(0, 6) + ' ' + this.landline.substring(6);
+            this.userService.updateLandline(this.member.id, this.landline).subscribe(
+              answ => {
+                this.member.landline = this.landline;
+                this.initialLandline = this.landline;
+                this.isLandlineEditable = false;
+              });
+          }
+        }
       }
     });
   }
@@ -490,6 +508,8 @@ export class UserProfileComponent implements OnInit {
     this.userService.getMemberById(id).subscribe(
       (response: membruSenat) => {
         this.member = response;
+        this.initialWebsite = response.website;
+        this.initialLandline = response.landline;
         this.hasModeratorRole = this.member.roles.includes('Moderator');
         this.hasAdminRole = this.member.roles.includes('Administrator');
         if (this.member.id === this.tokenStorageService.getUser().id) {

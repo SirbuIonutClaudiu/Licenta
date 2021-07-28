@@ -4,4 +4,10 @@ li {
 
 li:hover {
   background-color: #6495ED;
+  cursor: pointer;
+}
+
+.disabledLink:hover {
+  background-color: #343a40;
+  cursor: not-allowed;
 }

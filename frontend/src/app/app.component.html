@@ -1,7 +1,22 @@
 <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+<ng-template #template>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left">Logout confirmation</h4>
+    <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    Are you sure you want to <b>Log out</b> ?
+  </div>
+  <div class="modal-body text-right">
+    <button type="button" class="btn btn-danger mr-2" (click)="logout()">Yes</button>
+    <button type="button" class="btn btn-success mr-3" (click)="disconfirmModal()">No</button>
+  </div>
+</ng-template>
 <div id="app">
   <nav class="navbar navbar-expand navbar-dark bg-dark">
-    <a href="#" class="navbar-brand"><img src="favicon.ico" width="10%" height="10%" class="mr-2 icon-inline">UnitbVoting</a>
+    <a href="#" class="navbar-brand"><img src="favicon.ico" width="9%" height="9%" class="mr-2 icon-inline">UnitbVoting</a>
     <ul class="navbar-nav mr-auto" routerLinkActive="active">
     </ul>
 
@@ -36,24 +51,24 @@
             <path d="M0 2a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1v7.5a2.5 2.5 0 0 1-2.5 2.5h-9A2.5 2.5 0 0 1 1 12.5V5a1 1 0 0 1-1-1V2zm2 3v7.5A1.5 1.5 0 0 0 3.5 14h9a1.5 1.5 0 0 0 1.5-1.5V5H2zm13-3H1v2h14V2zM5 7.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5z"/>
           </svg>Votes</a>
       </li>
-      <li class="nav-item">
-        <a class="nav-link" routerLink="members">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" stroke-linecap="round" stroke-linejoin="round" class="bi bi-people-fill mr-2 icon-inline text-light" viewBox="0 0 16 16">
+      <li class="nav-item" [class.disabledLink]="!hasCredentials" title="Special credentials needed">
+        <a class="nav-link" [class.disabled]="!hasCredentials" routerLink="members">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" stroke-linecap="round" stroke-linejoin="round" class="bi bi-people-fill mr-2 icon-inline" [ngClass]="hasCredentials == true ? 'text-light' : 'text-secondary'" viewBox="0 0 16 16">
             <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
             <path fill-rule="evenodd" d="M5.216 14A2.238 2.238 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.325 6.325 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1h4.216z"/>
             <path d="M4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/>
           </svg>Members</a>
       </li>
-      <li class="nav-item">
-        <a class="nav-link" routerLink="add_vote">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" stroke-linecap="round" stroke-linejoin="round" class="bi bi-clipboard-plus mr-2 icon-inline text-light" viewBox="0 0 16 16">
+      <li class="nav-item" [class.disabledLink]="!hasCredentials" title="Special credentials needed">
+        <a class="nav-link" [class.disabled]="!hasCredentials" routerLink="add_vote">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" stroke-linecap="round" stroke-linejoin="round" class="bi bi-clipboard-plus mr-2 icon-inline" [ngClass]="hasCredentials == true ? 'text-light' : 'text-secondary'" viewBox="0 0 16 16">
             <path fill-rule="evenodd" d="M8 7a.5.5 0 0 1 .5.5V9H10a.5.5 0 0 1 0 1H8.5v1.5a.5.5 0 0 1-1 0V10H6a.5.5 0 0 1 0-1h1.5V7.5A.5.5 0 0 1 8 7z"/>
             <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
             <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/>
           </svg>Add vote</a>
       </li>
       <li class="nav-item">
-        <a href class="nav-link" (click)="logout()">
+        <a class="nav-link" (click)="openModalWithClass(template)">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" troke-linecap="round" stroke-linejoin="round" class="bi bi-box-arrow-left mr-2 icon-inline text-light" viewBox="0 0 16 16">
             <path fill-rule="evenodd" d="M6 12.5a.5.5 0 0 0 .5.5h8a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5h-8a.5.5 0 0 0-.5.5v2a.5.5 0 0 1-1 0v-2A1.5 1.5 0 0 1 6.5 2h8A1.5 1.5 0 0 1 16 3.5v9a1.5 1.5 0 0 1-1.5 1.5h-8A1.5 1.5 0 0 1 5 12.5v-2a.5.5 0 0 1 1 0v2z"/>
             <path fill-rule="evenodd" d="M.146 8.354a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L1.707 7.5H10.5a.5.5 0 0 1 0 1H1.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3z"/>
