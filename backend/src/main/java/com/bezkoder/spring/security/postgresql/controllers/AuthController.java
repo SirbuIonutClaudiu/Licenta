@@ -239,8 +239,7 @@ public class AuthController {
 	}
 
 	@PostMapping("/send_reset")
-	public ResponseEntity<?> sendResetEmail(@Valid @RequestBody ResetRequest resetRequest, HttpServletRequest request)
-			throws MessagingException, UnsupportedEncodingException {
+	public ResponseEntity<?> sendResetEmail(@Valid @RequestBody ResetRequest resetRequest, HttpServletRequest request) {
 		membruSenat member = membruSenatRepo.findByEmail(resetRequest.getEmail())
 				.orElseThrow(() -> new RuntimeException("Email address not found!"));
 		PasswordResetToken passToken = passwordResetTokenRepository.findByMemberId(member.getId());
@@ -251,7 +250,7 @@ public class AuthController {
 			else {
 				return ResponseEntity
 						.badRequest()
-						.body(new MessageResponse("Code already sent. Check your email!"));
+						.body(new MessageResponse("Code with 24 hour availability already sent. Check your email!"));
 			}
 		}
 		try {

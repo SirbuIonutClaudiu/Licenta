@@ -18,6 +18,7 @@
         <input
           type="text"
           class="form-control"
+          id="first_name"
           name="first_name"
           [(ngModel)]="form.first_name"
           placeholder="Enter your first name"
@@ -42,6 +43,7 @@
         <input
           type="text"
           class="form-control"
+          id="last_name"
           name="last_name"
           [(ngModel)]="form.last_name"
           placeholder="Enter your last name"
@@ -65,6 +67,7 @@
          <label for="institutional_code">Institutional code</label>
          <input type="text"
                 class="form-control"
+                id="institutional_code"
                 name="institutional_code"
                 [(ngModel)]="form.institutional_code"
                 #institutional_code="ngModel"
@@ -78,6 +81,7 @@
         <input
           type="email"
           class="form-control"
+          id="email"
           name="email"
           [(ngModel)]="form.email"
           placeholder="Your institutional email address"
@@ -98,6 +102,7 @@
         <input
           type="password"
           class="form-control"
+          id="password"
           name="password"
           [(ngModel)]="form.password"
           placeholder="Pick a password"
@@ -127,7 +132,7 @@
 
       <div class="form-group">
          <label for="googleAddress">Address of residence</label>
-         <input id="googleAddress" type="text" class="form-control" required>
+         <input id="googleAddress" name="googleAddress" type="text" class="form-control" [(ngModel)]="form.googleAddress" required>
       </div>
     </form>
 

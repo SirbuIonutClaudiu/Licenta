@@ -17,11 +17,11 @@
 <div class="loadingDiv" *ngIf="loading">
   <sa-spinner-circular-split [color]="spinnerColor"></sa-spinner-circular-split>
 </div>
-<div class="container" *ngIf="member.id && !loading">
+<div class="container" *ngIf="member.id && !loading" [class.bodyEditing]="(!profileEditable && ownProfile) || !ownProfile">
   <div class="main-body">
     <!-- Breadcrumb -->
     <nav aria-label="breadcrumb" class="main-breadcrumb">
-      <ol class="breadcrumb" [class.profileEditing]="!profileEditable && ownProfile">
+      <ol class="breadcrumb" [class.profileEditing]="(!profileEditable && ownProfile) || !ownProfile">
         <li class="breadcrumb-item active" aria-current="page" style="width: 10%;">User Profile</li>
         <li aria-current="page" style="width: 63%;" *ngIf="!HostHasAdministratorRole || member.roles.includes('Administrator')"></li>
         <li class="d-flex justify-content-end" aria-current="page" style="width: 63%;"

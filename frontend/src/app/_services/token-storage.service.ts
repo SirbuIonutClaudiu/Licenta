@@ -16,6 +16,7 @@ export class TokenStorageService {
   signOut(): void {
     window.sessionStorage.clear();
     this.dataSharingService.loggedIn.next(false);
+    this.dataSharingService.hasCredentials.next(false);
   }
 
   public saveToken(token: string): void {

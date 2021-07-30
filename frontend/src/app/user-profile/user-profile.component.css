@@ -243,6 +243,10 @@ input:focus {
   width: 83%;
 }
 
+.bodyEditing {
+  margin-left: 10%;
+}
+
 .imageConfirmation {
   padding: 0;
   width: 110px !important;

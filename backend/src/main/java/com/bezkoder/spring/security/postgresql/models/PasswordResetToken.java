@@ -31,6 +31,6 @@ public class PasswordResetToken {
     public PasswordResetToken(Long memberId, String token) {
         this.memberId = memberId;
         this.token = token;
-        this.expirationDate = LocalDate.now().plusDays(2);
+        this.expirationDate = LocalDate.now().plusDays(1);
     }
 }

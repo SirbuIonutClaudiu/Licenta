@@ -31,7 +31,7 @@ export class SmsVerificationComponent implements OnInit {
     this.email = this.tokenStorageService.savedEmail();
   }
 
-  onDigitInput(event: any) {
+  onDigitInput(event: any): void {
     let element;
     if (event.code !== 'Backspace') {
       element = event.srcElement.nextElementSibling;
@@ -62,6 +62,10 @@ export class SmsVerificationComponent implements OnInit {
                 this.isLoginFailed = false;
                 this.isLoggedIn = true;
                 this.dataSharingService.loggedIn.next(true);
+                const roles = this.tokenStorageService.getUser().roles;
+                if (roles.includes('ROLE_ADMIN') || roles.includes('ROLE_MODERATOR')) {
+                  this.dataSharingService.hasCredentials.next(true);
+                }
                 this.router.navigate(['user_profile/' + this.tokenStorageService.getId()]);
       },
       err => {

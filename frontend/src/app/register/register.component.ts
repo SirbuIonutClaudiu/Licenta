@@ -15,7 +15,8 @@ export class RegisterComponent implements OnInit {
     last_name: null,
     email: null,
     password: null,
-    institutional_code: null
+    institutional_code: null,
+    googleAddress: null
   };
   isSuccessful = false;
   isSignUpFailed = false;
@@ -28,6 +29,9 @@ export class RegisterComponent implements OnInit {
   constructor(private httpClient: HttpClient, private authService: AuthService, @Inject(DOCUMENT) private document: Document) { }
 
   ngOnInit(): void {
+  }
+
+  googleAddressInit(): void {
     google.maps.event.addDomListener(window, 'load', initializeAddress);
     const this_aux = this;
     function initializeAddress() {
@@ -49,14 +53,14 @@ export class RegisterComponent implements OnInit {
   }
 
   onSubmit(): void {
-    const { first_name, last_name, email, password, institutional_code } = this.form;
+    const { first_name, last_name, email, password, institutional_code, googleAddress } = this.form;
     const uploadImageData = new FormData();
     uploadImageData.append('imageFile', this.selectedFile, this.selectedFile.name);
     uploadImageData.append('memberEmail', this.form.email);
 
     this.isLoading = true;
     this.authService.register(last_name + ' ' + first_name, email, password,
-      institutional_code, this.address, this.applicationDate).subscribe(
+      institutional_code, googleAddress, this.applicationDate).subscribe(
       data => {
         this.httpClient.post('http://unitbvotingbackend-env.eba-fzmvt98p.us-east-2.elasticbeanstalk.com/api/users/upload', uploadImageData)
           .subscribe(answer => {

@@ -10,23 +10,21 @@ import {Router} from '@angular/router';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
-  private roles: string[] = [];
   isLoggedIn = false;
-  showAdminBoard = false;
-  showModeratorBoard = false;
   hasCredentials = false;
   modalRef!: BsModalRef;
 
   constructor(private tokenStorageService: TokenStorageService, private router: Router,
               private dataSharingService: DataSharingService, private modalService: BsModalService) {
-    this.dataSharingService.loggedIn.subscribe( next => this.isLoggedIn = next);
+    this.dataSharingService.loggedIn.subscribe(next => this.isLoggedIn = next);
+    this.dataSharingService.hasCredentials.subscribe( next => this.hasCredentials = next);
     this.checkHostRoles();
   }
 
   openModalWithClass(template: TemplateRef<any>): void {
     this.modalRef = this.modalService.show(
       template,
-      Object.assign({}, { class: 'modal-dialog-centered' })
+      Object.assign({}, {class: 'modal-dialog-centered'})
     );
   }
 
@@ -36,22 +34,13 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     this.isLoggedIn = !!this.tokenStorageService.getToken();
-
-    if (this.isLoggedIn) {
-      const user = this.tokenStorageService.getUser();
-      this.roles = user.roles;
-
-      this.showAdminBoard = this.roles.includes('ROLE_ADMIN');
-      this.showModeratorBoard = this.roles.includes('ROLE_MODERATOR');
-    }
   }
-
 
   checkHostRoles(): void {
     const roles = this.tokenStorageService.getUser().roles;
-    const HostHasAdministratorRole = (roles[0] === 'ROLE_ADMIN') || (roles[1] === 'ROLE_ADMIN');
-    const HostHasModeratorRole = (roles[0] === 'ROLE_MODERATOR') || (roles[1] === 'ROLE_MODERATOR');
-    this.hasCredentials = (HostHasModeratorRole || HostHasAdministratorRole);
+    if (roles != null) {
+      this.hasCredentials = (roles.includes('ROLE_ADMIN') || roles.includes('ROLE_MODERATOR'));
+    }
   }
 
   logout(): void {

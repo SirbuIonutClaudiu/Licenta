@@ -87,6 +87,7 @@ public class UserServices {
         String content = "Dear [[name]],<br>"
                 + "Please click the link below to verify your password reset request:<br>"
                 + "<h3><a href=\"[[URL]]\" target=\"_self\">RESET</a></h3>"
+                + "The token has a <b>24 hour availability</b> before expiring.<br>"
                 + "Thank you,<br>"
                 + "UNITBV";
 

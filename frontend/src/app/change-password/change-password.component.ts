@@ -15,47 +15,78 @@ export class ChangePasswordComponent implements OnInit {
   showFeedback = 0;
   errorMessage = '';
   successMessage = '';
-  passwordMessage = 'The password must be 8-20 characters.';
-  passwordError = false;
-  verifyMessage = 'To confirm, type the new password again.';
-  verifyError = false;
   login = false;
+  firstUnblur = true;
+  secondUnblur = true;
+  passwordLengthError = false;
+  passwordLowercaseError = false;
+  passwordUppercaseError = false;
+  passwordNumberError = false;
+  passwordError = true;
+  verifyPasswordError = true;
+  showPassword = false;
+  showVerifyPassword = false;
 
-  constructor(private _Activatedroute: ActivatedRoute,
-              private authService: AuthService) { }
+  constructor(private _Activatedroute: ActivatedRoute, private authService: AuthService) { }
 
   ngOnInit(): void {
     this.code = this._Activatedroute.snapshot.paramMap.get('code') || '';
   }
 
-  onSubmit(): void {
-    this.passwordError = false;
-    this.verifyError = false;
-    this.passwordMessage = 'The password must be 8-20 characters.';
-    this.verifyMessage = 'To confirm, type the new password again.';
-    if (this.password.length < 8) {
-      this.passwordMessage = 'Password must be at least 8 characters long.';
-      this.passwordError = true;
-      return;
+  passwordUnblurred(): void {
+    this.firstUnblur = !this.password.length;
+    this.checkPasswordRules();
+  }
+
+  verifyUnblurred(): void {
+    this.secondUnblur = !this.verify.length;
+    this.verifyPasswordError = (this.password.localeCompare(this.verify) !== 0);
+  }
+
+  toggleShowVerifyPassword(): void {
+    this.showVerifyPassword = !this.showVerifyPassword;
+  }
+
+  toggleShowPassword(): void {
+    this.showPassword = !this.showPassword;
+  }
+
+  checkPasswordRules(): void {
+    this.passwordLengthError = (this.password.length < 8 || this.password.length > 120);
+    let hasSmall = false;
+    let hasCaps = false;
+    let hasNumber = false;
+    for (let it = 0; it < this.password.length; it++) {
+      const charCode = this.password.charCodeAt(it);
+      if (charCode >= 97 && charCode <= 122) {
+        hasSmall = true;
+      }
+      if (charCode >= 65 && charCode <= 90) {
+        hasCaps = true;
+      }
+      if (charCode >= 48 && charCode <= 57) {
+        hasNumber = true;
+      }
     }
-    if (this.password !== this.verify) {
-      this.verifyError = true;
-      this.verifyMessage = 'Passwords do not match.';
-      return;
-    }
-    this.resetPassword();
+    this.passwordLowercaseError = !hasSmall;
+    this.passwordUppercaseError = !hasCaps;
+    this.passwordNumberError = !hasNumber;
+    this.passwordError = (this.passwordLowercaseError || this.passwordLowercaseError ||
+      this.passwordUppercaseError || this.passwordNumberError);
   }
 
   resetPassword(): void {
-    this.authService.resetPassword(this.code, this.password).subscribe(
-      data => {
-        this.successMessage = data.message;
-        this.showFeedback = 1;
-      },
-      err => {
-        this.errorMessage = err.error.message;
-        this.login = true;
-        this.showFeedback = 2;
-      });
+    if (!this.passwordError && !this.verifyPasswordError && this.password.length && this.verify.length) {
+      this.authService.resetPassword(this.code, this.password).subscribe(
+        data => {
+          this.successMessage = data.message;
+          this.showFeedback = 1;
+        },
+        err => {
+          this.errorMessage = err.error.message;
+          this.login = true;
+          this.showFeedback = 2;
+        });
+    }
   }
 }

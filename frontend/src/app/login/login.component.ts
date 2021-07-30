@@ -66,6 +66,9 @@ export class LoginComponent implements OnInit {
             this.isLoggedIn = true;
             this.roles = this.tokenStorage.getUser().roles;
             this.dataSharingService.loggedIn.next(true);
+            if (this.roles.includes('ROLE_ADMIN') || this.roles.includes('ROLE_MODERATOR')) {
+              this.dataSharingService.hasCredentials.next(true);
+            }
             this.router.navigate(['user_profile/' + this.user.id]);
           }
         });

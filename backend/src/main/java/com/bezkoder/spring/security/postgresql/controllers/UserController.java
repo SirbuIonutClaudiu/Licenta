@@ -82,17 +82,20 @@ public class UserController {
     }
 
     @PostMapping("/sendPhoneVerification/{id}/{number}")
-    public ResponseEntity<?> sendPhoneVerification(@PathVariable("id") Long id, @PathVariable("number") String number) {
-        if(!membruSenatRepo.existsById(id)) {
+    public ResponseEntity<?> sendPhoneVerification(@RequestHeader("Authorization") String auth,
+                                                   @PathVariable("id") Long id, @PathVariable("number") String number) {
+        membruSenat adminMember = getMemberFromAuthentication(auth);
+        membruSenat memberToBeModified = membruSenatRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Member to be modified does not exist !"));
+        if(!adminMember.getId().equals(memberToBeModified.getId())) {
             return ResponseEntity
                     .badRequest()
-                    .body(new MessageResponse("Member does not exist !"));
+                    .body(new MessageResponse("Only the owner of the account can request phone verification !"));
         }
-        membruSenat member = membruSenatService.findMemberById(id);
         Twilio.init(new TwilioSecrets("TwilioAccountSID").getSecret(),
                 new TwilioSecrets("TwilioAuthToken").getSecret());
-        if(member.getVerificationSID() != null) {
-            Service.deleter(member.getVerificationSID()).delete();
+        if(memberToBeModified.getVerificationSID() != null) {
+            Service.deleter(memberToBeModified.getVerificationSID()).delete();
         }
         Service service = Service.creator("UNITBV Voting").create();
         Verification verification = Verification.creator(
@@ -100,17 +103,24 @@ public class UserController {
                 number,
                 "sms")
                 .create();
-        member.setVerificationSID(service.getSid());
-        member.setPhoneNumber2BVerified(number);
-        membruSenatRepo.save(member);
+        memberToBeModified.setVerificationSID(service.getSid());
+        memberToBeModified.setPhoneNumber2BVerified(number);
+        membruSenatRepo.save(memberToBeModified);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping("/confirmPhone/{id}/{code}")
-    public ResponseEntity<?> confirmPhone(@PathVariable("id") Long id, @PathVariable("code") String code) {
-        membruSenat member = membruSenatRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("User does not exist!"));
-        if(member.getVerificationSID() == null) {
+    public ResponseEntity<?> confirmPhone(@RequestHeader("Authorization") String auth,
+                                          @PathVariable("id") Long id, @PathVariable("code") String code) {
+        membruSenat adminMember = getMemberFromAuthentication(auth);
+        membruSenat memberToBeModified = membruSenatRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Member to be modified does not exist !"));
+        if(!adminMember.getId().equals(memberToBeModified.getId())) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new MessageResponse("Only the owner of the account can confirm phone number !"));
+        }
+        if(memberToBeModified.getVerificationSID() == null) {
             return ResponseEntity
                     .badRequest()
                     .body(new MessageResponse("Try sending another verification request !"));
@@ -119,14 +129,14 @@ public class UserController {
                 new TwilioSecrets("TwilioAuthToken").getSecret());
         try {
             VerificationCheck verificationCheck = VerificationCheck.creator(
-                    member.getVerificationSID(),
+                    memberToBeModified.getVerificationSID(),
                     code)
-                    .setTo(member.getPhoneNumber2BVerified()).create();
+                    .setTo(memberToBeModified.getPhoneNumber2BVerified()).create();
             if(verificationCheck.getStatus().toLowerCase(Locale.ROOT).compareToIgnoreCase("approved") == 0) {
-                member.setVerificationSID(null);
-                member.setPhoneNumber(member.getPhoneNumber2BVerified());
-                member.setPhoneNumber2BVerified(null);
-                membruSenatRepo.save(member);
+                memberToBeModified.setVerificationSID(null);
+                memberToBeModified.setPhoneNumber(memberToBeModified.getPhoneNumber2BVerified());
+                memberToBeModified.setPhoneNumber2BVerified(null);
+                membruSenatRepo.save(memberToBeModified);
             }
             else {
                 return ResponseEntity
@@ -134,10 +144,10 @@ public class UserController {
                         .body(new MessageResponse("Wrong code.Try again !"));
             }
         } catch(Exception e) {
-            Service.deleter(member.getVerificationSID()).delete();
-            member.setVerificationSID(null);
-            member.setPhoneNumber2BVerified(null);
-            membruSenatRepo.save(member);
+            Service.deleter(memberToBeModified.getVerificationSID()).delete();
+            memberToBeModified.setVerificationSID(null);
+            memberToBeModified.setPhoneNumber2BVerified(null);
+            membruSenatRepo.save(memberToBeModified);
             return ResponseEntity
                     .badRequest()
                     .body("Code request expired.Try sending another one !");
@@ -231,28 +241,44 @@ public class UserController {
     }
 
     @PostMapping("/update_address/{id}/{address}")
-    public ResponseEntity<?> updateAddress(@PathVariable("id") Long id, @PathVariable("address") String address) {
-        if(!membruSenatRepo.existsById(id)) {
+    public ResponseEntity<?> updateAddress(@RequestHeader("Authorization") String auth,
+                                           @PathVariable("id") Long id, @PathVariable("address") String address) {
+        membruSenat adminMember = getMemberFromAuthentication(auth);
+        Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
+                .orElseThrow(() -> new RuntimeException("Role Admin does not exist !"));
+        Role modRole = roleRepository.findByName(ERole.ROLE_MODERATOR)
+                .orElseThrow(() -> new RuntimeException("Role Moderator does not exist !"));
+        membruSenat memberToBeModified = membruSenatRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Member to be modified does not exist !"));
+        boolean requestIsFromTheOwner = adminMember.getId().equals(memberToBeModified.getId());
+        boolean requestIsFromAdminOrMod = adminMember.getRoles().contains(adminRole) || adminMember.getRoles().contains(modRole);
+        if(!requestIsFromTheOwner && !requestIsFromAdminOrMod) {
             return ResponseEntity
                     .badRequest()
-                    .body(new MessageResponse("Member does not exist !"));
+                    .body(new MessageResponse("Only the owner of the account, the Admin or a Moderator can change the address of residence of the account !"));
         }
-        membruSenat member = membruSenatService.findMemberById(id);
-        member.setAddress(address);
-        membruSenatRepo.save(member);
+        memberToBeModified.setAddress(address);
+        membruSenatRepo.save(memberToBeModified);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping("/update_name/{id}/{name}")
-    public ResponseEntity<?> updateName(@PathVariable("id") Long id, @PathVariable("name") String name) {
-        if(!membruSenatRepo.existsById(id)) {
+    public ResponseEntity<?> updateName(@RequestHeader("Authorization") String auth,
+                                        @PathVariable("id") Long id, @PathVariable("name") String name) {
+        membruSenat adminMember = getMemberFromAuthentication(auth);
+        Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
+                .orElseThrow(() -> new RuntimeException("Role Admin does not exist !"));
+        Role modRole = roleRepository.findByName(ERole.ROLE_MODERATOR)
+                .orElseThrow(() -> new RuntimeException("Role Moderator does not exist !"));
+        membruSenat memberToBeModified = membruSenatRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Member to be modified does not exist !"));
+        if(!adminMember.getRoles().contains(adminRole) && !adminMember.getRoles().contains(modRole)) {
             return ResponseEntity
                     .badRequest()
-                    .body(new MessageResponse("Member does not exist !"));
+                    .body(new MessageResponse("Only the Admin or a Moderator can change the name of the account !"));
         }
-        membruSenat member = membruSenatService.findMemberById(id);
-        member.setName(name);
-        membruSenatRepo.save(member);
+        memberToBeModified.setName(name);
+        membruSenatRepo.save(memberToBeModified);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -273,18 +299,21 @@ public class UserController {
     }
 
     @PostMapping("/update_email/{id}/{email}")
-    public ResponseEntity<?> updateEmail(@PathVariable("id") Long id, @PathVariable("email") String email) {
-        if(!membruSenatRepo.existsById(id)) {
+    public ResponseEntity<?> updateEmail(@RequestHeader("Authorization") String auth,
+                                         @PathVariable("id") Long id, @PathVariable("email") String email) {
+        membruSenat adminMember = getMemberFromAuthentication(auth);
+        membruSenat memberToBeModified = membruSenatRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Member to be modified does not exist !"));
+        if(!adminMember.getId().equals(memberToBeModified.getId())) {
             return ResponseEntity
                     .badRequest()
-                    .body(new MessageResponse("Member does not exist !"));
+                    .body(new MessageResponse("Only the owner of the account can change the email !"));
         }
-        membruSenat member = membruSenatService.findMemberById(id);
-        ImageModel image = imageRepository.findByName(member.getEmail())
+        ImageModel image = imageRepository.findByName(memberToBeModified.getEmail())
                 .orElseThrow(() -> new RuntimeException("Email unavailable!"));
         image.setName(email);
-        member.setEmail(email);
-        membruSenatRepo.save(member);
+        memberToBeModified.setEmail(email);
+        membruSenatRepo.save(memberToBeModified);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -347,7 +376,7 @@ public class UserController {
         if(!adminMember.getId().equals(memberToBeModified.getId())) {
             return ResponseEntity
                     .badRequest()
-                    .body(new MessageResponse("Can only activate 2FA on own account !"));
+                    .body(new MessageResponse("Only the owner of the account can toggle 2FA !"));
         }
         boolean twoFactor = memberToBeModified.isActivated2FA();
         memberToBeModified.setActivated2FA(!twoFactor);
