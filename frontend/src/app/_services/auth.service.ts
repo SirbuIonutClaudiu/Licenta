@@ -26,6 +26,10 @@ export class AuthService {
     return this.http.post(AUTH_API + 'confirm_code/' + code, httpOptions);
   }
 
+  getPhone(): Observable<string> {
+    return this.http.get<string>(AUTH_API + 'get_phone', httpOptions);
+  }
+
   register(name: string, email: string, password: string, institutionalCode: string,
            address: string, applicationDate: string): Observable<any> {
     return this.http.post(AUTH_API + 'signup', {

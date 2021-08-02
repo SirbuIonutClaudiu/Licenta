@@ -5,6 +5,7 @@ import com.bezkoder.spring.security.postgresql.models.*;
 import com.bezkoder.spring.security.postgresql.payload.request.NewPasswordRequest;
 import com.bezkoder.spring.security.postgresql.payload.request.PasswordRequest;
 import com.bezkoder.spring.security.postgresql.payload.request.WebsiteRequest;
+import com.bezkoder.spring.security.postgresql.payload.response.JwtResponse;
 import com.bezkoder.spring.security.postgresql.payload.response.MessageResponse;
 import com.bezkoder.spring.security.postgresql.payload.response.UserResponse;
 import com.bezkoder.spring.security.postgresql.repository.ImageRepository;

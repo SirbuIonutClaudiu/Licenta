@@ -46,6 +46,10 @@
              role="alert" *ngIf="captchaSubmitted && !captchaSuccess">
           Wrong Captcha
         </div>
+        <div class="alert alert-success d-flex justify-content-center"
+             role="alert" *ngIf="captchaSubmitted && captchaSuccess">
+          Captcha verified
+        </div>
       </div>
 
       <div class="form-group">

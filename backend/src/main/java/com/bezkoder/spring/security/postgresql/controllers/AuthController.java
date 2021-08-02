@@ -238,6 +238,13 @@ public class AuthController {
 		return ResponseEntity.ok(new JwtResponse(jwt, loginID_aux, this.roles));
 	}
 
+	@GetMapping("/get_phone")
+	public ResponseEntity<String> getPhone() {
+		membruSenat member = membruSenatRepo.findById(this.loginID)
+				.orElseThrow(() -> new RuntimeException("Member not found!"));
+		return ResponseEntity.ok(member.getPhoneNumber());
+	}
+
 	@PostMapping("/send_reset")
 	public ResponseEntity<?> sendResetEmail(@Valid @RequestBody ResetRequest resetRequest, HttpServletRequest request) {
 		membruSenat member = membruSenatRepo.findByEmail(resetRequest.getEmail())

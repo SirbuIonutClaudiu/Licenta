@@ -6,6 +6,7 @@ import { VisitorsService} from '../_services/visitors.service';
 import { DataSharingService } from '../_services/DataSharingService';
 import { NgxCaptchaService } from '@binssoft/ngx-captcha';
 import { Router } from '@angular/router';
+import {HttpClient, HttpClientModule} from '@angular/common/http';
 
 @Component({
   selector: 'app-login',
@@ -45,25 +46,31 @@ export class LoginComponent implements OnInit {
   loginLocation = '';
 
   constructor(private authService: AuthService, private tokenStorage: TokenStorageService,
-              private dataSharingService: DataSharingService, private userService: UserService,
+              public dataSharingService: DataSharingService, private userService: UserService,
               private router: Router, private visitorsService: VisitorsService,
-              private captchaService: NgxCaptchaService) { }
+              private captchaService: NgxCaptchaService, private http:HttpClient) {
+    dataSharingService.captchaSubmitted.subscribe(next => this.captchaSubmitted = next);
+  }
 
   ngOnInit(): void {
     this.initializeRoles();
     this.initializeLocationTracker();
     this.initializeCaptcha();
+    this.http.get('http://api.ipify.org/?format=json').subscribe((res: any) =>{
+      alert(res.ip);
+    });
   }
 
   initializeCaptcha(): void {
+    this.captchaService.setCaptchaStatus(null);
     this.captchaService.captchStatus.subscribe((status) => {
       this.captchaStatus = status;
       if (status === false) {
-        this.captchaSubmitted = true;
+        this.dataSharingService.captchaSubmitted.next(true);
         this.captchaSuccess = false;
         this.refreshCaptcha();
       } else  if (status === true) {
-        this.captchaSubmitted = true;
+        this.dataSharingService.captchaSubmitted.next(true);
         this.captchaSuccess = true;
       }
     });
@@ -110,6 +117,7 @@ export class LoginComponent implements OnInit {
         this.userService.check2FA(email).subscribe(data => {
           if (data.valueOf()) {
             this.tokenStorage.setEmail(email);
+            this.dataSharingService.captchaSubmitted.next(false);
             this.router.navigate(['sms_verification']);
           }
           else {
@@ -122,6 +130,7 @@ export class LoginComponent implements OnInit {
             if (this.roles.includes('ROLE_ADMIN') || this.roles.includes('ROLE_MODERATOR')) {
               this.dataSharingService.hasCredentials.next(true);
             }
+            this.dataSharingService.captchaSubmitted.next(false);
             this.router.navigate(['user_profile/' + this.user.id]);
           }
         });

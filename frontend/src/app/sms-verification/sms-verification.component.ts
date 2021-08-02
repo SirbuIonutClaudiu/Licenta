@@ -10,7 +10,8 @@ import {DataSharingService} from '../_services/DataSharingService';
   styleUrls: ['./sms-verification.component.css']
 })
 export class SmsVerificationComponent implements OnInit {
-  email = ' ';
+  phoneNumber = '';
+  email = '';
   isLoggedIn = false;
   isLoginFailed = false;
   resentSucess = false;
@@ -28,7 +29,19 @@ export class SmsVerificationComponent implements OnInit {
               private router: Router, private dataSharingService: DataSharingService) { }
 
   ngOnInit(): void {
-    this.email = this.tokenStorageService.savedEmail();
+    this.getPhone();
+  }
+
+  getPhone(): void {
+    this.authService.getPhone().subscribe(
+      (answer: string) => {
+        this.phoneNumber = answer;
+        this.email = this.tokenStorageService.savedEmail();
+      },
+      err => {
+        this.errorMessage = err.error.message;
+        this.isLoginFailed = true;
+      });
   }
 
   onDigitInput(event: any): void {
