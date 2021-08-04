@@ -22,12 +22,12 @@ export class AuthService {
     }, httpOptions);
   }
 
-  confirmCode(code: string): Observable<any> {
-    return this.http.post(AUTH_API + 'confirm_code/' + code, httpOptions);
-  }
-
-  getPhone(): Observable<string> {
-    return this.http.get<string>(AUTH_API + 'get_phone', httpOptions);
+  confirmCode(memberEmail: string, accessToken: string, confirmationCode: string): Observable<any> {
+    return this.http.post(AUTH_API + 'confirm_code', {
+      memberEmail,
+      accessToken,
+      confirmationCode
+    }, httpOptions);
   }
 
   register(name: string, email: string, password: string, institutionalCode: string,
@@ -55,7 +55,10 @@ export class AuthService {
     }, httpOptions);
   }
 
-  resendSMS(): Observable<any> {
-    return this.http.post(AUTH_API + 'sendPhoneVerification/', httpOptions);
+  resendSMS(memberEmail: string, accessToken: string): Observable<any> {
+    return this.http.post(AUTH_API + 'sendPhoneVerification', {
+      memberEmail,
+      accessToken
+    }, httpOptions);
   }
 }

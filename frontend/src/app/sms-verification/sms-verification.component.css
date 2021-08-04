@@ -52,3 +52,7 @@
   height: auto;
   border-radius: 20px;
 }
+
+.confirmBtn {
+  border-radius: 15px;
+}

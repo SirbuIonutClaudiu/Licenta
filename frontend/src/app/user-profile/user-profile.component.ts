@@ -7,6 +7,7 @@ import {BsModalRef, BsModalService} from 'ngx-bootstrap/modal';
 import {PhoneNumberFormat, PhoneNumberUtil, ShortNumberInfo} from 'google-libphonenumber';
 import {ActivatedRoute} from '@angular/router';
 import {HttpClient} from '@angular/common/http';
+import {DataSharingService} from '../_services/DataSharingService';
 
 @Component({
   selector: 'app-user-profile',
@@ -108,7 +109,7 @@ export class UserProfileComponent implements OnInit {
   ownProfile = false;
   modalRef!: BsModalRef;
 
-  constructor(private tokenStorageService: TokenStorageService, private httpClient: HttpClient,
+  constructor(private tokenStorageService: TokenStorageService, private httpClient: HttpClient, public data: DataSharingService,
               private userService: UserService, private _Activatedroute: ActivatedRoute, private modalService: BsModalService) {
     this.getMemberById(Number(this._Activatedroute.snapshot.paramMap.get('id')));
     this.checkHostRoles();

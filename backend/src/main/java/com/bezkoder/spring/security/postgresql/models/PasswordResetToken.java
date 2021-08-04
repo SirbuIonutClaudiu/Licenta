@@ -7,6 +7,8 @@ import net.bytebuddy.utility.RandomString;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import java.time.LocalDate;
+import java.util.Calendar;
+import java.util.Date;
 
 @Data
 @NoArgsConstructor
@@ -26,11 +28,14 @@ public class PasswordResetToken {
     @Column(name = "member_id")
     private Long memberId;
 
-    private LocalDate expirationDate;
+    private Date expirationDate;
 
     public PasswordResetToken(Long memberId, String token) {
         this.memberId = memberId;
         this.token = token;
-        this.expirationDate = LocalDate.now().plusDays(1);
+        Calendar expirationDateCalendar = Calendar.getInstance();
+        expirationDateCalendar.setTime(new Date());
+        expirationDateCalendar.add(Calendar.HOUR, 24);
+        this.expirationDate = expirationDateCalendar.getTime();
     }
 }

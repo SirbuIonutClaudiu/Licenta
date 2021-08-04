@@ -2,7 +2,6 @@ package com.bezkoder.spring.security.postgresql.models;
 
 import lombok.Getter;
 import lombok.Setter;
-
 import javax.persistence.*;
 
 @Entity
@@ -21,14 +20,9 @@ public class ImageModel {
     @Column(name = "name")
     private String name;
     @Column(name = "type")
-    private String type;    //image bytes can have large lengths so we specify a value
-    //which is more than the default length for picByte column
+    private String type;
     @Column(name = "picByte", length = 1000)
     private byte[] picByte;
-
-    public ImageModel() {
-        super();
-    }
 
     public ImageModel(String name, String type, byte[] picByte) {
         this.name = name;

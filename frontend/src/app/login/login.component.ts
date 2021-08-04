@@ -6,7 +6,6 @@ import { VisitorsService} from '../_services/visitors.service';
 import { DataSharingService } from '../_services/DataSharingService';
 import { NgxCaptchaService } from '@binssoft/ngx-captcha';
 import { Router } from '@angular/router';
-import {HttpClient, HttpClientModule} from '@angular/common/http';
 
 @Component({
   selector: 'app-login',
@@ -14,6 +13,7 @@ import {HttpClient, HttpClientModule} from '@angular/common/http';
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit {
+  isLoading = false;
   captchaSubmitted = false;
   captchaSuccess = false;
   captchaStatus: any = null;
@@ -48,7 +48,7 @@ export class LoginComponent implements OnInit {
   constructor(private authService: AuthService, private tokenStorage: TokenStorageService,
               public dataSharingService: DataSharingService, private userService: UserService,
               private router: Router, private visitorsService: VisitorsService,
-              private captchaService: NgxCaptchaService, private http:HttpClient) {
+              private captchaService: NgxCaptchaService) {
     dataSharingService.captchaSubmitted.subscribe(next => this.captchaSubmitted = next);
   }
 
@@ -56,9 +56,6 @@ export class LoginComponent implements OnInit {
     this.initializeRoles();
     this.initializeLocationTracker();
     this.initializeCaptcha();
-    this.http.get('http://api.ipify.org/?format=json').subscribe((res: any) =>{
-      alert(res.ip);
-    });
   }
 
   initializeCaptcha(): void {
@@ -103,6 +100,7 @@ export class LoginComponent implements OnInit {
 
   onSubmit(): void {
     if (this.captchaSubmitted && this.captchaSuccess) {
+      this.isLoading = true;
       this.submitForm();
     }
   }
@@ -116,8 +114,11 @@ export class LoginComponent implements OnInit {
         // tslint:disable-next-line:no-shadowed-variable
         this.userService.check2FA(email).subscribe(data => {
           if (data.valueOf()) {
+            this.dataSharingService.temporaryAccessToken.next(this.user.token);
+            this.dataSharingService.phoneNumber.next(this.user.phone);
             this.tokenStorage.setEmail(email);
             this.dataSharingService.captchaSubmitted.next(false);
+            this.isLoading = false;
             this.router.navigate(['sms_verification']);
           }
           else {
@@ -131,6 +132,7 @@ export class LoginComponent implements OnInit {
               this.dataSharingService.hasCredentials.next(true);
             }
             this.dataSharingService.captchaSubmitted.next(false);
+            this.isLoading = false;
             this.router.navigate(['user_profile/' + this.user.id]);
           }
         });
@@ -139,6 +141,7 @@ export class LoginComponent implements OnInit {
         this.errorMessage = err.error.message;
         this.isLoginFailed = true;
         this.refreshCaptcha();
+        this.isLoading = false;
       });
   }
 

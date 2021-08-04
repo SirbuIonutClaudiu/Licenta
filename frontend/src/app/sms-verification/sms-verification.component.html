@@ -7,7 +7,7 @@
   <div class="card py-5 px-3">
     <h5 class="m-0">Mobile phone verification</h5>
        <span class="mobile-text">
-         Enter the code we just send on your mobile phone <b class="text-danger">{{phoneNumber}}</b>
+         Enter the code we just send on your mobile phone &nbsp;&nbsp;&nbsp;<b class="text-danger">{{phoneNumber}}</b>
        </span>
     <div class="d-flex flex-row mt-5">
       <input type="text"
@@ -60,13 +60,14 @@
              name="digitSix"
              (keydown.enter)="onSubmit()">
     </div>
-    <button type="button"
-            class="btn btn-success"
-            style="margin-top: 10%"
-            (click)="onSubmit()">
+    <button class="btn btn-success mt-5 mb-4 confirmBtn"
+            type="button" (click)="onSubmit()" *ngIf="!isLoading">
       Verify
     </button>
-    <div class="text-center mt-5">
+    <button class="btn btn-success mt-5 mb-4 confirmBtn" type="button" *ngIf="isLoading">
+      <i class="fa fa-spinner fa-spin"></i>&nbsp;&nbsp;Verifying...
+    </button>
+    <div class="text-center">
       <span class="d-block mobile-text">
         Don't receive the code?
       </span>

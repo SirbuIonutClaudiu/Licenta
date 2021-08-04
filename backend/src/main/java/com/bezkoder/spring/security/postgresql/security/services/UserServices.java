@@ -14,6 +14,7 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.io.UnsupportedEncodingException;
 import java.time.LocalDate;
+import java.util.Date;
 
 @Service
 public class UserServices {
@@ -87,7 +88,7 @@ public class UserServices {
         String content = "Dear [[name]],<br>"
                 + "Please click the link below to verify your password reset request:<br>"
                 + "<h3><a href=\"[[URL]]\" target=\"_self\">RESET</a></h3>"
-                + "The token has a <b>24 hour availability</b> before expiring.<br>"
+                + "The token has a <b>24 hour availability</b> before expiring.<br><br>"
                 + "Thank you,<br>"
                 + "UNITBV";
 
@@ -124,8 +125,7 @@ public class UserServices {
     public boolean verifyResetCode(String resetCode) {
         PasswordResetToken passwordResetToken = passwordResetTokenRepository.findByToken(resetCode);
 
-        if (passwordResetToken== null ||
-                LocalDate.now().isAfter(passwordResetToken.getExpirationDate())) {
+        if (passwordResetToken== null || new Date().after(passwordResetToken.getExpirationDate())) {
             return false;
         } else {
             String code = passwordResetToken.getToken();

@@ -1,22 +1,24 @@
 package com.bezkoder.spring.security.postgresql.controllers;
 
 import java.io.UnsupportedEncodingException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
+import java.time.ZoneId;
+import java.util.*;
 import java.util.stream.Collectors;
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import com.bezkoder.spring.security.postgresql.awsecrets.TwilioSecrets;
-import com.bezkoder.spring.security.postgresql.models.PasswordResetToken;
-import com.bezkoder.spring.security.postgresql.models.membruSenat;
+import com.bezkoder.spring.security.postgresql.models.*;
 import com.bezkoder.spring.security.postgresql.payload.request.*;
+import com.bezkoder.spring.security.postgresql.payload.response.LoginResponse;
 import com.bezkoder.spring.security.postgresql.repository.PasswordResetTokenRepository;
+import com.bezkoder.spring.security.postgresql.repository.TemporaryAccessTokenRepository;
 import com.bezkoder.spring.security.postgresql.repository.membruSenatRepository;
 import com.bezkoder.spring.security.postgresql.security.services.MembruSenatService;
+import com.bezkoder.spring.security.postgresql.security.services.TemporaryAccessTokenService;
 import com.bezkoder.spring.security.postgresql.security.services.UserServices;
 import com.twilio.Twilio;
 import com.twilio.rest.verify.v2.service.Verification;
@@ -25,6 +27,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -33,8 +36,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-import com.bezkoder.spring.security.postgresql.models.ERole;
-import com.bezkoder.spring.security.postgresql.models.Role;
 import com.bezkoder.spring.security.postgresql.payload.response.JwtResponse;
 import com.bezkoder.spring.security.postgresql.payload.response.MessageResponse;
 import com.bezkoder.spring.security.postgresql.repository.RoleRepository;
@@ -61,6 +62,9 @@ public class AuthController {
 	PasswordResetTokenRepository passwordResetTokenRepository;
 
 	@Autowired
+	TemporaryAccessTokenService temporaryAccessTokenService;
+
+	@Autowired
 	RoleRepository roleRepository;
 
 	@Autowired
@@ -72,23 +76,12 @@ public class AuthController {
 	@Autowired
 	private UserServices service;
 
-	private String jwt;
-	private List<String> roles;
-	private Long loginID = 0L;
-
 	@PostMapping("/signin")
 	public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
-
 		Authentication authentication = authenticationManager.authenticate(
 				new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
-
 		SecurityContextHolder.getContext().setAuthentication(authentication);
-		String jwt = jwtUtils.generateJwtToken(authentication);
-		
-		UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();		
-		List<String> roles = userDetails.getAuthorities().stream()
-				.map(GrantedAuthority::getAuthority)
-				.collect(Collectors.toList());
+		UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
 		membruSenat member = membruSenatRepo.findByEmail(loginRequest.getEmail())
 				.orElseThrow(() -> new RuntimeException("No such member !"));
@@ -106,17 +99,20 @@ public class AuthController {
 		membruSenatRepo.save(member);
 
 		if(userDetails.isActivated2FA()) {
-			this.loginID = userDetails.getId();
-			if(!this.sendPhoneVerification()) {
+			TemporaryAccessToken newTemporaryAccessToken = temporaryAccessTokenService.saveNewAccessToken(member.getId(), loginRequest.getPassword());
+			SendPhoneVerificationRequest sendPhoneVerificationRequest = new SendPhoneVerificationRequest(member.getEmail(), newTemporaryAccessToken.getToken());
+			if(!this.sendPhoneVerification(sendPhoneVerificationRequest)) {
 				return ResponseEntity
 						.badRequest()
 						.body(new MessageResponse("Verification code could not be sent!"));
 			}
-			this.jwt = jwt;
-			this.roles = roles;
-			return ResponseEntity.ok(new MessageResponse("Passed the login stage!"));
+			return ResponseEntity.ok(new LoginResponse(newTemporaryAccessToken.getToken(), member.getPhoneNumber()));
 		}
 
+		String jwt = jwtUtils.generateJwtToken(authentication);
+		List<String> roles = userDetails.getAuthorities().stream()
+				.map(GrantedAuthority::getAuthority)
+				.collect(Collectors.toList());
 		return ResponseEntity.ok(new JwtResponse(jwt, userDetails.getId(), roles));
 	}
 
@@ -175,11 +171,18 @@ public class AuthController {
 	}
 
 	@PostMapping("/sendPhoneVerification")
-	public boolean sendPhoneVerification() {
-		if(!membruSenatRepo.existsById(this.loginID)) {
+	public boolean PostSendPhoneVerification(@Valid @RequestBody SendPhoneVerificationRequest sendPhoneVerificationRequest) {
+		if(!membruSenatRepo.existsByEmail(sendPhoneVerificationRequest.getMemberEmail())) {
 			return false;
 		}
-		membruSenat member = membruSenatService.findMemberById(this.loginID);
+		membruSenat member = membruSenatService.findMemberByEmail(sendPhoneVerificationRequest.getMemberEmail());
+		TemporaryAccessToken temporaryAccessToken = temporaryAccessTokenService.findByMemberId(member.getId());
+		if(!temporaryAccessToken.getToken().equals(sendPhoneVerificationRequest.getAccessToken())) {
+			return false;
+		}
+		if(new Date().after(temporaryAccessToken.getExpirationDate())) {
+			return false;
+		}
 		Twilio.init(new TwilioSecrets("TwilioAccountSID").getSecret(),
 				new TwilioSecrets("TwilioAuthToken").getSecret());
 		if(member.getVerificationSID() != null) {
@@ -197,10 +200,50 @@ public class AuthController {
 		return true;
 	}
 
-	@PostMapping("/confirm_code/{code}")
-	public ResponseEntity<?> confirmPhone(@PathVariable("code") String code) {
-		membruSenat member = membruSenatRepo.findById(this.loginID)
+	public boolean sendPhoneVerification(SendPhoneVerificationRequest sendPhoneVerificationRequest) {
+		if(!membruSenatRepo.existsByEmail(sendPhoneVerificationRequest.getMemberEmail())) {
+			return false;
+		}
+		membruSenat member = membruSenatService.findMemberByEmail(sendPhoneVerificationRequest.getMemberEmail());
+		TemporaryAccessToken temporaryAccessToken = temporaryAccessTokenService.findByMemberId(member.getId());
+		if(!temporaryAccessToken.getToken().equals(sendPhoneVerificationRequest.getAccessToken())) {
+			return false;
+		}
+		if(new Date().after(temporaryAccessToken.getExpirationDate())) {
+			return false;
+		}
+		Twilio.init(new TwilioSecrets("TwilioAccountSID").getSecret(),
+				new TwilioSecrets("TwilioAuthToken").getSecret());
+		if(member.getVerificationSID() != null) {
+			com.twilio.rest.verify.v2.Service.deleter(member.getVerificationSID()).delete();
+		}
+		com.twilio.rest.verify.v2.Service service = com.twilio.rest.verify.v2.Service.creator("UNITBV Voting").create();
+		Verification verification = Verification.creator(
+				service.getSid(),
+				member.getPhoneNumber(),
+				"sms")
+				.create();
+		member.setVerificationSID(service.getSid());
+		member.setPhoneNumber2BVerified(member.getPhoneNumber());
+		membruSenatRepo.save(member);
+		return true;
+	}
+
+	@PostMapping("/confirm_code")
+	public ResponseEntity<?> confirmPhone(@Valid @RequestBody AuthCodeConfirmationRequest authCodeConfirmationRequest) {
+		membruSenat member = membruSenatRepo.findByEmail(authCodeConfirmationRequest.getMemberEmail())
 				.orElseThrow(() -> new RuntimeException("User does not exist!"));
+		TemporaryAccessToken temporaryAccessToken = temporaryAccessTokenService.findByMemberId(member.getId());
+		if(!authCodeConfirmationRequest.getAccessToken().equals(temporaryAccessToken.getToken())) {
+			return ResponseEntity
+					.badRequest()
+					.body(new MessageResponse("Temporary Access Token provided is not valid !"));
+		}
+		if(new Date().after(temporaryAccessToken.getExpirationDate())) {
+			return ResponseEntity
+					.badRequest()
+					.body(new MessageResponse("Temporary Access Token expired.Try to log in again !"));
+		}
 		if(member.getVerificationSID() == null) {
 			return ResponseEntity
 					.badRequest()
@@ -211,7 +254,7 @@ public class AuthController {
 		try {
 			VerificationCheck verificationCheck = VerificationCheck.creator(
 					member.getVerificationSID(),
-					code)
+					authCodeConfirmationRequest.getConfirmationCode())
 					.setTo(member.getPhoneNumber2BVerified()).create();
 			if(verificationCheck.getStatus().toLowerCase(Locale.ROOT).compareToIgnoreCase("approved") == 0) {
 				member.setVerificationSID(null);
@@ -233,31 +276,35 @@ public class AuthController {
 					.badRequest()
 					.body("Code request expired.Try sending another one !");
 		}
-		Long loginID_aux = this.loginID;
-		this.loginID = 0L;
-		return ResponseEntity.ok(new JwtResponse(jwt, loginID_aux, this.roles));
-	}
 
-	@GetMapping("/get_phone")
-	public ResponseEntity<String> getPhone() {
-		membruSenat member = membruSenatRepo.findById(this.loginID)
-				.orElseThrow(() -> new RuntimeException("Member not found!"));
-		return ResponseEntity.ok(member.getPhoneNumber());
+		Authentication authentication = authenticationManager.authenticate(
+				new UsernamePasswordAuthenticationToken(member.getEmail(), temporaryAccessToken.getLoginRequestPassword()));
+		SecurityContextHolder.getContext().setAuthentication(authentication);
+		String jwt = jwtUtils.generateJwtToken(authentication);
+		UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+		List<String> roles = userDetails.getAuthorities().stream()
+				.map(GrantedAuthority::getAuthority)
+				.collect(Collectors.toList());
+		temporaryAccessTokenService.deleteToken(temporaryAccessToken);
+		return ResponseEntity.ok(new JwtResponse(jwt, member.getId(), roles));
 	}
 
 	@PostMapping("/send_reset")
-	public ResponseEntity<?> sendResetEmail(@Valid @RequestBody ResetRequest resetRequest, HttpServletRequest request) {
+	public ResponseEntity<?> sendResetEmail(@Valid @RequestBody ResetRequest resetRequest, HttpServletRequest request) throws ParseException {
 		membruSenat member = membruSenatRepo.findByEmail(resetRequest.getEmail())
 				.orElseThrow(() -> new RuntimeException("Email address not found!"));
 		PasswordResetToken passToken = passwordResetTokenRepository.findByMemberId(member.getId());
 		if(passToken != null) {
-			if(LocalDate.now().isAfter(passToken.getExpirationDate())) {
+			Calendar sendTime = Calendar.getInstance();
+			sendTime.setTime(passToken.getExpirationDate());
+			sendTime.add(Calendar.HOUR, -23);
+			if(new Date().after(sendTime.getTime())) {
 				passwordResetTokenRepository.deleteById(passToken.getId());
 			}
 			else {
 				return ResponseEntity
 						.badRequest()
-						.body(new MessageResponse("Code with 24 hour availability already sent. Check your email!"));
+						.body(new MessageResponse("Code can be requested once per hour. Check your email!"));
 			}
 		}
 		try {
