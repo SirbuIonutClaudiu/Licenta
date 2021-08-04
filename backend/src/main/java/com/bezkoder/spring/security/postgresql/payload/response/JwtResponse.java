@@ -1,7 +1,6 @@
 package com.bezkoder.spring.security.postgresql.payload.response;
 
 import lombok.Data;
-
 import java.util.List;
 
 @Data

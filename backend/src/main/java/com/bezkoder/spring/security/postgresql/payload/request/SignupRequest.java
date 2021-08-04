@@ -1,9 +1,7 @@
 package com.bezkoder.spring.security.postgresql.payload.request;
 
 import lombok.Data;
-
 import java.util.Set;
-
 import javax.validation.constraints.*;
 
 @Data

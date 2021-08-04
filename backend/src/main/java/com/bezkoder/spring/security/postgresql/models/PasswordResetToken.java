@@ -2,11 +2,7 @@ package com.bezkoder.spring.security.postgresql.models;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import net.bytebuddy.utility.RandomString;
-
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
-import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Date;
 

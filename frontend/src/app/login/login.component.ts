@@ -14,6 +14,7 @@ import { Router } from '@angular/router';
 })
 export class LoginComponent implements OnInit {
   isLoading = false;
+  formSubmitted = false;
   captchaSubmitted = false;
   captchaSuccess = false;
   captchaStatus: any = null;
@@ -101,6 +102,7 @@ export class LoginComponent implements OnInit {
   onSubmit(): void {
     if (this.captchaSubmitted && this.captchaSuccess) {
       this.isLoading = true;
+      this.formSubmitted = true;
       this.submitForm();
     }
   }

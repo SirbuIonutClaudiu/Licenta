@@ -69,13 +69,12 @@
       </div>
 
       <div class="form-group">
-        <div class="alert alert-danger d-flex justify-content-center"
-             role="alert" *ngIf="f.submitted && isLoginFailed">
-          <b>Login failed:&nbsp;</b> {{ errorMessage }}
+        <div class="alert alert-danger d-flex justify-content-center mt-3"
+             role="alert" *ngIf="formSubmitted && isLoginFailed">
+          <b>Login failed:&nbsp;</b> {{errorMessage}}
         </div>
       </div>
     </form>
-
     <div class="alert alert-success" *ngIf="isLoggedIn">
       Logged in as {{ roles }}.
     </div>

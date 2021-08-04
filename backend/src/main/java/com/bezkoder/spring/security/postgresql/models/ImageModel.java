@@ -1,12 +1,14 @@
 package com.bezkoder.spring.security.postgresql.models;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import javax.persistence.*;
 
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
 @Table(name = "image_table",
        uniqueConstraints = {
                 @UniqueConstraint(columnNames = "name")

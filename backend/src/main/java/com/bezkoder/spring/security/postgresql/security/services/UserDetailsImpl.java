@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-
 import com.bezkoder.spring.security.postgresql.models.membruSenat;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;

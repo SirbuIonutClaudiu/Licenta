@@ -2,7 +2,6 @@ package com.bezkoder.spring.security.postgresql.models;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import javax.persistence.*;
 import java.util.Calendar;
 import java.util.Date;
