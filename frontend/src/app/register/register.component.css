@@ -21,13 +21,10 @@ label {
 }
 
 .profile-img-card {
-  width: 96px;
-  height: 96px;
-  margin: 0 auto 10px;
+  width: 100px;
+  height: 100px;
+  margin: 0 auto 20px;
   display: block;
-  -moz-border-radius: 50%;
-  -webkit-border-radius: 50%;
-  border-radius: 50%;
 }
 
 body{
@@ -93,8 +90,6 @@ body{
     transform: rotate(359deg);
   }
 }
-
-
 
 .animated {
   -webkit-animation-duration: 1s;
@@ -173,4 +168,39 @@ body{
   cursor: pointer;
   opacity: 0;
   filter: alpha(opacity=0);
+}
+
+.custom_input {
+  width: 90%;
+  height: 5%;
+  margin-top: 0;
+  padding: 0.5em;
+  border: 0;
+  border-bottom: 2px solid gray;
+  font-family: "Roboto", sans-serif;
+  font-size: 18px;
+  background-color: #f7f7f7;
+  color: #6495ED;
+}
+
+.custom_input:focus {
+  border-bottom: 4px solid black;
+  border-right: none;
+  border-left: none;
+  border-top: none;
+  outline: none;
+  background-color: #f7f7f7;
+  color: black;
+}
+
+.hideElement {
+  display: none;
+}
+
+.fileError {
+  border: 2px solid red !important;
+}
+
+.errorInput {
+  border-bottom: 4px solid red;
 }

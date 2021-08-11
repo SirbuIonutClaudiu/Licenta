@@ -1,138 +1,155 @@
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
 <div class="col-md-12">
   <div class="card card-container">
-    <img
-      id="profile-img"
-      src="//ssl.gstatic.com/accounts/ui/avatar_2x.png"
-      class="profile-img-card"
-    />
+    <img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pg0KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDE5LjAuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPg0KPHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJMYXllcl8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCINCgkgdmlld0JveD0iMCAwIDUxMiA1MTIiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDUxMiA1MTI7IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxwYXRoIHN0eWxlPSJmaWxsOiM0NUMxRjE7IiBkPSJNMTIxLDEzNWMwLDc0LjQ0Myw2MC41NTcsMTM1LDEzNSwxMzVzMTM1LTYwLjU1NywxMzUtMTM1UzMzMC40NDMsMCwyNTYsMFMxMjEsNjAuNTU3LDEyMSwxMzV6Ii8+DQo8cGF0aCBzdHlsZT0iZmlsbDojNDRBNEVDOyIgZD0iTTM5MSwxMzVDMzkxLDYwLjU1NywzMzAuNDQzLDAsMjU2LDB2MjcwQzMzMC40NDMsMjcwLDM5MSwyMDkuNDQzLDM5MSwxMzV6Ii8+DQo8cGF0aCBzdHlsZT0iZmlsbDojNDVDMUYxOyIgZD0iTTMxLDQ5N2MwLDguMjkxLDYuNzA5LDE1LDE1LDE1aDQyMGM4LjI5MSwwLDE1LTYuNzA5LDE1LTE1YzAtMTA3LjUyLTg3LjQ4LTE5Ny0xOTUtMTk3aC02MA0KCUMxMTguNDgsMzAwLDMxLDM4OS40OCwzMSw0OTd6Ii8+DQo8cGF0aCBzdHlsZT0iZmlsbDojNDRBNEVDOyIgZD0iTTI4NiwzMDBoLTMwdjIxMmgyMTBjOC4yOTEsMCwxNS02LjcwOSwxNS0xNUM0ODEsMzg5LjQ4LDM5My41MiwzMDAsMjg2LDMwMHoiLz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjxnPg0KPC9nPg0KPGc+DQo8L2c+DQo8Zz4NCjwvZz4NCjwvc3ZnPg0K"
+         class="profile-img-card"/>
     <form
       *ngIf="!isSuccessful"
       name="form"
-      (ngSubmit)="f.form.valid && onSubmit()"
+      (ngSubmit)="f.form.valid"
       #f="ngForm"
-      novalidate
-    >
+      novalidate>
+
       <div class="form-group">
         <label for="first_name">First name</label>
         <input
           type="text"
-          class="form-control"
+          class="custom_input"
           id="first_name"
           name="first_name"
           [(ngModel)]="form.first_name"
           placeholder="Enter your first name"
-          required
-          minlength="3"
-          maxlength="20"
-          #first_name="ngModel"
-        />
-        <div class="alert-danger" *ngIf="first_name.errors && f.submitted">
-          <div *ngIf="first_name.errors.required">First name is required</div>
-          <div *ngIf="first_name.errors.minlength">
-            First name must be at least 3 characters
-          </div>
-          <div *ngIf="first_name.errors.maxlength">
-            First nme must be at most 20 characters
-          </div>
-        </div>
-
+          [class.errorInput]="formSubmitted && (firstNameNullError || firstNameLengthError)"
+          #first_name="ngModel"/>
       </div>
+
+      <div class="text-danger" *ngIf="formSubmitted && firstNameNullError">
+        Field is required
+      </div>
+      <div class="text-danger" *ngIf="formSubmitted && firstNameLengthError">
+        First name has to be at least 3 characters long
+      </div>
+
       <div class="form-group">
         <label for="last_name">Last name</label>
         <input
           type="text"
-          class="form-control"
+          class="custom_input"
           id="last_name"
           name="last_name"
           [(ngModel)]="form.last_name"
           placeholder="Enter your last name"
-          required
-          minlength="3"
-          maxlength="20"
-          #last_name="ngModel"
-        />
-        <div class="alert-danger" *ngIf="last_name.errors && f.submitted">
-          <div *ngIf="last_name.errors.required">Last name is required</div>
-          <div *ngIf="last_name.errors.minlength">
-            Name must be at least 3 characters
-          </div>
-          <div *ngIf="last_name.errors.maxlength">
-            Last name must be at most 20 characters
-          </div>
-        </div>
+          [class.errorInput]="formSubmitted && (lastNameNullError || lastNameLengthError)"
+          #last_name="ngModel"/>
+      </div>
+
+      <div class="text-danger" *ngIf="formSubmitted && lastNameNullError">
+        Field is required
+      </div>
+      <div class="text-danger" *ngIf="formSubmitted && lastNameLengthError">
+        Last name has to be at least 3 characters long
       </div>
 
       <div class="form-group">
          <label for="institutional_code">Institutional code</label>
          <input type="text"
-                class="form-control"
+                class="custom_input"
                 id="institutional_code"
                 name="institutional_code"
                 [(ngModel)]="form.institutional_code"
-                #institutional_code="ngModel"
                 placeholder="Enter your institutional code"
-                required
-          />
+                mask="000000"
+                [class.errorInput]="formSubmitted && (codeNullError || codeLengthError)"
+                #institutional_code="ngModel"/>
+      </div>
+
+      <div class="text-danger" *ngIf="formSubmitted && codeNullError">
+        Field is required
+      </div>
+      <div class="text-danger" *ngIf="formSubmitted && codeLengthError">
+        Institutional code needs to have 6 digits
       </div>
 
       <div class="form-group">
         <label for="email">Email</label>
         <input
           type="email"
-          class="form-control"
+          class="custom_input"
           id="email"
           name="email"
           [(ngModel)]="form.email"
           placeholder="Your institutional email address"
-          required
-          email
-          #email="ngModel"
-        />
-        <div class="alert-danger" *ngIf="email.errors && f.submitted">
-          <div *ngIf="email.errors.required">Email is required</div>
-          <div *ngIf="email.errors.email">
-            Email must be a valid email address
-          </div>
-        </div>
+          [class.errorInput]="formSubmitted && (emailNullError || emailValidError)"
+          #email="ngModel"/>
+      </div>
+
+      <div class="text-danger" *ngIf="formSubmitted && emailNullError">
+        Field is required
+      </div>
+      <div class="text-danger" *ngIf="formSubmitted && emailValidError">
+        Invalid email address
       </div>
 
       <div class="form-group">
         <label for="password">Password</label>
         <input
           type="password"
-          class="form-control"
+          class="custom_input"
           id="password"
           name="password"
           [(ngModel)]="form.password"
           placeholder="Pick a password"
-          required
-          minlength="6"
+          [class.errorInput]="formSubmitted && (passwordNullError || passwordGeneralError)"
           #password="ngModel"/>
+      </div>
 
-        <div class="alert-danger" *ngIf="password.errors && f.submitted">
-          <div *ngIf="password.errors.required">Password is required</div>
-          <div *ngIf="password.errors.minlength">
-            Password must be at least 6 characters
-          </div>
-        </div>
+      <div class="text-danger" *ngIf="formSubmitted && passwordNullError">
+        Field is required
+      </div>
+      <div *ngIf="formSubmitted && passwordGeneralError">
+        Password needs to have :<br>
+      </div>
+      <div [ngClass]="{'text-success': !passwordLengthError, 'text-danger': passwordLengthError,
+      'hideElement': !formSubmitted || (formSubmitted && !passwordGeneralError)}">
+        * between 8 and 120 characters
+      </div>
+      <div [ngClass]="{'text-success': !passwordLowercaseError, 'text-danger': passwordLowercaseError,
+      'hideElement': !formSubmitted || (formSubmitted && !passwordGeneralError)}">
+        * at least one lowercase character
+      </div>
+      <div [ngClass]="{'text-success': !passwordUppercaseError, 'text-danger': passwordUppercaseError,
+      'hideElement': !formSubmitted || (formSubmitted && !passwordGeneralError)}">
+        * at least one uppercase character
+      </div>
+      <div [ngClass]="{'text-success': !passwordNumberError, 'text-danger': passwordNumberError,
+      'hideElement': !formSubmitted || (formSubmitted && !passwordGeneralError)}">
+        * at least one number
+      </div>
+
+      <div class="form-group">
+        <label for="googleAddress">Address of residence</label>
+        <input id="googleAddress" name="googleAddress" type="text"
+               placeholder = "Enter your address"
+               [class.errorInput]="formSubmitted && residenceAddressNullError"
+               class="custom_input" [(ngModel)]="form.googleAddress">
+      </div>
+
+      <div class="text-danger" *ngIf="formSubmitted && residenceAddressNullError">
+        Field is required
       </div>
 
       <div class="form-group">
          <label for="uploadFile">Pick a profile image</label>
          <input id="uploadFile"
                 placeholder="Image to be uploaded"
+                style="color: #6495ED;"
+                [class.fileError]="formSubmitted && (imageNullError || imageSizeError)"
                 value={{selectedFile.name}}
                 disabled="disabled"/>
          <div class="fileUpload btn btn-primary">
             <span>Upload</span>
-           <input id="uploadBtn" type="file" class="upload" accept="image/*" (change)="onFileChanged($event)" required/>
+           <input id="uploadBtn" type="file" class="upload" accept="image/*" (change)="onFileChanged($event)"/>
          </div>
-      </div>
-
-      <div class="form-group">
-         <label for="googleAddress">Address of residence</label>
-         <input id="googleAddress" name="googleAddress" type="text" class="form-control" [(ngModel)]="form.googleAddress" required>
       </div>
     </form>
 

@@ -15,6 +15,7 @@ import { Router } from '@angular/router';
 export class LoginComponent implements OnInit {
   isLoading = false;
   formSubmitted = false;
+  captchaVisible = false;
   captchaSubmitted = false;
   captchaSuccess = false;
   captchaStatus: any = null;
@@ -57,6 +58,13 @@ export class LoginComponent implements OnInit {
     this.initializeRoles();
     this.initializeLocationTracker();
     this.initializeCaptcha();
+  }
+
+  makeCaptchaVisible(): void {
+    this.userService.sleep(2).subscribe(
+      ans => {
+        this.captchaVisible = true;
+      });
   }
 
   initializeCaptcha(): void {
