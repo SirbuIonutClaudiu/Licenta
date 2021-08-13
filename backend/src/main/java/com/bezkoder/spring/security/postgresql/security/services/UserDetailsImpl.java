@@ -9,23 +9,16 @@ import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Data
 public class UserDetailsImpl implements UserDetails {
 	private static final long serialVersionUID = 1L;
-
 	private Long id;
-
 	private String name;
-
 	private String email;
-
 	private boolean verifiedApplication;
-
 	private boolean verifiedEmail;
-
 	private boolean activated2FA;
 
 	@JsonIgnore

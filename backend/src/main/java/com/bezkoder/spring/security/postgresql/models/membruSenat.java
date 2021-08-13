@@ -2,8 +2,7 @@ package com.bezkoder.spring.security.postgresql.models;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.persistence.*;
 import javax.validation.constraints.Email;

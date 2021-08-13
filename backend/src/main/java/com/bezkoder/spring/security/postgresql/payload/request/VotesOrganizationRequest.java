@@ -67,7 +67,7 @@ public class VotesOrganizationRequest {
 
     public List<VoteResponse> ShowGeoRestriction(List<VoteResponse> allVotes) {
         allVotes.removeIf(currentResponse -> (this.enableGeorestriction && (this.geoRestrictedOption != currentResponse.isGeoRestricted())));
-        return  allVotes;
+        return allVotes;
     }
 
     public List<VoteResponse> SortVotesBy(List<VoteResponse> allVotes) {
@@ -90,4 +90,3 @@ public class VotesOrganizationRequest {
         return allVotes;
     }
 }
-

@@ -4,6 +4,7 @@ import com.bezkoder.spring.security.postgresql.awsecrets.TwilioSecrets;
 import com.bezkoder.spring.security.postgresql.models.*;
 import com.bezkoder.spring.security.postgresql.payload.request.NewPasswordRequest;
 import com.bezkoder.spring.security.postgresql.payload.request.PasswordRequest;
+import com.bezkoder.spring.security.postgresql.payload.request.UsersOrganizationRequest;
 import com.bezkoder.spring.security.postgresql.payload.request.WebsiteRequest;
 import com.bezkoder.spring.security.postgresql.payload.response.MessageResponse;
 import com.bezkoder.spring.security.postgresql.payload.response.UserResponse;
@@ -66,7 +67,7 @@ public class UserController {
     @GetMapping("/return_all")
     public List<UserResponse> returnAll() {
         List<UserResponse> result = new ArrayList<>();
-        membruSenatService.returnAll().forEach((member) -> result.add(memberToUserResponse(member)));
+        membruSenatService.returnAll().forEach((member) -> result.add(membruSenatService.memberToUserResponse(member)));
         return result;
     }
 
@@ -75,10 +76,15 @@ public class UserController {
         List<UserResponse> result = new ArrayList<>();
         membruSenatService.returnAll().forEach((member) -> {
             if(!member.isVerifiedApplication()) {
-                result.add(memberToUserResponse(member));
+                result.add(membruSenatService.memberToUserResponse(member));
             }
         });
         return result;
+    }
+
+    @PostMapping("/get_members")
+    public ResponseEntity<List<UserResponse>> getMembers(@Valid @RequestBody UsersOrganizationRequest usersOrganizationRequest) {
+        return new ResponseEntity<>(membruSenatService.SortUsersByRequest(usersOrganizationRequest), HttpStatus.OK);
     }
 
     @PostMapping("/sendPhoneVerification/{id}/{number}")
@@ -393,7 +399,7 @@ public class UserController {
     @GetMapping("/find/{id}")
     public ResponseEntity<UserResponse> getMemberById(@PathVariable("id") Long id) {
         membruSenat member = membruSenatService.findMemberById(id);
-        UserResponse userResult = memberToUserResponse(member);
+        UserResponse userResult = membruSenatService.memberToUserResponse(member);
         return new ResponseEntity<>(userResult, HttpStatus.OK);
     }
 
@@ -539,57 +545,6 @@ public class UserController {
         final Optional<ImageModel> retrievedImage = imageRepository.findByName(imageName);
         return new ImageModel(retrievedImage.get().getName(), retrievedImage.get().getType(),
                 decompressBytes(retrievedImage.get().getPicByte()));
-    }
-
-    public String ERoleToString(ERole erole) {
-        switch(erole) {
-            case ROLE_ADMIN:
-                return "Administrator";
-            case ROLE_MODERATOR:
-                return "Moderator";
-            case ROLE_USER:
-                return "Utilizator";
-            case ROLE_DIDACTIC:
-                return "Comisia didactica";
-            case ROLE_STIINTIFIC:
-                return "Comisia stiintifica";
-            case ROLE_CALITATE:
-                return "Comisia de asigurare a calitatii si relatii internationale";
-            case ROLE_DREPTURI:
-                return "Comisia privind drepturile si obligatiile studentilor";
-            case ROLE_BUGET:
-                return "Comisia de buget–finante";
-            case ROLE_JURIDIC:
-                return "Comisia juridica";
-            default:
-                return "NO_ROLE";
-        }
-    }
-
-    private UserResponse memberToUserResponse(membruSenat member) {
-        Set<Role> userRoles = member.getRoles();
-        Iterator<Role> it = userRoles.iterator();
-        List<String> roles = new ArrayList<>();
-        while(it.hasNext()) {
-            ERole roleName = it.next().getName();
-            roles.add(ERoleToString(roleName));
-        }
-        roles.sort(Comparator.comparingInt(String::length));
-        return new UserResponse( member.getId(),
-                                 member.getEmail(),
-                                 member.getName(),
-                                 member.getAddress(),
-                                 member.getInstitutionalCode(),
-                                 member.getApplicationDate(),
-                                 member.getLoginLocation(),
-                                 member.getWebsite(),
-                                 member.getLandline(),
-                                 member.getPhoneNumber(),
-                                 member.isDisabled(),
-                                 member.isVerifiedApplication(),
-                                 member.isVerifiedEmail(),
-                                 member.isActivated2FA(),
-                                 roles );
     }
 
     public static byte[] compressBytes(byte[] data) {
