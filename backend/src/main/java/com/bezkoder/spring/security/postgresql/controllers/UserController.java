@@ -6,6 +6,8 @@ import com.bezkoder.spring.security.postgresql.payload.request.NewPasswordReques
 import com.bezkoder.spring.security.postgresql.payload.request.PasswordRequest;
 import com.bezkoder.spring.security.postgresql.payload.request.UsersOrganizationRequest;
 import com.bezkoder.spring.security.postgresql.payload.request.WebsiteRequest;
+import com.bezkoder.spring.security.postgresql.payload.response.GetMembersResponse;
+import com.bezkoder.spring.security.postgresql.payload.response.MemberNamesSearchResponse;
 import com.bezkoder.spring.security.postgresql.payload.response.MessageResponse;
 import com.bezkoder.spring.security.postgresql.payload.response.UserResponse;
 import com.bezkoder.spring.security.postgresql.repository.ImageRepository;
@@ -82,8 +84,15 @@ public class UserController {
         return result;
     }
 
-    @PostMapping("/get_members")
-    public ResponseEntity<List<UserResponse>> getMembers(@Valid @RequestBody UsersOrganizationRequest usersOrganizationRequest) {
+    @GetMapping("/get_member_names")
+    public ResponseEntity<List<MemberNamesSearchResponse>> getMemberNames() {
+        List<MemberNamesSearchResponse> membersList = new ArrayList<>();
+        membruSenatService.returnAll().forEach(member -> membersList.add(new MemberNamesSearchResponse(member.getId(), member.getName())));
+        return new ResponseEntity<>(membersList, HttpStatus.OK);
+    }
+
+    @GetMapping("/get_members")
+    public ResponseEntity<GetMembersResponse> getMembers(@Valid @RequestBody UsersOrganizationRequest usersOrganizationRequest) {
         return new ResponseEntity<>(membruSenatService.SortUsersByRequest(usersOrganizationRequest), HttpStatus.OK);
     }
 
@@ -103,7 +112,7 @@ public class UserController {
         if(memberToBeModified.getVerificationSID() != null) {
             Service.deleter(memberToBeModified.getVerificationSID()).delete();
         }
-        Service service = Service.creator("UNITBV Voting").create();
+        Service service = Service.creator("UnitbVoting").create();
         Verification verification = Verification.creator(
                 service.getSid(),
                 number,

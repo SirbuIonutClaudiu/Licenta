@@ -183,7 +183,7 @@ public class AuthController {
 		if(member.getVerificationSID() != null) {
 			com.twilio.rest.verify.v2.Service.deleter(member.getVerificationSID()).delete();
 		}
-		com.twilio.rest.verify.v2.Service service = com.twilio.rest.verify.v2.Service.creator("UNITBV Voting").create();
+		com.twilio.rest.verify.v2.Service service = com.twilio.rest.verify.v2.Service.creator("UnitbVoting").create();
 		Verification verification = Verification.creator(
 				service.getSid(),
 				member.getPhoneNumber(),
@@ -212,7 +212,7 @@ public class AuthController {
 		if(member.getVerificationSID() != null) {
 			com.twilio.rest.verify.v2.Service.deleter(member.getVerificationSID()).delete();
 		}
-		com.twilio.rest.verify.v2.Service service = com.twilio.rest.verify.v2.Service.creator("UNITBV Voting").create();
+		com.twilio.rest.verify.v2.Service service = com.twilio.rest.verify.v2.Service.creator("UnitbVoting").create();
 		Verification verification = Verification.creator(
 				service.getSid(),
 				member.getPhoneNumber(),

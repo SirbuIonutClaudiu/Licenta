@@ -4,6 +4,7 @@ import com.bezkoder.spring.security.postgresql.models.ERole;
 import com.bezkoder.spring.security.postgresql.models.Role;
 import com.bezkoder.spring.security.postgresql.models.membruSenat;
 import com.bezkoder.spring.security.postgresql.payload.request.UsersOrganizationRequest;
+import com.bezkoder.spring.security.postgresql.payload.response.GetMembersResponse;
 import com.bezkoder.spring.security.postgresql.payload.response.UserResponse;
 import com.bezkoder.spring.security.postgresql.repository.RoleRepository;
 import com.bezkoder.spring.security.postgresql.repository.membruSenatRepository;
@@ -45,18 +46,19 @@ public class MembruSenatService {
         return membruRepo.findAll(Sort.by(Sort.Direction.ASC, "name"));
     }
 
-    public List<UserResponse> SortUsersByRequest(UsersOrganizationRequest usersOrganizationRequest) {
+    public GetMembersResponse SortUsersByRequest(UsersOrganizationRequest usersOrganizationRequest) {
         List<UserResponse> result;
         result = getAllUserResponses();
-        result = sortByActivatedAccount(result, usersOrganizationRequest.isFilterByActivatedAccount(), usersOrganizationRequest.isActivatedAccount());
-        result = sortByDisabledAccount(result, usersOrganizationRequest.isFilterByDisabledAccount(), usersOrganizationRequest.isDisabledAccount());
-        result = sortByActivatedEmail(result, usersOrganizationRequest.isFilterByActivatedEmail(), usersOrganizationRequest.isActivatedEmail());
-        result = sortUsersBy(result, usersOrganizationRequest.getSortParameter(), usersOrganizationRequest.getSortDirection());
+        sortByActivatedAccount(result, usersOrganizationRequest.isFilterByActivatedAccount(), usersOrganizationRequest.isActivatedAccount());
+        sortByDisabledAccount(result, usersOrganizationRequest.isFilterByDisabledAccount(), usersOrganizationRequest.isDisabledAccount());
+        sortByActivatedEmail(result, usersOrganizationRequest.isFilterByActivatedEmail(), usersOrganizationRequest.isActivatedEmail());
+        sortUsersBy(result, usersOrganizationRequest.getSortParameter(), usersOrganizationRequest.getSortDirection());
+        int resultLength = result.size();
         result = usersPerPage(result, usersOrganizationRequest.getPage(), usersOrganizationRequest.getPerPage());
         if(!usersOrganizationRequest.getERoles().isEmpty()) {
-            result = filterByRoles(result, getRolesFromERoles(usersOrganizationRequest.getERoles()));
+            filterByRoles(result, getRolesFromERoles(usersOrganizationRequest.getERoles()));
         }
-        return result;
+        return new GetMembersResponse(result, resultLength);
     }
 
     private List<Role> getRolesFromERoles(List<ERole> eroles) {
