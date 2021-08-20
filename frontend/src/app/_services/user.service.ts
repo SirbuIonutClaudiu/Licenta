@@ -3,8 +3,9 @@ import {HttpClient, HttpHeaders} from '@angular/common/http';
 import { Observable } from 'rxjs';
 import {membruSenat} from './membruSenat';
 import {TokenStorageService} from './token-storage.service';
+import {GetMembersResponse} from './GetMembersResponse';
 
-const API_URL = 'http://unitbvotingbackend-env.eba-fzmvt98p.us-east-2.elasticbeanstalk.com/api/users/';
+const API_URL = 'http://localhost:5000/api/users/';
 
 @Injectable({
   providedIn: 'root'
@@ -25,18 +26,6 @@ export class UserService {
       headers: new HttpHeaders({ 'Content-Type': 'application/json',
         Authorization: `Bearer ${token}` })
     };
-  }
-
-  getPublicContent(): Observable<any> {
-    return this.http.get(API_URL + 'all', { responseType: 'text' });
-  }
-
-  getUserBoard(): Observable<any> {
-    return this.http.get(API_URL + 'user', { responseType: 'text' });
-  }
-
-  getModeratorBoard(): Observable<any> {
-    return this.http.get(API_URL + 'mod', { responseType: 'text' });
   }
 
   getMemberById(id: number): Observable<membruSenat> {
@@ -138,5 +127,24 @@ export class UserService {
 
   sleep(seconds: number): Observable<any> {
     return this.http.get(API_URL + 'sleep/' + seconds, this.httpOptions);
+  }
+
+  getMembers(page: number, perPage: number, sortParameter: string, sortDirection: string, filterByActivatedEmail: boolean,
+             activatedEmail: boolean, filterByActivatedAccount: boolean, activatedAccount: boolean,
+             filterByDisabledAccount: boolean, disabledAccount: boolean, eRoles: any[]): Observable<GetMembersResponse> {
+    return this.http.post<GetMembersResponse>(API_URL + 'get_members', {
+      page,
+      perPage,
+      sortParameter,
+      sortDirection,
+      filterByActivatedEmail,
+      activatedEmail,
+      filterByActivatedAccount,
+      activatedAccount,
+      filterByDisabledAccount,
+      disabledAccount,
+      eRoles
+      },
+      this.httpOptions);
   }
 }

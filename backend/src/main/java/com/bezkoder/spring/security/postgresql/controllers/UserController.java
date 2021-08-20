@@ -91,7 +91,7 @@ public class UserController {
         return new ResponseEntity<>(membersList, HttpStatus.OK);
     }
 
-    @GetMapping("/get_members")
+    @PostMapping("/get_members")
     public ResponseEntity<GetMembersResponse> getMembers(@Valid @RequestBody UsersOrganizationRequest usersOrganizationRequest) {
         return new ResponseEntity<>(membruSenatService.SortUsersByRequest(usersOrganizationRequest), HttpStatus.OK);
     }
@@ -556,7 +556,7 @@ public class UserController {
                 decompressBytes(retrievedImage.get().getPicByte()));
     }
 
-    public static byte[] compressBytes(byte[] data) {
+    private static byte[] compressBytes(byte[] data) {
         Deflater deflater = new Deflater();
         deflater.setInput(data);
         deflater.finish();		ByteArrayOutputStream outputStream = new ByteArrayOutputStream(data.length);
@@ -572,7 +572,7 @@ public class UserController {
         return outputStream.toByteArray();
     }
 
-    public static byte[] decompressBytes(byte[] data) {
+    private static byte[] decompressBytes(byte[] data) {
         Inflater inflater = new Inflater();
         inflater.setInput(data);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream(data.length);

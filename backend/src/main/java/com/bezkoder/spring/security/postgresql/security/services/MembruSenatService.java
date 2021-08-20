@@ -1,11 +1,13 @@
 package com.bezkoder.spring.security.postgresql.security.services;
 
 import com.bezkoder.spring.security.postgresql.models.ERole;
+import com.bezkoder.spring.security.postgresql.models.ImageModel;
 import com.bezkoder.spring.security.postgresql.models.Role;
 import com.bezkoder.spring.security.postgresql.models.membruSenat;
 import com.bezkoder.spring.security.postgresql.payload.request.UsersOrganizationRequest;
 import com.bezkoder.spring.security.postgresql.payload.response.GetMembersResponse;
 import com.bezkoder.spring.security.postgresql.payload.response.UserResponse;
+import com.bezkoder.spring.security.postgresql.repository.ImageRepository;
 import com.bezkoder.spring.security.postgresql.repository.RoleRepository;
 import com.bezkoder.spring.security.postgresql.repository.membruSenatRepository;
 import com.bezkoder.spring.security.postgresql.security.exceptions.UserNotFoundException;
@@ -13,11 +15,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.zip.DataFormatException;
+import java.util.zip.Inflater;
 
 @Service
 @Transactional
 public class MembruSenatService {
+    @Autowired
+    private ImageRepository imageRepository;
+
     @Autowired
     private RoleRepository roleRepository;
 
@@ -58,7 +68,45 @@ public class MembruSenatService {
         if(!usersOrganizationRequest.getERoles().isEmpty()) {
             filterByRoles(result, getRolesFromERoles(usersOrganizationRequest.getERoles()));
         }
-        return new GetMembersResponse(result, resultLength);
+        List<ImageModel> usersImages = getUsersImages(result);
+        return new GetMembersResponse(result, usersImages, resultLength);
+    }
+
+    private boolean imageBelongsToAUser(List<UserResponse> allUsers, ImageModel image) {
+        AtomicBoolean belongs = new AtomicBoolean(false);
+        allUsers.forEach(user -> {
+            if(user.getEmail().equals(image.getName())) {
+                belongs.set(true);
+            }
+        });
+        return belongs.get();
+    }
+
+    private List<ImageModel> getUsersImages(List<UserResponse> allUsers) {
+        List<ImageModel> retrievedImages = new ArrayList<>();
+        this.imageRepository.findAll().forEach(image -> {
+            if(imageBelongsToAUser(allUsers, image)) {
+                retrievedImages.add(new ImageModel(image.getName(), image.getType(),
+                        decompressBytes(image.getPicByte())));
+            }
+        });
+        return retrievedImages;
+    }
+
+    private static byte[] decompressBytes(byte[] data) {
+        Inflater inflater = new Inflater();
+        inflater.setInput(data);
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream(data.length);
+        byte[] buffer = new byte[1024];
+        try {
+            while (!inflater.finished()) {
+                int count = inflater.inflate(buffer);
+                outputStream.write(buffer, 0, count);
+            }
+            outputStream.close();
+        } catch (IOException | DataFormatException ignored) {
+        }
+        return outputStream.toByteArray();
     }
 
     private List<Role> getRolesFromERoles(List<ERole> eroles) {
@@ -81,7 +129,6 @@ public class MembruSenatService {
                 allUsers.sort(Comparator.comparing(UserResponse::getName, String.CASE_INSENSITIVE_ORDER));
             }
             else {
-                System.out.println("here");
                 allUsers.sort(Comparator.comparing(UserResponse::getName, String.CASE_INSENSITIVE_ORDER).reversed());
             }
         }
