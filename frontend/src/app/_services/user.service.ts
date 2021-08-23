@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import {membruSenat} from './membruSenat';
 import {TokenStorageService} from './token-storage.service';
 import {GetMembersResponse} from './GetMembersResponse';
+import {UserNames} from './UserNames';
 
 const API_URL = 'http://localhost:5000/api/users/';
 
@@ -146,5 +147,9 @@ export class UserService {
       eRoles
       },
       this.httpOptions);
+  }
+
+  getMemberNames(): Observable<UserNames[]> {
+    return this.http.get<UserNames[]>(API_URL + 'get_member_names', this.httpOptions);
   }
 }

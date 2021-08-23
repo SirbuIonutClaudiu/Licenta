@@ -206,6 +206,14 @@ small, time, .small {
 }
 
 .loadingDiv {
-  margin-top: 40%;
-  margin-left: 50%;
+  margin: 5% 0 2% 50%;
+}
+
+.searchContainer {
+  padding-top: 1%;
+  padding-bottom: 2%;
+  margin-top: 2%;
+  margin-bottom: 3%;
+  background-color: #F0F8FF;
+  border-radius: 25px;
 }
