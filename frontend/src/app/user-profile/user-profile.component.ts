@@ -426,7 +426,7 @@ export class UserProfileComponent implements OnInit {
           this.isLandlineEditable = true;
         }
       }
-      else {
+      else if (this.ownProfile) {
         this.isLandlineEditable = false;
         if (this.landline !== this.initialLandline) {
           if (this.landline.length !== 10) {

@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, TemplateRef} from '@angular/core';
 import {UserService} from '../_services/user.service';
 import {GetMembersResponse} from '../_services/GetMembersResponse';
 import {membruSenat} from '../_services/membruSenat';
@@ -6,6 +6,8 @@ import {IDropdownSettings} from 'ng-multiselect-dropdown';
 import {Router} from '@angular/router';
 import {UserNames} from '../_services/UserNames';
 import {FieldSettingsModel} from '@syncfusion/ej2-angular-dropdowns';
+import {TokenStorageService} from '../_services/token-storage.service';
+import {BsModalRef, BsModalService} from 'ngx-bootstrap/modal';
 
 @Component({
   selector: 'app-home',
@@ -64,12 +66,52 @@ export class HomeComponent implements OnInit {
   userNames = [{id: '', name: ''}];
   field: FieldSettingsModel = {value: 'id', text: 'name'};
   searchPlaceholder = 'Search users by name';
+  HostHasModeratorRole = false;
+  HostHasAdministratorRole = false;
+  modalRef!: BsModalRef;
+  memberName = '';
+  memberId = 0;
+  AcceptOrDeny = false;
 
-  constructor(private userService: UserService, private router: Router) { }
+  constructor(private userService: UserService, private tokenStorageService: TokenStorageService,
+              private modalService: BsModalService, private router: Router) { }
 
   ngOnInit(): void {
     this.getMembers();
     this.getMemberNames();
+    this.checkHostRoles();
+  }
+
+  openAcceptOrDenyModalWithClass(template: TemplateRef<any>, acceptOrDeny: boolean,
+                                 memberName: string, memberID: number): void {
+    this.modalRef = this.modalService.show(
+      template,
+      Object.assign({}, { class: 'modal-dialog-centered' })
+    );
+    this.AcceptOrDeny = acceptOrDeny;
+    this.memberName = memberName;
+    this.memberId = memberID;
+  }
+
+  confirmAcceptOrDenyModal(): void {
+    if (this.AcceptOrDeny) {
+      this.userService.verifyApplication(this.memberId).subscribe(
+        answer => {
+          this.modalRef.hide();
+          window.location.reload();
+        });
+    }
+    else {
+      this.userService.denyApplication(this.memberId).subscribe(
+        answer => {
+          this.modalRef.hide();
+          window.location.reload();
+        });
+    }
+  }
+
+  disconfirmModal(): void {
+    this.modalRef.hide();
   }
 
   getMembers(): void {
@@ -91,6 +133,26 @@ export class HomeComponent implements OnInit {
       error => {
         this.loading = false;
       });
+  }
+
+  checkHostRoles(): void {
+    const roles = this.tokenStorageService.getUser().roles;
+    this.HostHasAdministratorRole = (roles[0] === 'ROLE_ADMIN') || (roles[1] === 'ROLE_ADMIN');
+    this.HostHasModeratorRole = (roles[0] === 'ROLE_MODERATOR') || (roles[1] === 'ROLE_MODERATOR');
+  }
+
+  ownProfile(user: membruSenat): boolean {
+    const loggedId = this.tokenStorageService.getUser().id;
+    const userId = user.id;
+    return (loggedId === userId);
+  }
+
+  userHasModeratorRole(user: membruSenat): boolean {
+    return user.roles.includes('Moderator');
+  }
+
+  userHasAdministratorRole(user: membruSenat): boolean {
+    return user.roles.includes('Administrator');
   }
 
   getMemberNames(): void {

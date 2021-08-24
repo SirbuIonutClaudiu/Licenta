@@ -189,16 +189,48 @@ small, time, .small {
   font-size: 10px !important;
 }
 
-.selectorSpace {
-  margin-bottom: 3%;
-}
-
 .not {
   color: #C12F10;
 }
 
 .yes {
   color: #38B67B;
+}
+
+.verified {
+  color: #8A2BE2;
+}
+
+.unactivatedTXT {
+  font-size: small;
+  font-style: italic;
+  font-family: Comic Sans MS, Comic Sans, cursive;
+  color: #A9A9A9;
+}
+
+.adminTXT {
+  font-size: small;
+  font-style: italic;
+  font-family: Comic Sans MS, Comic Sans, cursive;
+  color: #9932CC;
+}
+
+.modTXT {
+  font-size: small;
+  font-style: italic;
+  font-family: Comic Sans MS, Comic Sans, cursive;
+  color: #DAA520;
+}
+
+.userTXT {
+  font-size: small;
+  font-style: italic;
+  font-family: Comic Sans MS, Comic Sans, cursive;
+  color: #8FBC8F;
+}
+
+.unactivatedBG {
+  background-color: #F8F8FF;
 }
 
 .pointer {

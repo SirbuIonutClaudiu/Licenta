@@ -1,4 +1,19 @@
 <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+<ng-template #acceptdenytemplate>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left">Confirmation for application {{AcceptOrDeny ? 'acceptance' : 'denial'}}</h4>
+    <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    Are you sure you want to <b>{{AcceptOrDeny ? 'accept' : 'deny'}} user application</b> for <br> {{memberName | titlecase}} ?
+  </div>
+  <div class="modal-body text-right">
+    <button type="button" class="btn btn-primary mr-2" (click)="confirmAcceptOrDenyModal()">Yes</button>
+    <button type="button" class="btn btn-danger mr-3" (click)="disconfirmModal()">No</button>
+  </div>
+</ng-template>
 <div class="container searchContainer">
   <div class="row d-flex justify-content-center mb-3">
     <div class="col-8">
@@ -38,49 +53,76 @@
     </div>
   </div>
 </div>
+
 <div class="loadingDiv" *ngIf="loading">
   <sa-spinner-circular-split [color]="spinnerColor"></sa-spinner-circular-split>
 </div>
-<div class="card b-1 hover-shadow mb-20" *ngFor="let member of membriSenat">
-  <div class="media card-body">
-    <div class="media-left pr-12">
-      <img class="avatar avatar-xl no-radius pointer"
-           [src]="usersImages.get(member.email)"
-           alt="..." *ngIf="!loading">
-    </div>
-    <div class="media-body">
-      <div class="mb-2">
-        <span class="fs-20 pr-16 pointer">{{member.name}}</span>
+
+<div *ngIf="!loading">
+  <div class="card b-1 hover-shadow mb-20" *ngFor="let member of membriSenat" [class.unactivatedBG]="!member.verifiedApplication">
+    <div class="media card-body">
+      <div class="media-left pr-12">
+        <img class="avatar avatar-xl no-radius pointer"
+             [src]="usersImages.get(member.email)"
+             (click)="navToProfile(member.id)" alt="...">
       </div>
-      <i class="fa fa-thumbs-up yes pointer"
-         aria-hidden="true"
-         title="Email verified"
-         *ngIf="member.verifiedEmail">
-      </i>
-      <i class="fa fa-thumbs-down not pointer"
-         aria-hidden="true"
-         title="Email not verified"
-         *ngIf="!member.verifiedEmail">
-      </i>
-      <small class="fs-16 fw-300 ls-1">   {{member.email}}</small>
+      <div class="media-body">
+        <div class="mb-2">
+          <span class="fs-20 pr-16 pointer" (click)="navToProfile(member.id)">{{member.name}}</span>
+          <span class="unactivatedTXT" *ngIf="!member.verifiedApplication">( Unactivated )</span>
+          <span class="adminTXT" *ngIf="userHasAdministratorRole(member)">( Administrator )</span>
+          <span class="modTXT" *ngIf="userHasModeratorRole(member)">( Moderator )</span>
+          <span class="userTXT" *ngIf="member.verifiedApplication && !(userHasAdministratorRole(member) || userHasModeratorRole(member))">( User )</span>
+        </div>
+        <i class="fa fa-thumbs-up yes pointer"
+           aria-hidden="true"
+           title="Email verified"
+           *ngIf="!member.verifiedApplication && member.verifiedEmail">
+        </i>
+        <i class="fa fa-thumbs-down not pointer"
+           aria-hidden="true"
+           title="Email not verified"
+           *ngIf="!member.verifiedApplication && !member.verifiedEmail">
+        </i>
+        <i class="fa fa-envelope verified pointer"
+           aria-hidden="true"
+           title="Email address"
+           *ngIf="member.verifiedApplication">
+        </i>
+        <small class="fs-16 fw-300 ls-1">   {{member.email}}</small>
+      </div>
+      <div class="media-right text-right d-none d-md-block">
+        <p class="fs-14 text-fade mb-12"><i class="fa fa-map-marker pr-1"></i>{{member.address}}</p>
+        <span class="text-fade"><i class="fa fa-cog pr-1"></i>{{member.institutionalCode}}</span>
+      </div>
     </div>
-    <div class="media-right text-right d-none d-md-block">
-      <p class="fs-14 text-fade mb-12"><i class="fa fa-map-marker pr-1"></i>{{member.address}}</p>
-      <span class="text-fade"><i class="fa fa-cog pr-1"></i>{{member.institutionalCode}}</span>
-    </div>
+    <footer class="card-footer flexbox align-items-center" [class.unactivatedBG]="!member.verifiedApplication">
+      <div>
+        <strong>Applied on: </strong>
+        <span>{{member.applicationDate}}</span>
+      </div>
+      <div class="card-hover-show" *ngIf="!member.verifiedApplication">
+        <a class="btn btn-xs btn-bold btn-success text-light mr-3"
+           (click)="openAcceptOrDenyModalWithClass(acceptdenytemplate, true, member.name, member.id)">
+          <i class="fa fa-check fa-lg"></i> Accept</a>
+        <a class="btn btn-xs btn-bold btn-danger text-light"
+           (click)="openAcceptOrDenyModalWithClass(acceptdenytemplate, false, member.name, member.id)">
+          <i class="fa fa-times fa-lg"></i> Deny</a>
+      </div>
+      <div class="card-hover-show" *ngIf="member.verifiedApplication && !ownProfile(member)">
+        <a class="btn btn-xs btn-bold btn-warning text-light mr-3" *ngIf="!member.disabled">
+          <i class="fa fa-ban fa-lg"></i> Disable</a>
+        <a class="btn btn-xs btn-bold btn-success text-light mr-3" *ngIf="member.disabled">
+          <i class="fa fa-ban fa-lg"></i> Enable</a>
+        <a class="btn btn-xs btn-bold btn-danger text-light">
+          <i class="fa fa-trash-o fa-lg"></i>&nbsp;Delete</a>
+      </div>
+      <div class="card-hover-show" *ngIf="ownProfile(member)">
+        <a class="btn btn-xs btn-bold btn-primary text-light mr-3" (click)="navToProfile(member.id)">
+          <i class="fa fa-reply fa-lg"></i>&nbsp;Go to Profile</a>
+      </div>
+    </footer>
   </div>
-  <footer class="card-footer flexbox align-items-center">
-    <div>
-      <strong>Applied on: </strong>
-      <span>{{member.applicationDate}}</span>
-    </div>
-    <div class="card-hover-show">
-      <a class="btn btn-xs btn-bold btn-success text-light mr-3">
-        <i class="fa fa-check fa-lg"></i> Accept</a>
-      <a class="btn btn-xs btn-bold btn-danger text-light">
-        <i class="fa fa-times fa-lg"></i> Deny</a>
-    </div>
-  </footer>
 </div>
 
 <div class="d-flex flex-row-reverse">

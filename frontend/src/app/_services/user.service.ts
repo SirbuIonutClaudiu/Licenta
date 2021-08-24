@@ -6,7 +6,7 @@ import {TokenStorageService} from './token-storage.service';
 import {GetMembersResponse} from './GetMembersResponse';
 import {UserNames} from './UserNames';
 
-const API_URL = 'http://localhost:5000/api/users/';
+const API_URL = 'http://unitbvotingbackend-env.eba-fzmvt98p.us-east-2.elasticbeanstalk.com/api/users/';
 
 @Injectable({
   providedIn: 'root'
