@@ -1,4 +1,5 @@
 <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 <ng-template #template>
   <div class="modal-header">
     <h4 class="modal-title pull-left">User {{deleteDisable ? 'delete' : (member.disabled ? 'enable' : 'disable')}} confirmation</h4>
@@ -448,26 +449,26 @@
           <div class="col-sm-6 mb-3">
             <div class="card h-100">
               <div class="card-body">
-                <h6 class="d-flex align-items-center mb-3"><i class="material-icons text-info mr-2">assignment</i>Project Status</h6>
-                <small>Web Design</small>
-                <div class="progress mb-3" style="height: 5px">
-                  <div class="progress-bar bg-primary" role="progressbar" style="width: 80%" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
+                <h6 class="d-flex align-items-center mb-3"><i class="material-icons text-info mr-2">assignment</i><b>Vote Statistics</b></h6>
+                <small>Number of total votes</small>
+                <div class="w3-light-grey">
+                  <div class="w3-container w3-blue w3-center" style="width:100%">{{totalVotes}}</div>
                 </div>
-                <small>Website Markup</small>
-                <div class="progress mb-3" style="height: 5px">
-                  <div class="progress-bar bg-primary" role="progressbar" style="width: 72%" aria-valuenow="72" aria-valuemin="0" aria-valuemax="100"></div>
+                <small>Number of for votes</small>
+                <div class="w3-light-grey">
+                  <div class="w3-container w3-blue w3-center" style="width:{{forVotes*100/totalVotes}}%">{{forVotes}}</div>
                 </div>
-                <small>One Page</small>
-                <div class="progress mb-3" style="height: 5px">
-                  <div class="progress-bar bg-primary" role="progressbar" style="width: 89%" aria-valuenow="89" aria-valuemin="0" aria-valuemax="100"></div>
+                <small>Number of against votes</small>
+                <div class="w3-light-grey">
+                  <div class="w3-container w3-blue w3-center" style="width:{{againstVotes*100/totalVotes}}%">{{againstVotes}}</div>
                 </div>
-                <small>Mobile Template</small>
-                <div class="progress mb-3" style="height: 5px">
-                  <div class="progress-bar bg-primary" role="progressbar" style="width: 55%" aria-valuenow="55" aria-valuemin="0" aria-valuemax="100"></div>
+                <small>Number of blank votes</small>
+                <div class="w3-light-grey">
+                  <div class="w3-container w3-blue w3-center" style="width:{{blankVotes*100/totalVotes}}%">{{blankVotes}}</div>
                 </div>
-                <small>Backend API</small>
-                <div class="progress mb-3" style="height: 5px">
-                  <div class="progress-bar bg-primary" role="progressbar" style="width: 66%" aria-valuenow="66" aria-valuemin="0" aria-valuemax="100"></div>
+                <small>Number of absent votes</small>
+                <div class="w3-light-grey">
+                  <div class="w3-container w3-blue w3-center" style="width:{{absentVotes*100/totalVotes}}%">{{absentVotes}}</div>
                 </div>
               </div>
             </div>
@@ -475,27 +476,18 @@
           <div class="col-sm-6 mb-3">
             <div class="card h-100">
               <div class="card-body">
-                <h6 class="d-flex align-items-center mb-3"><i class="material-icons text-info mr-2">assignment</i>Project Status</h6>
-                <small>Web Design</small>
-                <div class="progress mb-3" style="height: 5px">
-                  <div class="progress-bar bg-primary" role="progressbar" style="width: 80%" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-                <small>Website Markup</small>
-                <div class="progress mb-3" style="height: 5px">
-                  <div class="progress-bar bg-primary" role="progressbar" style="width: 72%" aria-valuenow="72" aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-                <small>One Page</small>
-                <div class="progress mb-3" style="height: 5px">
-                  <div class="progress-bar bg-primary" role="progressbar" style="width: 89%" aria-valuenow="89" aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-                <small>Mobile Template</small>
-                <div class="progress mb-3" style="height: 5px">
-                  <div class="progress-bar bg-primary" role="progressbar" style="width: 55%" aria-valuenow="55" aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-                <small>Backend API</small>
-                <div class="progress mb-3" style="height: 5px">
-                  <div class="progress-bar bg-primary" role="progressbar" style="width: 66%" aria-valuenow="66" aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
+                <h6 class="d-flex align-items-center mb-3"><i class="material-icons text-info mr-2">assignment</i><b>Vote presence</b></h6>
+                <circle-progress
+                  [percent]="percentage"
+                  [radius]="100"
+                  [outerStrokeWidth]="12"
+                  [innerStrokeWidth]="7"
+                  [outerStrokeColor]="outerStrokeColor"
+                  [innerStrokeColor]="innerStrokeColor"
+                  [animation]="true"
+                  [animationDuration]="300"
+                  [subtitle]="'presence'"
+                ></circle-progress>
               </div>
             </div>
           </div>

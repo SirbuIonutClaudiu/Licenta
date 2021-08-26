@@ -6,15 +6,13 @@ import com.bezkoder.spring.security.postgresql.payload.request.NewPasswordReques
 import com.bezkoder.spring.security.postgresql.payload.request.PasswordRequest;
 import com.bezkoder.spring.security.postgresql.payload.request.UsersOrganizationRequest;
 import com.bezkoder.spring.security.postgresql.payload.request.WebsiteRequest;
-import com.bezkoder.spring.security.postgresql.payload.response.GetMembersResponse;
-import com.bezkoder.spring.security.postgresql.payload.response.MemberNamesSearchResponse;
-import com.bezkoder.spring.security.postgresql.payload.response.MessageResponse;
-import com.bezkoder.spring.security.postgresql.payload.response.UserResponse;
+import com.bezkoder.spring.security.postgresql.payload.response.*;
 import com.bezkoder.spring.security.postgresql.repository.ImageRepository;
 import com.bezkoder.spring.security.postgresql.repository.PasswordResetTokenRepository;
 import com.bezkoder.spring.security.postgresql.repository.RoleRepository;
 import com.bezkoder.spring.security.postgresql.repository.membruSenatRepository;
 import com.bezkoder.spring.security.postgresql.security.jwt.JwtUtils;
+import com.bezkoder.spring.security.postgresql.security.services.MemberChoiceService;
 import com.bezkoder.spring.security.postgresql.security.services.MembruSenatService;
 import com.twilio.rest.verify.v2.Service;
 import com.twilio.rest.verify.v2.service.Verification;
@@ -44,27 +42,29 @@ import java.util.zip.Inflater;
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
-
     @Autowired
-    ImageRepository imageRepository;
+    private final ImageRepository imageRepository;
 
     @Autowired
     private final MembruSenatService membruSenatService;
 
     @Autowired
-    membruSenatRepository membruSenatRepo;
+    private final membruSenatRepository membruSenatRepo;
 
     @Autowired
-    PasswordResetTokenRepository PRTrepository;
+    private final PasswordResetTokenRepository PRTrepository;
 
     @Autowired
-    PasswordEncoder encoder;
+    private final PasswordEncoder encoder;
 
     @Autowired
-    RoleRepository roleRepository;
+    private final RoleRepository roleRepository;
 
     @Autowired
-    JwtUtils jwtUtils;
+    private final JwtUtils jwtUtils;
+
+    @Autowired
+    private final MemberChoiceService memberChoiceService;
 
     @GetMapping("/get_member_names")
     public ResponseEntity<List<MemberNamesSearchResponse>> getMemberNames(@RequestHeader("Authorization") String auth) {
@@ -93,6 +93,16 @@ public class UserController {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(membruSenatService.SortUsersByRequest(usersOrganizationRequest), HttpStatus.OK);
+    }
+
+    @GetMapping("/vote_statistics/{id}")
+    public ResponseEntity<VoteCountResponse> getForVotes(@PathVariable("id") Long memberId) {
+        return new ResponseEntity<>(new VoteCountResponse(
+                memberChoiceService.getTotalNumberOfForVotes(memberId),
+                memberChoiceService.getTotalNumberOfAgainstVotes(memberId),
+                memberChoiceService.getTotalNumberOfBlankVotes(memberId),
+                memberChoiceService.getTotalNumberOfAbsentVotes(memberId)
+        ), HttpStatus.OK);
     }
 
     @PostMapping("/sendPhoneVerification/{id}/{number}")

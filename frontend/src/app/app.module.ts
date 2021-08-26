@@ -39,6 +39,7 @@ import { ButtonModule } from '@syncfusion/ej2-angular-buttons';
 import { CdTimerModule } from 'angular-cd-timer';
 import { ModalModule } from 'ngx-bootstrap/modal';
 import { NgxCaptchaModule } from '@binssoft/ngx-captcha';
+import { NgCircleProgressModule } from 'ng-circle-progress';
 import { PieSeriesService, AccumulationLegendService, AccumulationTooltipService, AccumulationAnnotationService,
   AccumulationDataLabelService } from '@syncfusion/ej2-angular-charts';
 import {
@@ -47,6 +48,7 @@ import {
   NgxMatTimepickerModule
 } from '@angular-material-components/datetime-picker';
 
+// @ts-ignore
 @NgModule({
   declarations: [
     AppComponent,
@@ -91,7 +93,8 @@ import {
     SpinnerCircularSplitModule,
     NgxCaptchaModule,
     ModalModule.forRoot(),
-    NgMultiSelectDropDownModule.forRoot()
+    NgMultiSelectDropDownModule.forRoot(),
+    NgCircleProgressModule.forRoot()
   ],
   providers: [
     authInterceptorProviders,

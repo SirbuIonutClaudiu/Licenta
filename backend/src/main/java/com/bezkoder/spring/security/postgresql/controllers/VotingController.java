@@ -8,6 +8,7 @@ import com.bezkoder.spring.security.postgresql.payload.request.VotesResultsReque
 import com.bezkoder.spring.security.postgresql.payload.response.*;
 import com.bezkoder.spring.security.postgresql.repository.*;
 import com.bezkoder.spring.security.postgresql.security.jwt.JwtUtils;
+import com.bezkoder.spring.security.postgresql.security.services.MemberChoiceService;
 import com.bezkoder.spring.security.postgresql.security.services.MembruSenatService;
 import com.bezkoder.spring.security.postgresql.security.services.VoteResultService;
 import com.bezkoder.spring.security.postgresql.security.services.VoteService;
@@ -37,7 +38,6 @@ import java.util.*;
 @RestController
 @RequestMapping("/api/voting")
 public class VotingController {
-
     @Autowired
     private final VoteRepository voteRepository;
 

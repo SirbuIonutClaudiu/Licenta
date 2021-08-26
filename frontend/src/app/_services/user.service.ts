@@ -5,6 +5,7 @@ import {membruSenat} from './membruSenat';
 import {TokenStorageService} from './token-storage.service';
 import {GetMembersResponse} from './GetMembersResponse';
 import {UserNames} from './UserNames';
+import {VoteCountResponse} from './VoteCountResponse';
 
 const API_URL = 'http://unitbvotingbackend-env.eba-fzmvt98p.us-east-2.elasticbeanstalk.com/api/users/';
 
@@ -139,5 +140,9 @@ export class UserService {
 
   getMemberNames(): Observable<UserNames[]> {
     return this.http.get<UserNames[]>(API_URL + 'get_member_names', this.httpOptions);
+  }
+
+  getVoteStatistics(memberId: number): Observable<VoteCountResponse> {
+    return this.http.get<VoteCountResponse>(API_URL + 'vote_statistics/' + memberId, this.httpOptions);
   }
 }

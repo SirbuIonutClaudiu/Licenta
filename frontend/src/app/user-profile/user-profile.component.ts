@@ -8,6 +8,7 @@ import {PhoneNumberFormat, PhoneNumberUtil, ShortNumberInfo} from 'google-libpho
 import {ActivatedRoute} from '@angular/router';
 import {HttpClient} from '@angular/common/http';
 import {DataSharingService} from '../_services/DataSharingService';
+import {VoteCountResponse} from '../_services/VoteCountResponse';
 
 @Component({
   selector: 'app-user-profile',
@@ -94,6 +95,14 @@ export class UserProfileComponent implements OnInit {
     ['Utilizator', 'ROLE_USER'],
     ['Moderator', 'ROLE_MODERATOR'],
     ['Administrator', 'ROLE_ADMIN']]);
+  outerStrokeColor = '';
+  innerStrokeColor = '';
+  forVotes = 0;
+  againstVotes = 0;
+  blankVotes = 0;
+  absentVotes = 0;
+  totalVotes = 0;
+  percentage = 0;
   defaultOption = 'Attribute a user role';
   selectedRole = 'Attribute a user role';
   isRoleEditable = false;
@@ -332,12 +341,42 @@ export class UserProfileComponent implements OnInit {
     this.isPhoneNumberEditable = false;
   }
 
+  initVotePercentageStatistic(): void {
+    this.totalVotes = this.forVotes + this.againstVotes + this.blankVotes + this.absentVotes;
+    this.percentage = Math.round(((this.totalVotes - this.absentVotes) * 100) / this.totalVotes);
+    if (this.percentage <= 25) {
+      this.innerStrokeColor = '#FF4500';
+      this.outerStrokeColor = '#FF0000';
+    }
+    else if (this.percentage <= 50) {
+      this.innerStrokeColor = '#FFA07A';
+      this.outerStrokeColor = '#FF8C00';
+    }
+    else {
+      this.innerStrokeColor = '#C7E596';
+      this.outerStrokeColor = '#78C000';
+    }
+    this.loading = false;
+  }
+
+  getVoteStatistics(): void {
+    this.userService.getVoteStatistics(this.member.id).subscribe(
+      (statistics: VoteCountResponse) => {
+        this.forVotes = statistics.for_count;
+        this.againstVotes = statistics.against_count;
+        this.blankVotes = statistics.blank_count;
+        this.absentVotes = statistics.absent_count;
+        this.initVotePercentageStatistic();
+      });
+  }
+
+
   getImage(name: string): void{
     this.userService.getImage(name).subscribe(
       res => {
         const base64Data = res.picByte;
         this.retrievedImage = 'data:image/jpeg;base64,' + base64Data;
-        this.loading = false;
+        this.getVoteStatistics();
       });
   }
 
