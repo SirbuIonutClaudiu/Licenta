@@ -1,5 +1,6 @@
 body{
   background:#FCFCFC;
+  padding-top: 10%;
 }
 .pr-12 {
   padding-right: 12px !important;
@@ -72,8 +73,8 @@ body{
 .avatar {
   position: relative;
   display: inline-block;
-  width: 50px;
-  height: 50px;
+  width: 60px;
+  height: 70px;
   line-height: 36px;
   text-align: center;
   border-radius: 100%;
@@ -188,14 +189,6 @@ small, time, .small {
   font-size: 10px !important;
 }
 
-.activateBtn {
-  color: white;
-}
-
-.selectorSpace {
-  margin-bottom: 3%;
-}
-
 .not {
   color: #C12F10;
 }
@@ -204,6 +197,67 @@ small, time, .small {
   color: #38B67B;
 }
 
+.verified {
+  color: #8A2BE2;
+}
+
+.unactivatedTXT {
+  font-size: small;
+  font-style: italic;
+  font-family: Comic Sans MS, Comic Sans, cursive;
+  color: #A9A9A9;
+}
+
+.adminTXT {
+  font-size: small;
+  font-style: italic;
+  font-family: Comic Sans MS, Comic Sans, cursive;
+  color: #9932CC;
+}
+
+.modTXT {
+  font-size: small;
+  font-style: italic;
+  font-family: Comic Sans MS, Comic Sans, cursive;
+  color: #DAA520;
+}
+
+.userTXT {
+  font-size: small;
+  font-style: italic;
+  font-family: Comic Sans MS, Comic Sans, cursive;
+  color: #8FBC8F;
+}
+
+.unactivatedBG {
+  background-color: #F8F8FF;
+}
+
 .pointer {
   cursor: pointer;
+}
+
+.loadingDiv {
+  margin: 5% 0 2% 50%;
+}
+
+.searchContainer {
+  padding-top: 1%;
+  padding-bottom: 2%;
+  margin-top: 2%;
+  margin-bottom: 3%;
+  background-color: #F0F8FF;
+  border-radius: 25px;
+}
+
+.disabledTXT {
+  font-size: small;
+  font-style: italic;
+  font-family: Comic Sans MS, Comic Sans, cursive;
+  color: #DC143C;
+}
+
+.errorMsg {
+  margin-top: 10%;
+  width: 50%;
 }

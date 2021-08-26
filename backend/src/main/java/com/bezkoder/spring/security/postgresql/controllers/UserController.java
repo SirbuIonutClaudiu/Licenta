@@ -66,33 +66,32 @@ public class UserController {
     @Autowired
     JwtUtils jwtUtils;
 
-    @GetMapping("/return_all")
-    public List<UserResponse> returnAll() {
-        List<UserResponse> result = new ArrayList<>();
-        membruSenatService.returnAll().forEach((member) -> result.add(membruSenatService.memberToUserResponse(member)));
-        return result;
-    }
-
-    @GetMapping("/still_pending")
-    public List<UserResponse> stillPending() {
-        List<UserResponse> result = new ArrayList<>();
-        membruSenatService.returnAll().forEach((member) -> {
-            if(!member.isVerifiedApplication()) {
-                result.add(membruSenatService.memberToUserResponse(member));
-            }
-        });
-        return result;
-    }
-
     @GetMapping("/get_member_names")
-    public ResponseEntity<List<MemberNamesSearchResponse>> getMemberNames() {
+    public ResponseEntity<List<MemberNamesSearchResponse>> getMemberNames(@RequestHeader("Authorization") String auth) {
+        membruSenat adminMember = getMemberFromAuthentication(auth);
+        Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
+                .orElseThrow(() -> new RuntimeException("Role Admin does not exist !"));
+        Role modRole = roleRepository.findByName(ERole.ROLE_MODERATOR)
+                .orElseThrow(() -> new RuntimeException("Role Moderator does not exist !"));
+        if(!adminMember.getRoles().contains(adminRole) && !adminMember.getRoles().contains(modRole)) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
         List<MemberNamesSearchResponse> membersList = new ArrayList<>();
         membruSenatService.returnAll().forEach(member -> membersList.add(new MemberNamesSearchResponse(member.getId(), member.getName())));
         return new ResponseEntity<>(membersList, HttpStatus.OK);
     }
 
     @PostMapping("/get_members")
-    public ResponseEntity<GetMembersResponse> getMembers(@Valid @RequestBody UsersOrganizationRequest usersOrganizationRequest) {
+    public ResponseEntity<GetMembersResponse> getMembers(@RequestHeader("Authorization") String auth,
+                                                         @Valid @RequestBody UsersOrganizationRequest usersOrganizationRequest) {
+        membruSenat adminMember = getMemberFromAuthentication(auth);
+        Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
+                .orElseThrow(() -> new RuntimeException("Role Admin does not exist !"));
+        Role modRole = roleRepository.findByName(ERole.ROLE_MODERATOR)
+                .orElseThrow(() -> new RuntimeException("Role Moderator does not exist !"));
+        if(!adminMember.getRoles().contains(adminRole) && !adminMember.getRoles().contains(modRole)) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
         return new ResponseEntity<>(membruSenatService.SortUsersByRequest(usersOrganizationRequest), HttpStatus.OK);
     }
 

@@ -2,6 +2,7 @@ package com.bezkoder.spring.security.postgresql.payload.request;
 
 import com.bezkoder.spring.security.postgresql.models.ERole;
 import com.bezkoder.spring.security.postgresql.models.Role;
+import com.bezkoder.spring.security.postgresql.payload.response.GetVotesResponse;
 import com.bezkoder.spring.security.postgresql.payload.response.VoteResponse;
 import com.bezkoder.spring.security.postgresql.repository.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,10 +37,11 @@ public class VotesOrganizationRequest {
         Eroles = eroles;
     }
 
-    public List<VoteResponse> SortVotesByRequest(List<VoteResponse> allVotes) {
+    public GetVotesResponse SortVotesByRequest(List<VoteResponse> allVotes) {
         List<VoteResponse> result;
-        result = VotesPerPage(SortVotesBy(ShowGeoRestriction(ShowStatus(allVotes))));
-        return (this.roleRestriction ? ShowRoles(result) : result);
+        result = SortVotesBy(ShowGeoRestriction(ShowStatus(allVotes)));
+        result = this.roleRestriction ? ShowRoles(result) : result;
+        return new GetVotesResponse(VotesPerPage(result), result.size());
     }
 
     public List<VoteResponse> VotesPerPage(List<VoteResponse> allVotes) {

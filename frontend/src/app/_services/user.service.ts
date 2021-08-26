@@ -33,14 +33,6 @@ export class UserService {
     return this.http.get<membruSenat>(API_URL + 'find/' + id, this.httpOptions);
   }
 
-  getAllMembers(): Observable<membruSenat[]> {
-    return this.http.get<membruSenat[]>(API_URL + 'return_all', this.httpOptions);
-  }
-
-  getStillPending(): Observable<membruSenat[]> {
-    return this.http.get<membruSenat[]>(API_URL + 'still_pending', this.httpOptions);
-  }
-
   verifyApplication(id: number): Observable<any> {
     return this.http.post(API_URL + 'accept_application/' + id, this.httpOptions);
   }
@@ -59,10 +51,6 @@ export class UserService {
 
   getImage(name: string): Observable<any> {
     return this.http.get(API_URL + 'get/' + name, this.httpOptions);
-  }
-
-  getAllImages(): Observable<any[]> {
-    return this.http.get<any[]>(API_URL + 'get_images/', this.httpOptions);
   }
 
   check2FA(email: string): Observable<boolean> {

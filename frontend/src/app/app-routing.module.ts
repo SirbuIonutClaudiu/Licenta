@@ -3,7 +3,6 @@ import { Routes, RouterModule } from '@angular/router';
 
 import { RegisterComponent } from './register/register.component';
 import { LoginComponent } from './login/login.component';
-import { HomeComponent } from './home/home.component';
 import { EmailSuccessfullComponent} from './email-successfull/email-successfull.component';
 import { UserProfileComponent} from './user-profile/user-profile.component';
 import {SmsVerificationComponent} from './sms-verification/sms-verification.component';
@@ -15,7 +14,6 @@ import {VoteComponent} from './vote/vote.component';
 import {AllVotesComponent} from './all-votes/all-votes.component';
 
 const routes: Routes = [
-  { path: 'home', component: HomeComponent },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
   { path: 'user_profile/:id', component: UserProfileComponent, },

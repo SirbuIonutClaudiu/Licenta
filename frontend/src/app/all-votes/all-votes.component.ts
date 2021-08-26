@@ -8,6 +8,7 @@ import {FieldSettingsModel} from '@syncfusion/ej2-angular-dropdowns';
 import {Router} from '@angular/router';
 import {IDropdownSettings} from 'ng-multiselect-dropdown';
 import {TokenStorageService} from '../_services/token-storage.service';
+import {GetVotesResponse} from '../_services/GetVotesResponse';
 
 @Component({
   selector: 'app-all-votes',
@@ -66,6 +67,7 @@ export class AllVotesComponent implements OnInit {
     color: 'white',
     size: '25px'
   };
+  votesLength = 0;
   availableColors = ['#DCDCDC', '#ADD8E6', '#F0E68C'];
   searchPlaceholder = 'Find a vote by subject';
   voteSubjects = [{id: '', subject: ''}];
@@ -237,8 +239,9 @@ export class AllVotesComponent implements OnInit {
     this.voteService.getAllVotes(this.page, this.perPage, this.sortParameter,
       this.sortDirection, this.enableGeorestriction, this.geoRestrictedOption,
       this.status, this.roleRestrictions, this.Eroles).subscribe(
-      (answer: Vote[]) => {
-        this.votes = answer;
+      (answer: GetVotesResponse) => {
+        this.votes = answer.votes;
+        this.votesLength = answer.length;
         this.getAllVotesResults();
       });
   }

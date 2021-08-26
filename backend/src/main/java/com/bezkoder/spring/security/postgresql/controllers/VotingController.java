@@ -5,10 +5,7 @@ import com.bezkoder.spring.security.postgresql.payload.request.NewVoteRequest;
 import com.bezkoder.spring.security.postgresql.payload.request.VoteRequest;
 import com.bezkoder.spring.security.postgresql.payload.request.VotesOrganizationRequest;
 import com.bezkoder.spring.security.postgresql.payload.request.VotesResultsRequest;
-import com.bezkoder.spring.security.postgresql.payload.response.MessageResponse;
-import com.bezkoder.spring.security.postgresql.payload.response.VoteCountResponse;
-import com.bezkoder.spring.security.postgresql.payload.response.VoteResponse;
-import com.bezkoder.spring.security.postgresql.payload.response.VoteSubjectSearchResponse;
+import com.bezkoder.spring.security.postgresql.payload.response.*;
 import com.bezkoder.spring.security.postgresql.repository.*;
 import com.bezkoder.spring.security.postgresql.security.jwt.JwtUtils;
 import com.bezkoder.spring.security.postgresql.security.services.MembruSenatService;
@@ -82,8 +79,8 @@ public class VotingController {
     }
 
     @PostMapping("/all_votes")
-    public ResponseEntity<List<VoteResponse>> getAllVotes(@RequestHeader("Authorization") String auth,
-                                          @Valid @RequestBody VotesOrganizationRequest votesOrganizationRequest) {
+    public ResponseEntity<GetVotesResponse> getAllVotes(@RequestHeader("Authorization") String auth,
+                                                        @Valid @RequestBody VotesOrganizationRequest votesOrganizationRequest) {
         Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
                 .orElseThrow(() -> new RuntimeException("Admin role not inserted !"));
         List<Role> roles = getRolesFromAuthentication(auth);

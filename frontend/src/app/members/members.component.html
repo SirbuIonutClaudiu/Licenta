@@ -1,41 +1,112 @@
 <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
-<br>
-<br>
-<br>
-<div class="container">
-  <div class="col-md-12">
-    <div class="selectorSpace">
-    <b>Show    </b>
-    <select class="selectpicker" [(ngModel)]="option" (change)="newPerPage()">
-      <option>5</option>
-      <option selected>10</option>
-      <option>15</option>
-      <option>20</option>
-    </select>
-    <b>    Rows</b>
+<ng-template #acceptdenytemplate>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left">Confirmation for application {{AcceptOrDeny ? 'acceptance' : 'denial'}}</h4>
+    <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    Are you sure you want to <b>{{AcceptOrDeny ? 'accept' : 'deny'}} user application</b> for <br> {{memberName | titlecase}} ?
+  </div>
+  <div class="modal-body text-right">
+    <button type="button" class="btn btn-primary mr-2" (click)="confirmAcceptOrDenyModal()">Yes</button>
+    <button type="button" class="btn btn-danger mr-3" (click)="disconfirmModal()">No</button>
+  </div>
+</ng-template>
+<ng-template #deletedisabletemplate>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left">User {{DeleteOrDisable ? 'delete' : (memberDisabled ? 'enable' : 'disable')}} confirmation</h4>
+    <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    Are you sure you want to <b>{{DeleteOrDisable ? 'delete' : (memberDisabled ? 'enable' : 'disable')}} user</b> {{memberName | titlecase}} ?
+  </div>
+  <div class="modal-body text-right">
+    <button type="button" class="btn btn-danger mr-2" (click)="confirmDeleteOrDisableModal()">Yes</button>
+    <button type="button" class="btn btn-primary mr-3" (click)="disconfirmModal()">No</button>
+  </div>
+</ng-template>
+<div *ngIf="HostHasModeratorRole || HostHasAdministratorRole">
+  <div class="container searchContainer">
+    <div class="row d-flex justify-content-center mb-3">
+      <div class="col-8">
+        <ejs-autocomplete id='atcelement' (change)="userSelected($event)" [dataSource]='userNames'
+                          [fields]="field" [placeholder]="searchPlaceholder">
+        </ejs-autocomplete>
+      </div>
+      <div class="col-3">
+        <ejs-dropdownlist id='ddlelement' (change)="sortByChange($event)"
+                          [dataSource]='sortByElements' [value]="sortByElements[0]"
+                          placeholder = 'Sort by...'>
+        </ejs-dropdownlist>
+      </div>
     </div>
-    <div class="card b-1 hover-shadow mb-20" *ngFor="let member of selectedMembers">
+    <div class="row d-flex justify-content-center">
+      <div class="col-5">
+        <ng-multiselect-dropdown
+          [placeholder]="'Members filtering options'"
+          [settings]="dropdownSettings"
+          [data]="dropdownList1"
+          (onSelect)="onSelection($event)"
+          (onDeSelect)="onDeselection($event)"
+          (onSelectAll)="onAllSelect()"
+          (onDeSelectAll)="onAllDeselect()">
+        </ng-multiselect-dropdown>
+      </div>
+      <div class="col-5">
+        <ng-multiselect-dropdown
+          [placeholder]="'Filter by member roles'"
+          [settings]="dropdownSettings"
+          [data]="dropdownList2"
+          (onSelect)="onRoleSelect($event)"
+          (onDeSelect)="onRoleDeselect($event)"
+          (onSelectAll)="onRoleSelectAll()"
+          (onDeSelectAll)="onRoleDeselectAll()">
+        </ng-multiselect-dropdown>
+      </div>
+    </div>
+  </div>
+
+  <div class="loadingDiv" *ngIf="loading">
+    <sa-spinner-circular-split [color]="spinnerColor"></sa-spinner-circular-split>
+  </div>
+
+  <div *ngIf="!loading">
+    <div class="card b-1 hover-shadow mb-20" *ngFor="let member of membriSenat" [class.unactivatedBG]="!member.verifiedApplication">
       <div class="media card-body">
         <div class="media-left pr-12">
           <img class="avatar avatar-xl no-radius pointer"
-               [src]="retreivedImages.get(member.email)"
-               (click)="navToProfile(member.id)"
-               alt="..." *ngIf="!loading">
-          <sa-spinner-circular [color]="spinnerColor" *ngIf="loading"></sa-spinner-circular>
+               [src]="usersImages.get(member.email)"
+               (click)="navToProfile(member.id)" alt="...">
         </div>
         <div class="media-body">
           <div class="mb-2">
             <span class="fs-20 pr-16 pointer" (click)="navToProfile(member.id)">{{member.name}}</span>
+            <span class="unactivatedTXT" *ngIf="!member.verifiedApplication">( Unactivated )</span>
+            <span class="adminTXT" *ngIf="userHasAdministratorRole(member)">( Administrator )</span>
+            <span class="modTXT" *ngIf="userHasModeratorRole(member)">( Moderator )</span>
+            <span class="userTXT" *ngIf="!member.disabled && member.verifiedApplication && !(userHasAdministratorRole(member) || userHasModeratorRole(member))">
+            ( User )
+          </span>
+            <span class="disabledTXT" *ngIf="member.disabled">( Disabled )</span>
           </div>
           <i class="fa fa-thumbs-up yes pointer"
              aria-hidden="true"
              title="Email verified"
-             *ngIf="member.verifiedEmail">
+             *ngIf="!member.verifiedApplication && member.verifiedEmail">
           </i>
           <i class="fa fa-thumbs-down not pointer"
              aria-hidden="true"
              title="Email not verified"
-             *ngIf="!member.verifiedEmail">
+             *ngIf="!member.verifiedApplication && !member.verifiedEmail">
+          </i>
+          <i class="fa fa-envelope verified pointer"
+             aria-hidden="true"
+             title="Email address"
+             *ngIf="member.verifiedApplication">
           </i>
           <small class="fs-16 fw-300 ls-1">   {{member.email}}</small>
         </div>
@@ -44,36 +115,59 @@
           <span class="text-fade"><i class="fa fa-cog pr-1"></i>{{member.institutionalCode}}</span>
         </div>
       </div>
-      <footer class="card-footer flexbox align-items-center">
+      <footer class="card-footer flexbox align-items-center" [class.unactivatedBG]="!member.verifiedApplication">
         <div>
           <strong>Applied on: </strong>
           <span>{{member.applicationDate}}</span>
         </div>
-        <div class="card-hover-show">
-          <a class="btn btn-xs btn-bold btn-success activateBtn" (click)="acceptApplication(member.id)">
+        <div class="card-hover-show" *ngIf="!member.verifiedApplication">
+          <a class="btn btn-xs btn-bold btn-success text-light mr-3"
+             (click)="openModalWithClass(acceptdenytemplate, 'AcceptOrDeny', true, member.name, member.id, member.disabled)">
             <i class="fa fa-check fa-lg"></i> Accept</a>
-          <a class="btn btn-xs btn-bold btn-danger activateBtn" (click)="denyApplication(member.id)">
+          <a class="btn btn-xs btn-bold btn-danger text-light"
+             (click)="openModalWithClass(acceptdenytemplate, 'AcceptOrDeny', false, member.name, member.id, member.disabled)">
             <i class="fa fa-times fa-lg"></i> Deny</a>
+        </div>
+        <div class="card-hover-show" *ngIf="member.verifiedApplication && !ownProfile(member) &&
+      ((!userHasModeratorRole(member) && !userHasAdministratorRole(member) && HostHasModeratorRole) || HostHasAdministratorRole)">
+          <a class="btn btn-xs btn-bold btn-warning text-light mr-3" *ngIf="!member.disabled"
+             (click)="openModalWithClass(deletedisabletemplate, 'DeleteOrDisable', false, member.name, member.id, member.disabled)">
+            <i class="fa fa-ban fa-lg"></i> Disable</a>
+          <a class="btn btn-xs btn-bold btn-primary text-light mr-3" *ngIf="member.disabled"
+             (click)="openModalWithClass(deletedisabletemplate, 'DeleteOrDisable', false, member.name, member.id, member.disabled)">
+            <i class="fa fa-history fa-lg"></i> Enable</a>
+          <a class="btn btn-xs btn-bold btn-danger text-light"
+             (click)="openModalWithClass(deletedisabletemplate, 'DeleteOrDisable', true, member.name, member.id, member.disabled)">
+            <i class="fa fa-trash-o fa-lg"></i>&nbsp;Delete</a>
+        </div>
+        <div class="card-hover-show" *ngIf="ownProfile(member) ||
+      ((userHasModeratorRole(member) || userHasAdministratorRole(member)) && HostHasModeratorRole && !HostHasAdministratorRole)">
+          <a class="btn btn-xs btn-bold btn-primary text-light mr-3" (click)="navToProfile(member.id)">
+            <i class="fa fa-reply fa-lg"></i>&nbsp;Go to Profile</a>
         </div>
       </footer>
     </div>
+  </div>
 
-    <nav aria-label="Page navigation example">
-      <ul class="pagination justify-content-end">
-        <li class="page-item" [ngClass]="{'disabled': NumberOf(cookieService.get('page')) == 1}">
-          <a class="page-link" tabindex="-1" href="members" (click)="previousPage()">Previous</a>
-        </li>
-        <li class="page-item"
-            *ngFor="let p of pages"
-            [ngClass]="{'disabled': p == 0, 'active': NumberOf(cookieService.get('page')) == p}">
-          <a class="page-link" href="members" (click)="setPage(p)">{{p ? p : '...'}}</a>
-        </li>
-        <li class="page-item" [ngClass]="{'disabled': NumberOf(cookieService.get('page')) == getLastPage()}">
-          <a class="page-link" href="members" (click)="nextPage()">Next</a>
-        </li>
-      </ul>
-    </nav>
+  <div class="d-flex flex-row-reverse">
+    <div class="d-flex justify-content-end pager">
+      <mat-paginator [length]=totalUsers
+                     showFirstLastButtons="true"
+                     [pageSize]=perPage
+                     [pageSizeOptions]="[5, 10, 15, 20]"
+                     (page)="onPaginateChange($event)"
+                     (activate)="onPageActivate($event)">
+      </mat-paginator>
+    </div>
+  </div>
+</div>
 
-    <br>
+<div class="d-flex justify-content-center" *ngIf="!(HostHasModeratorRole || HostHasAdministratorRole)">
+  <div class="alert alert-danger errorMsg">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">
+      ×</button>
+    <span class="glyphicon glyphicon-hand-right"></span> <strong> Error</strong>
+    <hr class="message-inner-separator">
+    You do <b>not have permission</b> to view all members !
   </div>
 </div>

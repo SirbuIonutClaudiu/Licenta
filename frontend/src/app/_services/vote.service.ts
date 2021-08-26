@@ -4,6 +4,7 @@ import {Observable} from 'rxjs';
 import {Vote} from './Vote';
 import {VoteCountResponse} from './VoteCountResponse';
 import {VoteSearchSubject} from './VoteSearchSubject';
+import {GetVotesResponse} from './GetVotesResponse';
 
 const VOTE_API = 'http://unitbvotingbackend-env.eba-fzmvt98p.us-east-2.elasticbeanstalk.com/api/voting/';
 
@@ -31,8 +32,8 @@ export class VoteService {
   }
 
   getAllVotes(page: number, perPage: number, sortParameter: string, sortDirection: string, enableGeorestriction: boolean,
-              geoRestrictedOption: boolean, status: string, roleRestrictions: boolean, Eroles: string[]): Observable<Vote[]> {
-    return this.http.post<Vote[]>(VOTE_API + 'all_votes', {
+              geoRestrictedOption: boolean, status: string, roleRestrictions: boolean, Eroles: string[]): Observable<GetVotesResponse> {
+    return this.http.post<GetVotesResponse>(VOTE_API + 'all_votes', {
       page,
       perPage,
       sortParameter,
