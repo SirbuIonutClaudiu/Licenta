@@ -6,6 +6,7 @@ import {VoteCountResponse} from '../_services/VoteCountResponse';
 import {CdTimerComponent} from 'angular-cd-timer';
 import {LegendSettingsModel} from '@syncfusion/ej2-angular-charts';
 import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
+import {UserService} from '../_services/user.service';
 
 @Component({
   selector: 'app-vote',
@@ -67,7 +68,8 @@ export class VoteComponent implements OnInit {
   time = '';
 
   // tslint:disable-next-line:variable-name
-  constructor(private voteService: VoteService, private _Activatedroute: ActivatedRoute, private router: Router, private sanitized: DomSanitizer) {  }
+  constructor(private voteService: VoteService, private _Activatedroute: ActivatedRoute, private router: Router,
+              private sanitized: DomSanitizer, private userService: UserService) {  }
 
   ngOnInit(): void {
     this.id = Number(this._Activatedroute.snapshot.paramMap.get('id'));
@@ -81,8 +83,6 @@ export class VoteComponent implements OnInit {
         (response: VoteCountResponse) => {
           this.VoteResult = response;
           this.initiateChart();
-          // @ts-ignore
-          alert(document.getElementById('content').innerText);
         });
     }
   }
@@ -192,7 +192,10 @@ export class VoteComponent implements OnInit {
         this.vote = response;
         this.userVoted(this.vote.id);
         if (!this.vote.idle) {
-          this.getVoteResult(this.vote.id);
+          this.userService.sleep(1).subscribe(
+            ans => {
+              this.getVoteResult(this.vote.id);
+            });
         }
         if (this.vote.active) {
           this.checkGeolocation(this.vote.id);

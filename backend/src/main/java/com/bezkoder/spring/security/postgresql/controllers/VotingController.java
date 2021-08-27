@@ -8,7 +8,6 @@ import com.bezkoder.spring.security.postgresql.payload.request.VotesResultsReque
 import com.bezkoder.spring.security.postgresql.payload.response.*;
 import com.bezkoder.spring.security.postgresql.repository.*;
 import com.bezkoder.spring.security.postgresql.security.jwt.JwtUtils;
-import com.bezkoder.spring.security.postgresql.security.services.MemberChoiceService;
 import com.bezkoder.spring.security.postgresql.security.services.MembruSenatService;
 import com.bezkoder.spring.security.postgresql.security.services.VoteResultService;
 import com.bezkoder.spring.security.postgresql.security.services.VoteService;
@@ -18,7 +17,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -285,7 +283,6 @@ public class VotingController {
         return new ResponseEntity<>(voteResult.userVoted(member), HttpStatus.OK);
     }
 
-    @Async
     @Scheduled(fixedRate = 1000)
     public void scheduleFixedRateTaskAsync() {
         voteService.returnIdles().forEach(vote -> {

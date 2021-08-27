@@ -23,9 +23,9 @@
     <!-- Breadcrumb -->
     <nav aria-label="breadcrumb" class="main-breadcrumb">
       <ol class="breadcrumb" [class.profileEditing]="(!profileEditable && ownProfile) || !ownProfile">
-        <li class="breadcrumb-item active" aria-current="page" style="width: 10%;">User Profile</li>
-        <li aria-current="page" style="width: 63%;" *ngIf="!HostHasAdministratorRole || member.roles.includes('Administrator')"></li>
-        <li class="d-flex justify-content-end" aria-current="page" style="width: 63%;"
+        <li class="breadcrumb-item active" aria-current="page" style="width: 14%;">User Profile</li>
+        <li aria-current="page" style="width: 59%;" *ngIf="!HostHasAdministratorRole || member.roles.includes('Administrator')"></li>
+        <li class="d-flex justify-content-end" aria-current="page" style="width: 59%;"
             *ngIf="HostHasAdministratorRole && !member.roles.includes('Administrator')">
           <table class="ripple">
             <tr>
@@ -218,7 +218,7 @@
               <div [ngClass]="profileEditable ? 'col-sm-2' : 'col-md-3'">
                 <h6 class="col-mb-0"><b>Mobile</b></h6>
               </div>
-              <div class="col-md-5" *ngIf="(!isPhoneNumber || isPhoneNumberEditable) && !isPhoneCodeEditable">
+              <div class="col-md-5" *ngIf="(!isPhoneNumber || isPhoneNumberEditable) && !isPhoneCodeEditable && ownProfile">
                 <international-phone-number placeholder="Enter phone number"
                                             [maxlength]="15"
                                             [defaultCountry]="'ro'"
@@ -227,6 +227,9 @@
                                             [(ngModel)]="phoneNumber"
                                             (keydown.enter)="addNumber()">
                 </international-phone-number>
+              </div>
+              <div class="col-md-7" *ngIf="(!isPhoneNumber || isPhoneNumberEditable) && !isPhoneCodeEditable && !ownProfile">
+                No phone number available
               </div>
               <div class="col d-flex flex-row md-6" *ngIf="isPhoneCodeEditable">
                 <input type="text"
@@ -286,7 +289,7 @@
                 <a class="btn btn-xs btn-bold btn-warning activateBtn rounded-pill" (click)="EditPhoneNumber()">
                   <i class="fa fa-pencil fa-lg"></i>&nbsp;&nbsp;Edit</a>
               </div>
-              <div class="col-md-5 card-hover-show" *ngIf="(!isPhoneNumber || isPhoneNumberEditable) && !isPhoneCodeEditable">
+              <div class="col-md-5 card-hover-show" *ngIf="(!isPhoneNumber || isPhoneNumberEditable) && !isPhoneCodeEditable && ownProfile">
                 <a class="btn btn-xs btn-bold btn-primary activateBtn rounded-pill" (click)="addNumber()" style="margin-right: 5%;">
                   <i class="fa fa-mobile fa-lg"></i>&nbsp;&nbsp;Add number</a>
                 <a class="btn btn-xs btn-bold btn-danger activateBtn rounded-pill" (click)="discardPhoneChange()" *ngIf="isPhoneNumber">

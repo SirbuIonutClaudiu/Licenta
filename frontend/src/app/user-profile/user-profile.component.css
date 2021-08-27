@@ -235,8 +235,7 @@ input:focus {
 
 .imageOverlay {
   position: relative;
-  transform: translate(-145%,-115%);
-  opacity: 60%;
+  transform: translate(-155%,-115%);
 }
 
 .profileEditing {
@@ -250,10 +249,6 @@ input:focus {
 .imageConfirmation {
   padding: 0;
   width: 110px !important;
-}
-
-.imageOverlay:hover {
-  opacity: 100%;
 }
 
 .marginTop {

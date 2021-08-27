@@ -343,7 +343,7 @@ export class UserProfileComponent implements OnInit {
 
   initVotePercentageStatistic(): void {
     this.totalVotes = this.forVotes + this.againstVotes + this.blankVotes + this.absentVotes;
-    this.percentage = Math.round(((this.totalVotes - this.absentVotes) * 100) / this.totalVotes);
+    this.percentage = !this.totalVotes ? 100 : Math.round(((this.totalVotes - this.absentVotes) * 100) / this.totalVotes);
     if (this.percentage <= 25) {
       this.innerStrokeColor = '#FF4500';
       this.outerStrokeColor = '#FF0000';
