@@ -7,7 +7,7 @@ import {GetMembersResponse} from './GetMembersResponse';
 import {UserNames} from './UserNames';
 import {VoteCountResponse} from './VoteCountResponse';
 
-const API_URL = 'http://unitbvotingbackend-env.eba-fzmvt98p.us-east-2.elasticbeanstalk.com/api/users/';
+const API_URL = 'http://unitbvotingbackend-env.eba-z7tre6mm.us-east-2.elasticbeanstalk.com/api/users/';
 
 @Injectable({
   providedIn: 'root'

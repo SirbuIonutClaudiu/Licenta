@@ -21,14 +21,14 @@ public class DatabaseConfig {
         assert secrets != null;
         return DataSourceBuilder
                 .create()
-                .url("jdbc:" + secrets.getEngine() + "ql://" + secrets.getHost() + ":" + secrets.getPort() + "/UnitbVotingDB")
+                .url("jdbc:" + secrets.getEngine() + "ql://" + secrets.getHost() + ":" + secrets.getPort() + "/postgres")
                 .username(secrets.getUsername())
                 .password(secrets.getPassword())
                 .build();
     }
 
     private AwsSecrets getSecret() {
-        String secretName = "UnitbVotindAppDBcredentials";
+        String secretName = "UnitbVotingDatabaseCredentials";
         String region = "us-east-2";
         String accessKey = "-";
         String secretkey = "-";

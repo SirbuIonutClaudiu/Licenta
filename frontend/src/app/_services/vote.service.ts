@@ -6,7 +6,7 @@ import {VoteCountResponse} from './VoteCountResponse';
 import {VoteSearchSubject} from './VoteSearchSubject';
 import {GetVotesResponse} from './GetVotesResponse';
 
-const VOTE_API = 'http://unitbvotingbackend-env.eba-fzmvt98p.us-east-2.elasticbeanstalk.com/api/voting/';
+const VOTE_API = 'http://unitbvotingbackend-env.eba-z7tre6mm.us-east-2.elasticbeanstalk.com/api/voting/';
 
 const httpOptions = {
   headers: new HttpHeaders({ 'Content-Type': 'application/json' })

@@ -25,7 +25,7 @@ public class SpringBootSecurityPostgresqlApplication {
 		CorsConfiguration corsConfiguration = new CorsConfiguration();
 		corsConfiguration.setAllowCredentials(true);
 		corsConfiguration.setAllowedOrigins(Arrays.asList(
-				"http://elasticbeanstalk-us-east-2-602307895584.s3-website.us-east-2.amazonaws.com", "http://localhost:4200"));
+				"http://unitbvotingfrontend.s3-website.us-east-2.amazonaws.com", "http://localhost:4200"));
 		corsConfiguration.setAllowedHeaders(Arrays.asList("Origin", "Access-Control-Allow-Origin", "Content-Type",
 				"Accept", "Authorization", "Origin, Accept", "X-Requested-With",
 				"Access-Control-Request-Method", "Access-Control-Request-Headers"));
