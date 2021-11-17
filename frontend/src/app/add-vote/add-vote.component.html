@@ -1,140 +1,156 @@
+<!--
+    This file is part of UnitbVoting application.
+
+    UnitbVoting is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    UnitbVoting is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with UnitbVoting. If not, see <https://www.gnu.org/licenses/>.
+-->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css"
-      integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous"/>
+     integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous"/>
 <ng-template #template>
-  <div class="modal-header">
-    <h4 class="modal-title pull-left">Create vote confirmation</h4>
-    <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
-      <span aria-hidden="true">&times;</span>
-    </button>
-  </div>
-  <div class="modal-body">
-    Are you sure you want to <b>create vote</b> with subject<br><b>{{subject}}</b> ?
-  </div>
-  <div class="modal-body text-right">
-    <button type="button" class="btn btn-success mr-2" (click)="submitForm()">Yes</button>
-    <button type="button" class="btn btn-danger mr-3" (click)="disconfirmModal()">No</button>
-  </div>
+ <div class="modal-header">
+   <h4 class="modal-title pull-left">Create vote confirmation</h4>
+   <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+     <span aria-hidden="true">&times;</span>
+   </button>
+ </div>
+ <div class="modal-body">
+   Are you sure you want to <b>create vote</b> with subject<br><b>{{subject}}</b> ?
+ </div>
+ <div class="modal-body text-right">
+   <button type="button" class="btn btn-success mr-2" (click)="submitForm()">Yes</button>
+   <button type="button" class="btn btn-danger mr-3" (click)="disconfirmModal()">No</button>
+ </div>
 </ng-template>
 <div *ngIf="HostHasModeratorRole || HostHasAdministratorRole">
-  <section class="section gray-bg" id="contactus">
-    <div class="container">
-      <div class="row">
-        <div class="col-lg-6">
-        </div>
-      </div>
-      <div class="row flex-row">
-        <div class="col-md-1"> </div>
-        <div class="col-md-10">
-          <div class="contact-form">
-            <div class="row">
-              <div class="col-md-3 d-flex align-items-center justify-content-start">
-                <mat-form-field>
-                  <input matInput [ngxMatDatetimePicker]="picker" style="color: #556B2F;"
-                         placeholder="Choose a date and time" [disabled]="true" [(ngModel)]="date" (ngModelChange)="change()">
-                  <mat-datepicker-toggle matSuffix [for]="$any(picker)"></mat-datepicker-toggle>
-                  <ngx-mat-datetime-picker #picker [showSpinners]=true [showSeconds]=true [disabled]="false">
-                  </ngx-mat-datetime-picker>
-                </mat-form-field>
-              </div>
-              <p id="date_formated" hidden>{{date | date :'medium'}}</p>
-              <div class="col-md-5 d-flex align-items-center justify-content-center">
-                <div class="w-75">
-                  <ng-multiselect-dropdown
-                    [placeholder]="'Vote visibility'"
-                    [settings]="dropdownSettings1"
-                    [data]="dropdownList1"
-                    (onSelect)="onRoleSelect($event)"
-                    (onDeSelect)="onRoleDeselect($event)"
-                    (onSelectAll)="onRoleSelectAll($event)"
-                    (onDeSelectAll)="onRoleDeselectAll()">
-                  </ng-multiselect-dropdown>
-                </div>
-              </div>
-              <div class="col-md-4 d-flex align-items-center justify-content-end">
-                <div class="w-75">
-                  <ng-multiselect-dropdown
-                    [placeholder]="'Duration'"
-                    [settings]="dropdownSettings2"
-                    [data]="dropdownList2"
-                    (onSelect)="onDurationSelect($event)"
-                    (onDeSelect)="onDurationDeselect()"
-                  >
-                  </ng-multiselect-dropdown>
-                </div>
-              </div>
-              <div class="col-12">
-                <div class="form-group">
-                  <input id="subject" type="text"
-                         placeholder="Subject" class="form-control subjectInput"
-                         [(ngModel)]="subject" maxlength="{{maxLength}}">
-                  <p class="error" *ngIf="subjectError">Subject has a maximum size of {{maxLength}} characters</p>
-                </div>
-              </div>
-              <div class="col-md-12">
-                <div class="form-group">
-                  <ejs-richtexteditor id='iframeRTE' [toolbarSettings]='tools' [iframeSettings]='iframe' [height]='height' [(ngModel)]="content">
-                  </ejs-richtexteditor>
-                </div>
-              </div>
-              <div class="col-md-4 d-flex align-items-center justify-content-start">
-                <div id='container1'>
-                  <table class="ripple">
-                    <tr>
-                      <td class="lRipple">
-                        <label for='switch1'>GeoRestricted voting&nbsp;&nbsp;</label>
-                      </td>
-                      <td>
-                        <ejs-switch id="switch1" [(ngModel)]="geoRestriction"></ejs-switch>
-                      </td>
-                    </tr>
-                  </table>
-                </div>
-              </div>
-              <div class="col-md-3 d-flex align-items-center justify-content-end">
-                <div id='container2'>
-                  <table class="ripple">
-                    <tr>
-                      <td class="lRipple">
-                        <label for='switch1'>Email reminder&nbsp;&nbsp;</label>
-                      </td>
-                      <td>
-                        <ejs-switch id="switch2" [(ngModel)]="emailReminder"></ejs-switch>
-                      </td>
-                    </tr>
-                  </table>
-                </div>
-              </div>
-              <div class="col-md-5 d-flex align-items-start justify-content-end">
-                <div class="send">
-                  <a id="send_message" class="px-btn theme" (click)="openModalWithClass(template)"><span>Create vote</span> <i class="arrow"></i></a>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-  <div class="row">
-    <div class="col-3"></div>
-    <div class="col-7" *ngIf="formSubmitError">
-      <div class="alert alert-danger">
-        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">
-          ×</button>
-        <span class="glyphicon glyphicon-hand-right"></span> <strong> Warning</strong>
-        <hr class="message-inner-separator">
-        {{errorMessage}}
-      </div>
-    </div>
-    <div class="col-3"></div>
-  </div>
+ <section class="section gray-bg" id="contactus">
+   <div class="container">
+     <div class="row">
+       <div class="col-lg-6">
+       </div>
+     </div>
+     <div class="row flex-row">
+       <div class="col-md-1"> </div>
+       <div class="col-md-10">
+         <div class="contact-form">
+           <div class="row">
+             <div class="col-md-3 d-flex align-items-center justify-content-start">
+               <mat-form-field>
+                 <input matInput [ngxMatDatetimePicker]="picker" style="color: #556B2F;"
+                        placeholder="Choose a date and time" [disabled]="true" [(ngModel)]="date" (ngModelChange)="change()">
+                 <mat-datepicker-toggle matSuffix [for]="$any(picker)"></mat-datepicker-toggle>
+                 <ngx-mat-datetime-picker #picker [showSpinners]=true [showSeconds]=true [disabled]="false">
+                 </ngx-mat-datetime-picker>
+               </mat-form-field>
+             </div>
+             <p id="date_formated" hidden>{{date | date :'medium'}}</p>
+             <div class="col-md-5 d-flex align-items-center justify-content-center">
+               <div class="w-75">
+                 <ng-multiselect-dropdown
+                   [placeholder]="'Vote visibility'"
+                   [settings]="dropdownSettings1"
+                   [data]="dropdownList1"
+                   (onSelect)="onRoleSelect($event)"
+                   (onDeSelect)="onRoleDeselect($event)"
+                   (onSelectAll)="onRoleSelectAll($event)"
+                   (onDeSelectAll)="onRoleDeselectAll()">
+                 </ng-multiselect-dropdown>
+               </div>
+             </div>
+             <div class="col-md-4 d-flex align-items-center justify-content-end">
+               <div class="w-75">
+                 <ng-multiselect-dropdown
+                   [placeholder]="'Duration'"
+                   [settings]="dropdownSettings2"
+                   [data]="dropdownList2"
+                   (onSelect)="onDurationSelect($event)"
+                   (onDeSelect)="onDurationDeselect()"
+                 >
+                 </ng-multiselect-dropdown>
+               </div>
+             </div>
+             <div class="col-12">
+               <div class="form-group">
+                 <input id="subject" type="text"
+                        placeholder="Subject" class="form-control subjectInput"
+                        [(ngModel)]="subject" maxlength="{{maxLength}}">
+                 <p class="error" *ngIf="subjectError">Subject has a maximum size of {{maxLength}} characters</p>
+               </div>
+             </div>
+             <div class="col-md-12">
+               <div class="form-group">
+                 <ejs-richtexteditor id='iframeRTE' [toolbarSettings]='tools' [iframeSettings]='iframe' [height]='height' [(ngModel)]="content">
+                 </ejs-richtexteditor>
+               </div>
+             </div>
+             <div class="col-md-4 d-flex align-items-center justify-content-start">
+               <div id='container1'>
+                 <table class="ripple">
+                   <tr>
+                     <td class="lRipple">
+                       <label for='switch1'>GeoRestricted voting&nbsp;&nbsp;</label>
+                     </td>
+                     <td>
+                       <ejs-switch id="switch1" [(ngModel)]="geoRestriction"></ejs-switch>
+                     </td>
+                   </tr>
+                 </table>
+               </div>
+             </div>
+             <div class="col-md-3 d-flex align-items-center justify-content-end">
+               <div id='container2'>
+                 <table class="ripple">
+                   <tr>
+                     <td class="lRipple">
+                       <label for='switch1'>Email reminder&nbsp;&nbsp;</label>
+                     </td>
+                     <td>
+                       <ejs-switch id="switch2" [(ngModel)]="emailReminder"></ejs-switch>
+                     </td>
+                   </tr>
+                 </table>
+               </div>
+             </div>
+             <div class="col-md-5 d-flex align-items-start justify-content-end">
+               <div class="send">
+                 <a id="send_message" class="px-btn theme" (click)="openModalWithClass(template)"><span>Create vote</span> <i class="arrow"></i></a>
+               </div>
+             </div>
+           </div>
+         </div>
+       </div>
+     </div>
+   </div>
+ </section>
+ <div class="row">
+   <div class="col-3"></div>
+   <div class="col-7" *ngIf="formSubmitError">
+     <div class="alert alert-danger">
+       <button type="button" class="close" data-dismiss="alert" aria-hidden="true">
+         ×</button>
+       <span class="glyphicon glyphicon-hand-right"></span> <strong> Warning</strong>
+       <hr class="message-inner-separator">
+       {{errorMessage}}
+     </div>
+   </div>
+   <div class="col-3"></div>
+ </div>
 </div>
 <div class="d-flex justify-content-center" *ngIf="!(HostHasModeratorRole || HostHasAdministratorRole)">
-  <div class="alert alert-danger errorMsg">
-    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">
-      ×</button>
-    <span class="glyphicon glyphicon-hand-right"></span> <strong> Error</strong>
-    <hr class="message-inner-separator">
-    You do <b>not have permission</b> to create new votes !
-  </div>
+ <div class="alert alert-danger errorMsg">
+   <button type="button" class="close" data-dismiss="alert" aria-hidden="true">
+     ×</button>
+   <span class="glyphicon glyphicon-hand-right"></span> <strong> Error</strong>
+   <hr class="message-inner-separator">
+   You do <b>not have permission</b> to create new votes !
+ </div>
 </div>
