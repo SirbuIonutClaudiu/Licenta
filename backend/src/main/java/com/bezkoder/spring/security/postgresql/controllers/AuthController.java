@@ -13,6 +13,8 @@
 
     You should have received a copy of the GNU General Public License
     along with UnitbVoting. If not, see <https://www.gnu.org/licenses/>.
+
+Copyright 2020-2021 Sirbu Ionut Claudiu
 */
 package com.bezkoder.spring.security.postgresql.controllers;
 
@@ -172,11 +174,11 @@ public class AuthController {
 	public RedirectView verifyUser(@Param("code") String code) {
 		if (service.verify(code)) {
 			RedirectView redirectView = new RedirectView();
-			redirectView.setUrl("http://elasticbeanstalk-us-east-2-602307895584.s3-website.us-east-2.amazonaws.com/email_successfull/successfull");
+			redirectView.setUrl("http://unitbvotingfrontend.s3-website.us-east-2.amazonaws.com/email_successfull/successfull");
 			return redirectView;
 		} else {
 			RedirectView redirectView = new RedirectView();
-			redirectView.setUrl("http://elasticbeanstalk-us-east-2-602307895584.s3-website.us-east-2.amazonaws.com/unsuccessfull");
+			redirectView.setUrl("http://unitbvotingfrontend.s3-website.us-east-2.amazonaws.com/email_successfull/unsuccessfull");
 			return redirectView;
 		}
 	}
@@ -330,11 +332,11 @@ public class AuthController {
 	public RedirectView ConfirmReset(@Param("code") String code) {
 		if (service.verifyResetCode(code)) {
 			RedirectView redirectView = new RedirectView();
-			redirectView.setUrl("http://elasticbeanstalk-us-east-2-602307895584.s3-website.us-east-2.amazonaws.com/change_password/" + code);
+			redirectView.setUrl("http://unitbvotingfrontend.s3-website.us-east-2.amazonaws.com/change_password/" + code);
 			return redirectView;
 		} else {
 			RedirectView redirectView = new RedirectView();
-			redirectView.setUrl("http://elasticbeanstalk-us-east-2-602307895584.s3-website.us-east-2.amazonaws.com/change_password/" + code);
+			redirectView.setUrl("http://unitbvotingfrontend.s3-website.us-east-2.amazonaws.com/change_password/" + code);
 			return redirectView;
 		}
 	}

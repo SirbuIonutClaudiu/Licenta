@@ -13,6 +13,8 @@
 
     You should have received a copy of the GNU General Public License
     along with UnitbVoting. If not, see <https://www.gnu.org/licenses/>.
+
+Copyright 2020-2021 Sirbu Ionut Claudiu
 -->
 <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
@@ -184,7 +186,7 @@
               <div class="col-md-6" *ngIf="!isNameEditable">
                 {{member.name}}
               </div>
-              <div class="col-md-3" *ngIf="isNameEditable">
+              <div class="col-md-6" *ngIf="isNameEditable">
                 <input class="customInput"
                        placeholder={{name}}
                        [(ngModel)]="this.name"
@@ -305,7 +307,7 @@
                 <a class="btn btn-xs btn-bold btn-warning activateBtn rounded-pill" (click)="EditPhoneNumber()">
                   <i class="fa fa-pencil fa-lg"></i>&nbsp;&nbsp;Edit</a>
               </div>
-              <div class="col-md-5 card-hover-show" *ngIf="(!isPhoneNumber || isPhoneNumberEditable) && !isPhoneCodeEditable && ownProfile">
+              <div class="col-md-4 card-hover-show" *ngIf="(!isPhoneNumber || isPhoneNumberEditable) && !isPhoneCodeEditable && ownProfile">
                 <a class="btn btn-xs btn-bold btn-primary activateBtn rounded-pill" (click)="addNumber()" style="margin-right: 5%;">
                   <i class="fa fa-mobile fa-lg"></i>&nbsp;&nbsp;Add number</a>
                 <a class="btn btn-xs btn-bold btn-danger activateBtn rounded-pill" (click)="discardPhoneChange()" *ngIf="isPhoneNumber">

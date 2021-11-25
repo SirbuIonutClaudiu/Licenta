@@ -13,6 +13,8 @@
 
     You should have received a copy of the GNU General Public License
     along with UnitbVoting. If not, see <https://www.gnu.org/licenses/>.
+
+Copyright 2020-2021 Sirbu Ionut Claudiu
 */
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../_services/auth.service';

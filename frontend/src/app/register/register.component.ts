@@ -13,6 +13,8 @@
 
     You should have received a copy of the GNU General Public License
     along with UnitbVoting. If not, see <https://www.gnu.org/licenses/>.
+
+Copyright 2020-2021 Sirbu Ionut Claudiu
 */
 import {Component, Inject, OnInit} from '@angular/core';
 import { AuthService } from '../_services/auth.service';
@@ -171,7 +173,7 @@ export class RegisterComponent implements OnInit {
     this.authService.register(last_name + ' ' + first_name, email, password,
       institutional_code, googleAddress, this.applicationDate).subscribe(
       data => {
-        this.httpClient.post('http://unitbvotingbackend-env.eba-fzmvt98p.us-east-2.elasticbeanstalk.com/api/users/upload', uploadImageData)
+        this.httpClient.post('http://unitbvotingbackend-env.eba-z7tre6mm.us-east-2.elasticbeanstalk.com/api/users/upload', uploadImageData)
           .subscribe(answer => {
                 this.isSuccessful = true;
                 this.isSignUpFailed = false;

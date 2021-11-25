@@ -13,6 +13,8 @@
 
     You should have received a copy of the GNU General Public License
     along with UnitbVoting. If not, see <https://www.gnu.org/licenses/>.
+
+Copyright 2020-2021 Sirbu Ionut Claudiu
 */
 import { enableProdMode } from '@angular/core';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';

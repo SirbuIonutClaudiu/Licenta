@@ -13,6 +13,8 @@
 
     You should have received a copy of the GNU General Public License
     along with UnitbVoting. If not, see <https://www.gnu.org/licenses/>.
+
+Copyright 2020-2021 Sirbu Ionut Claudiu
 */
 package com.bezkoder.spring.security.postgresql.controllers;
 
@@ -261,7 +263,7 @@ public class UserController {
                     .badRequest()
                     .body(new MessageResponse("Cannot set role on own account !"));
         }
-        if(adminMember.getRoles().contains(adminRole)) {
+        if(memberToBeModified.getRoles().contains(adminRole)) {
             return ResponseEntity
                     .badRequest()
                     .body(new MessageResponse("Administrator cannot be part of a commission !"));

@@ -13,6 +13,8 @@
 
     You should have received a copy of the GNU General Public License
     along with UnitbVoting. If not, see <https://www.gnu.org/licenses/>.
+
+Copyright 2020-2021 Sirbu Ionut Claudiu
 */
 import {Component, OnInit, TemplateRef} from '@angular/core';
 import {TokenStorageService} from '../_services/token-storage.service';
@@ -485,13 +487,16 @@ export class UserProfileComponent implements OnInit {
         this.isLandlineEditable = false;
         if (this.landline !== this.initialLandline) {
           if (this.landline.length !== 10) {
-            this.landlineError = true;
-            this.landline = 'Landline numbers have 10 digits';
-            this.userService.sleep(3).subscribe(
-              answ => {
-                this.landline = 'No landline available';
-                this.landlineError = false;
-              });
+            if (this.landline.localeCompare('No landline available'))
+            {
+              this.landlineError = true;
+              this.landline = 'Landline numbers have 10 digits';
+              this.userService.sleep(3).subscribe(
+                answ => {
+                  this.landline = 'No landline available';
+                  this.landlineError = false;
+                });
+            }
           }
           else {
             this.landline = ((this.landline.substring(0, 3) !== '+40') ? '+40 ' : '') + this.landline;
@@ -576,6 +581,7 @@ export class UserProfileComponent implements OnInit {
         this.getImage(this.member.email);
         this.member.website = (this.member.website == null) ? 'No website available' : this.member.website;
         this.website = this.member.website;
+        this.initialWebsite = this.website;
         this.landline = (this.member.landline == null) ? 'No landline available' : this.member.landline;
         this.twoFactor = this.member.activated2FA;
         this.isPhoneNumber = this.member.phoneNumber != null;
@@ -677,7 +683,7 @@ export class UserProfileComponent implements OnInit {
     const uploadImageData = new FormData();
     uploadImageData.append('imageFile', this.selectedFile, this.selectedFile.name);
     uploadImageData.append('memberEmail', this.member.email);
-    this.httpClient.post('http://unitbvotingbackend-env.eba-fzmvt98p.us-east-2.elasticbeanstalk.com/api/users/upload', uploadImageData)
+    this.httpClient.post('http://unitbvotingbackend-env.eba-z7tre6mm.us-east-2.elasticbeanstalk.com/api/users/upload', uploadImageData)
       .subscribe(ans => {
         this.isImageEditable = false;
       },
